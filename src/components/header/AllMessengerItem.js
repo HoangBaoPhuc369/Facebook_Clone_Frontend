@@ -7,6 +7,7 @@ export default function AllMessengerItem({
   onlineUser,
   messagesChat,
   arrivalMessage,
+  closeArrivalMessage,
 }) {
   const [checkOnline, setCheckOnline] = useState(false);
   const [messages, setMessages] = useState(messagesChat);
@@ -17,11 +18,12 @@ export default function AllMessengerItem({
 
   useEffect(() => {
     arrivalMessage &&
+      currentChat?._id === arrivalMessage.currentChatId &&
       currentChat?.members.some((m) => m._id === arrivalMessage?.sender) &&
       setMessages((prev) => [...prev, arrivalMessage]);
   }, [arrivalMessage, currentChat]);
 
-  console.log(messages[messages.length - 1].text);
+  // console.log(messages[messages.length - 1].text);
 
   return (
     <div className="all_messenger_item hover1">
@@ -42,13 +44,12 @@ export default function AllMessengerItem({
           <span>
             {friendChat?.first_name} {friendChat?.last_name}
           </span>
-          <span>
-            {messages &&
+          
+          {messages &&
             messages.length > 0 &&
             messages[messages.length - 1].sender == user.id
-              ? "You: " + messages[messages.length - 1].text
-              : messages[messages.length - 1].text}
-          </span>
+              ? <span >You: {messages[messages.length - 1].text}</span>
+              : <span className= {closeArrivalMessage ? "" : "all_messenger-arrival-message"}>{messages[messages.length - 1].text}</span>}
         </div>
       </div>
     </div>

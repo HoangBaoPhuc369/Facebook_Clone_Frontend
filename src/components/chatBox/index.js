@@ -30,6 +30,7 @@ export default function ChatBox({
 
   useEffect(() => {
     arrivalMessage &&
+      currentChat?._id === arrivalMessage.currentChatId &&
       currentChat?.members.some((m) => m._id === arrivalMessage?.sender) &&
       setMessages((prev) => [...prev, arrivalMessage]);
   }, [arrivalMessage, currentChat]);
@@ -66,6 +67,7 @@ export default function ChatBox({
     socket.current.emit("sendMessage", {
       senderId: user.id,
       receiverId: friendChat._id,
+      currentChatId: currentChat?._id,
       text: newMessage,
     });
 

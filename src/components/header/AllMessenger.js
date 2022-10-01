@@ -15,6 +15,7 @@ export default function AllMessenger({
 }) {
   const [typingUsers, setTypingUsers] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [closeArrivalMessage, setCloseArrivalMessage] = useState(false);
 
   const socketRef = useRef();
 
@@ -25,6 +26,7 @@ export default function AllMessenger({
       setArrivalMessage({
         sender: data.senderId,
         text: data.text,
+        currentChatId: data?.currentChatId,
         createdAt: new Date(Date.now()),
       });
     });
@@ -68,6 +70,7 @@ export default function AllMessenger({
                     onClick={() => {
                       registerPopup(c._id);
                       setShowAllMessenger(false);
+                      setCloseArrivalMessage(true);
                     }}
                   >
                     <AllMessengerItem
@@ -77,6 +80,7 @@ export default function AllMessenger({
                       messagesChat={c.messages}
                       friendChat={getFiendChat(c)}
                       arrivalMessage={arrivalMessage}
+                      closeArrivalMessage={closeArrivalMessage}
                     />
                   </div>
                   {createPortal(
