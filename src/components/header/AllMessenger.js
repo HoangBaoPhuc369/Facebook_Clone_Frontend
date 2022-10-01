@@ -71,12 +71,17 @@ export default function AllMessenger({
                     }}
                   >
                     <AllMessengerItem
+                      user={user}
+                      currentChat={c}
                       onlineUser={onlineUser}
+                      messagesChat={c.messages}
                       friendChat={getFiendChat(c)}
+                      arrivalMessage={arrivalMessage}
                     />
                   </div>
                   {createPortal(
                     <ChatBox
+                      onlineUser={onlineUser}
                       friendChat={getFiendChat(c)}
                       messagesChat={c.messages}
                       currentChat={c}

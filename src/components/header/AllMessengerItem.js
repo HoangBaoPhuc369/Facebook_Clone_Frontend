@@ -1,14 +1,27 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function AllMessengerItem({ friendChat, onlineUser }) {
+export default function AllMessengerItem({
+  user,
+  friendChat,
+  currentChat,
+  onlineUser,
+  messagesChat,
+  arrivalMessage,
+}) {
   const [checkOnline, setCheckOnline] = useState(false);
+  const [messages, setMessages] = useState(messagesChat);
 
   useEffect(() => {
     setCheckOnline(onlineUser.some((f) => f._id === friendChat._id));
   }, [onlineUser]);
 
-  // console.log(checkOnline);
+  useEffect(() => {
+    arrivalMessage &&
+      currentChat?.members.some((m) => m._id === arrivalMessage?.sender) &&
+      setMessages((prev) => [...prev, arrivalMessage]);
+  }, [arrivalMessage, currentChat]);
+
+  console.log(messages[messages.length - 1].text);
 
   return (
     <div className="all_messenger_item hover1">
@@ -30,10 +43,11 @@ export default function AllMessengerItem({ friendChat, onlineUser }) {
             {friendChat?.first_name} {friendChat?.last_name}
           </span>
           <span>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Doloribus
-            temporibus cumque ad non obcaecati adipisci, quo sequi odio ab
-            deleniti, esse perspiciatis amet pariatur quasi natus dolorum labore
-            rerum! Quo!
+            {messages &&
+            messages.length > 0 &&
+            messages[messages.length - 1].sender == user.id
+              ? "You: " + messages[messages.length - 1].text
+              : messages[messages.length - 1].text}
           </span>
         </div>
       </div>
