@@ -11,7 +11,6 @@ import Stories from "../../components/home/stories";
 import Post from "../../components/post";
 import "./style.css";
 
-
 export default function Home({ setVisible, posts, loading, getAllPosts }) {
   const { user } = useSelector((state) => ({ ...state }));
   const middle = useRef(null);
@@ -44,12 +43,12 @@ export default function Home({ setVisible, posts, loading, getAllPosts }) {
     getConversations();
   }, []);
 
-  // console.log(conversations);  
   return (
     <div className="home" style={{ height: `${height + 250}px` }}>
       <Header
         page="home"
         getAllPosts={getAllPosts}
+        onlineUser={onlineUser}
         setOnlineUsers={setOnlineUsers}
         conversations={conversations}
       />

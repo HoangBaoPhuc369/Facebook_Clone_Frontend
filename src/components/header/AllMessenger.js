@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useChatBox } from "../../context/ChatBoxContex";
 import AllMessengerItem from "./AllMessengerItem";
-import axios from "axios";
-import Chatbox from "../chatBox";
+import ChatBox from "../chatBox";
 import { createPortal } from "react-dom";
 import { registerPopup } from "../../helpers/displayChatBox";
 import { io } from "socket.io-client";
@@ -11,37 +9,14 @@ export default function AllMessenger({
   user,
   setShowAllMessenger,
   display,
+  onlineUser,
   setOnlineUsers,
   conversations,
-  // setGetConversationId,
 }) {
   const [typingUsers, setTypingUsers] = useState([]);
-  // const [conversations, setConversations] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
-  // const [onlineUser, setOnlineUsers] = useState([]);
 
   const socketRef = useRef();
-
-  // //Get conversation
-  // useEffect(() => {
-  //   const getConversations = async () => {
-  //     try {
-  //       const res = await axios.put(
-  //         `${process.env.REACT_APP_BACKEND_URL}/chat/conversations`,
-  //         {},
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${user.token}`,
-  //           },
-  //         }
-  //       );
-  //       setConversations(res.data);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   getConversations();
-  // }, []);
 
   // Get message from socketRef io
   useEffect(() => {
@@ -59,11 +34,6 @@ export default function AllMessenger({
         const user = typingInfo.user;
         setTypingUsers((users) => [...users, user]);
       }
-      console.log(`start typing message id currentId: ` + socketRef.current.id);
-      console.log(
-        `get typing from socket id currentId: ` + typingInfo.senderId
-      );
-      console.log(`typinginfo: ` + typingInfo.user);
     });
   }, []);
 
@@ -76,7 +46,9 @@ export default function AllMessenger({
     });
   }, [user]);
 
-
+  const getFiendChat = (current) => {
+    return current.members.find((m) => m._id !== user.id);
+  };
 
   return (
     <div className="all_messenger" style={{ display: display }}>
@@ -96,16 +68,16 @@ export default function AllMessenger({
                     onClick={() => {
                       registerPopup(c._id);
                       setShowAllMessenger(false);
-
                     }}
                   >
                     <AllMessengerItem
-                      friendChat={c.members.find((m) => m._id !== user.id)}
+                      onlineUser={onlineUser}
+                      friendChat={getFiendChat(c)}
                     />
                   </div>
                   {createPortal(
-                    <Chatbox
-                      friendChat={c.members.find((m) => m._id !== user.id)}
+                    <ChatBox
+                      friendChat={getFiendChat(c)}
                       messagesChat={c.messages}
                       currentChat={c}
                       arrivalMessage={arrivalMessage}

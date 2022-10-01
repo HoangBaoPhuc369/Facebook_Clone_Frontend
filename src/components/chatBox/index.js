@@ -19,7 +19,7 @@ import axios from "axios";
 import { BeatLoader } from "react-spinners";
 import useTyping from "../../hooks/useTyping";
 
-export default function Chatbox({
+export default function ChatBox({
   socket,
   friendChat,
   messagesChat,

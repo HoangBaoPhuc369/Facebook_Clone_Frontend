@@ -26,6 +26,7 @@ import AllMessenger from "./AllMessenger";
 export default function Header({
   page,
   getAllPosts,
+  onlineUser,
   setOnlineUsers,
   conversations,
 }) {
@@ -146,10 +147,9 @@ export default function Header({
             user={user}
             display={showAllMessenger ? "block" : "none"}
             setShowAllMessenger={setShowAllMessenger}
+            onlineUser={onlineUser}
             setOnlineUsers={setOnlineUsers}
             conversations={conversations}
-            // setConversations={setConversations}
-            // setGetConversationId={setGetConversationId}
           />
         </div>
         <div className="circle_icon hover1">

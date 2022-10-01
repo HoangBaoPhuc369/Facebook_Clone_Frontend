@@ -1,14 +1,29 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function AllMessengerItem({ friendChat}) {
+export default function AllMessengerItem({ friendChat, onlineUser }) {
+  const [checkOnline, setCheckOnline] = useState(false);
+
+  useEffect(() => {
+    setCheckOnline(onlineUser.some((f) => f._id === friendChat._id));
+  }, [onlineUser]);
+
+  // console.log(checkOnline);
 
   return (
     <div className="all_messenger_item hover1">
       <div className="all_messenger_item_chat">
-        <img src={friendChat?.picture} alt="" className="all_messenger_item_img" />
+        <img
+          src={friendChat?.picture}
+          alt=""
+          className="all_messenger_item_img"
+        />
         <div>
-          <span className="all_messenger_item_status"></span>
+          {checkOnline ? (
+            <span className="all_messenger_item_status"></span>
+          ) : (
+            <span></span>
+          )}
         </div>
         <div className="all_messenger_col">
           <span>
