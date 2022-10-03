@@ -29,6 +29,7 @@ export default function AllMessenger({
         currentChatId: data?.currentChatId,
         createdAt: new Date(Date.now()),
       });
+      // setCloseArrivalMessage(true);
     });
 
     socketRef.current.on("start typing message", (typingInfo) => {
@@ -64,13 +65,13 @@ export default function AllMessenger({
             </div>
             <div className="all_messenger_group">
               <div className="all_messenger_group_header">Inbox</div>
-              {conversations.map((c) => (
+              {conversations?.map((c) => (
                 <div key={c._id}>
                   <div
                     onClick={() => {
                       registerPopup(c._id);
                       setShowAllMessenger(false);
-                      setCloseArrivalMessage(true);
+                      // setCloseArrivalMessage(true);
                     }}
                   >
                     <AllMessengerItem
@@ -81,6 +82,7 @@ export default function AllMessenger({
                       friendChat={getFiendChat(c)}
                       arrivalMessage={arrivalMessage}
                       closeArrivalMessage={closeArrivalMessage}
+                      setCloseArrivalMessage={setCloseArrivalMessage}
                     />
                   </div>
                   {createPortal(
