@@ -17,6 +17,7 @@ export default function ChatBox({
   typingUsers,
   setTypingUsers,
   onlineUser,
+  scrollBottom,
 }) {
   const { user } = useSelector((user) => ({ ...user }));
   const { isTyping, startTyping, stopTyping, cancelTyping } = useTyping();
@@ -90,7 +91,7 @@ export default function ChatBox({
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [currentChat, messages]);
+  }, [messages, scrollBottom]);
 
   const startTypingMessage = () => {
     if (!socket.current) return;
@@ -131,7 +132,7 @@ export default function ChatBox({
 
           <div className="ChatBox_container">
             {messages?.map((message, i) => (
-              <div key={i} ref={scrollRef}>
+              <div key={i}>
                 <Message
                   message={message}
                   ownUser={message?.sender == user.id}
@@ -157,6 +158,7 @@ export default function ChatBox({
                 </div>
               </div>
             ))}
+            <div className="chatBox-scroll" ref={scrollRef}></div>
           </div>
 
           <ChatBoxBottom

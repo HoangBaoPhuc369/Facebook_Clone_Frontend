@@ -14,6 +14,7 @@ export default function AllMessenger({
   conversations,
 }) {
   const [typingUsers, setTypingUsers] = useState([]);
+  const [scrollBottom, setScrollBottom] = useState(false);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [closeArrivalMessage, setCloseArrivalMessage] = useState(false);
 
@@ -71,6 +72,7 @@ export default function AllMessenger({
                     onClick={() => {
                       registerPopup(c._id);
                       setShowAllMessenger(false);
+                      setScrollBottom(prev => !prev);
                       // setCloseArrivalMessage(true);
                     }}
                   >
@@ -95,6 +97,7 @@ export default function AllMessenger({
                       socket={socketRef}
                       typingUsers={typingUsers}
                       setTypingUsers={setTypingUsers}
+                      scrollBottom={scrollBottom}
                     />,
                     document.getElementById("wrapper")
                   )}

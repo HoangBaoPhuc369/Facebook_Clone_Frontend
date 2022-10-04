@@ -20,21 +20,35 @@ export default function AllMessengerItem({
     setCheckOnline(onlineUser.some((f) => f._id === friendChat._id));
   }, [onlineUser]);
 
+  const getArrivalMessage = (id) => {
+    document.getElementById(`arrival-message` + id)?.classList.add("all_messenger-arrival-message");
+  };
+
   useEffect(() => {
-    arrivalMessage &&
+    // arrivalMessage &&
+    //   currentChat?._id === arrivalMessage.currentChatId &&
+    //   currentChat?.members.some((m) => m._id === arrivalMessage?.sender) &&
+    //   setMessages((prev) => [...prev, arrivalMessage]);
+
+    if (
+      arrivalMessage &&
       currentChat?._id === arrivalMessage.currentChatId &&
-      currentChat?.members.some((m) => m._id === arrivalMessage?.sender) &&
+      currentChat?.members.some((m) => m._id === arrivalMessage?.sender)
+    ) {
+      console.log(true);
       setMessages((prev) => [...prev, arrivalMessage]);
+      getArrivalMessage(currentChat?._id);
+    }
   }, [arrivalMessage, currentChat]);
 
-  const handleCloseArrivalMessage = () => {
-    setCloseArrivalMessage(false);
+  const handleCloseArrivalMessage = (id) => {
+    document.getElementById(`arrival-message` + id)?.classList.remove("all_messenger-arrival-message");
   };
 
   return (
     <div
       className="all_messenger_item hover1"
-      onClick={handleCloseArrivalMessage}
+      onClick={() => handleCloseArrivalMessage(currentChat?._id)}
     >
       <div className="all_messenger_item_chat">
         <img
@@ -61,9 +75,8 @@ export default function AllMessengerItem({
           ) : (
             <span
               ref={arrivalRef}
-              className={
-                closeArrivalMessage ? "all_messenger-arrival-message" : ""
-              }
+              id={`arrival-message` + currentChat?._id}
+              className=""
             >
               {messages[messages.length - 1]?.text}
             </span>
