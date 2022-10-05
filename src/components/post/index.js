@@ -8,7 +8,7 @@ import CreateComment from "./CreateComment";
 import PostMenu from "./PostMenu";
 import { getReacts, reactPost } from "../../functions/post";
 import Comment from "./Comment";
-export default function Post({ post, user, profile }) {
+export default function Post({user, post, profile }) { 
   const [visible, setVisible] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
@@ -16,7 +16,99 @@ export default function Post({ post, user, profile }) {
   const [total, setTotal] = useState(0);
   const [count, setCount] = useState(1);
   const [checkSaved, setCheckSaved] = useState();
-  const [comments, setComments] = useState([]);
+  // const [comments, setComments] = useState([]);
+  const postRef = useRef(null);
+
+  
+
+  const Comments = [
+    {
+        "comment": "Mu vo doi",
+        "image": "",
+        "parentId": "",
+        "commentBy": {
+            "_id": "63257d515b888dcf66525601",
+            "first_name": "luan",
+            "last_name": "nguyen",
+            "username": "luannguyen_MrFyC2iag",
+            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
+        },
+        "commentAt": "2022-09-28T04:26:01.168Z",
+        "_id": "6333ccd902672eb73b386b66"
+    },
+    {
+        "comment": "haha",
+        "image": "",
+        "parentId": "6333ccd902672eb73b386b66",
+        "commentBy": {
+            "_id": "63257d515b888dcf66525601",
+            "first_name": "luan",
+            "last_name": "nguyen",
+            "username": "luannguyen_MrFyC2iag",
+            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
+        },
+        "commentAt": "2022-09-28T04:31:15.185Z",
+        "_id": "6333ce1302672eb73b386b6c"
+    },
+    {
+        "comment": "comment lv1",
+        "image": "",
+        "parentId": "",
+        "commentBy": {
+            "_id": "63257d515b888dcf66525601",
+            "first_name": "luan",
+            "last_name": "nguyen",
+            "username": "luannguyen_MrFyC2iag",
+            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
+        },
+        "commentAt": "2022-10-02T01:05:04.568Z",
+        "_id": "6338e3c0d2d7b99ea89f8a77"
+    },
+    {
+        "comment": "comment lv2",
+        "image": "",
+        "parentId": "6338e3c0d2d7b99ea89f8a77",
+        "commentBy": {
+            "_id": "63257d515b888dcf66525601",
+            "first_name": "luan",
+            "last_name": "nguyen",
+            "username": "luannguyen_MrFyC2iag",
+            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
+        },
+        "commentAt": "2022-10-02T01:05:30.037Z",
+        "_id": "6338e3dad2d7b99ea89f8a7a"
+    },
+    {
+        "comment": "comment lv3",
+        "image": "",
+        "parentId": "6338e3dad2d7b99ea89f8a7a",
+        "commentBy": {
+            "_id": "63257d515b888dcf66525601",
+            "first_name": "luan",
+            "last_name": "nguyen",
+            "username": "luannguyen_MrFyC2iag",
+            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
+        },
+        "commentAt": "2022-10-02T01:05:55.154Z",
+        "_id": "6338e3f3d2d7b99ea89f8a7d"
+    },
+    {
+        "comment": "comment lv3 1",
+        "image": "",
+        "parentId": "6338e3dad2d7b99ea89f8a7a",
+        "commentBy": {
+            "_id": "63257d515b888dcf66525601",
+            "first_name": "luan",
+            "last_name": "nguyen",
+            "username": "luannguyen_MrFyC2iag",
+            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
+        },
+        "commentAt": "2022-10-02T01:10:46.776Z",
+        "_id": "6338e516d2d7b99ea89f8a8f"
+    }
+]
+  const [comments, setComments] = useState(Comments);
+
   useEffect(() => {
     getPostReacts();
   }, [post]);
@@ -57,10 +149,10 @@ export default function Post({ post, user, profile }) {
       }
     }
   };
+
   const showMore = () => {
     setCount((prev) => prev + 3);
   };
-  const postRef = useRef(null);
   
   return (
     <div
@@ -70,7 +162,7 @@ export default function Post({ post, user, profile }) {
     >
       <div className="post_header">
         <Link
-          to={`/profile/${post.user.username}`}
+          to={`/profile/${post?.user.username}`}
           className="post_header_left"
         >
           <img src={post.user.picture} alt="" />
