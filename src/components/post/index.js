@@ -153,6 +153,17 @@ export default function Post({user, post, profile }) {
   const showMore = () => {
     setCount((prev) => prev + 3);
   };
+
+  const getComments = (commentId) => {
+    comments
+    .filter((comment) => comment.parentId == commentId)
+    .sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    )
+  }
+
+  console.log(comments);
   
   return (
     <div
