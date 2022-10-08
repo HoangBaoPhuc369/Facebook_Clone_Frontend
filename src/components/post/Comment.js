@@ -1,6 +1,12 @@
 import Moment from "react-moment";
 
-export default function Comment({ comment }) {
+export default function Comment({
+  comment,
+  repliesSecond = [],
+  repliesThird,
+  getReplies,
+}) {
+
   return (
     <div className="comment">
       <img src={comment.commentBy.picture} alt="" className="comment_img" />
@@ -23,6 +29,26 @@ export default function Comment({ comment }) {
             </Moment>
           </span>
         </div>
+
+        {repliesSecond && repliesSecond.length > 0 && (
+          <div className="replies-second">
+            {repliesSecond.map((reply, i) => (
+              <Comment
+                comment={reply}
+                repliesThird={getReplies(reply?._id)}
+                key={i}
+              />
+            ))}
+          </div>
+        )}
+
+        {repliesThird && repliesThird.length > 0 && (
+          <div className="replies-third">
+            {repliesThird.map((reply, i) => (
+              <Comment comment={reply} key={i} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

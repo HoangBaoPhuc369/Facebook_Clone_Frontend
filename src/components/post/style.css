@@ -514,6 +514,11 @@
   padding: 5px 15px;
   border-radius: 50px;
 }
+
+.comment_name {
+  font-weight: 600;
+}
+
 .comment_actions {
   display: flex;
   align-items: center;

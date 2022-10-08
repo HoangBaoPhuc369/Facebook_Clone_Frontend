@@ -24,8 +24,15 @@ export default function Post({ user, post, profile }) {
   useEffect(() => {
     getPostReacts();
   }, [post]);
+  // useEffect(() => {
+  //   setComments(post?.comments);
+  // }, [post]);
+
   useEffect(() => {
-    setComments(post?.comments);
+    const getRootComment = post.comments.filter(
+      (backendComment) => backendComment.parentId === ""
+    );
+    setComments(() => [...getRootComment]);
   }, [post]);
 
   const getPostReacts = async () => {
@@ -66,21 +73,13 @@ export default function Post({ user, post, profile }) {
     setCount((prev) => prev + 3);
   };
 
-  const getComments = (commentId) => {
-    comments
+  const getReplies = (commentId) =>
+    post?.comments
       .filter((comment) => comment.parentId === commentId)
       .sort(
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-  };
-
-  useEffect(() => {
-    const getRootComment = post.comments.filter(
-      (backendComment) => backendComment.parentId === ""
-    );
-    setComments(() => [...getRootComment]);
-  }, [post]);
 
   return (
     <div
@@ -198,7 +197,7 @@ export default function Post({ user, post, profile }) {
           <div className="reacts_count_num">{total > 0 && total}</div>
         </div>
         <div className="to_right">
-          <div className="comments_count">{comments.length} comments</div>
+          <div className="comments_count">{post.comments?.length} comments</div>
           <div className="share_count">0 share</div>
         </div>
       </div>
@@ -280,7 +279,15 @@ export default function Post({ user, post, profile }) {
               return new Date(b.commentAt) - new Date(a.commentAt);
             })
             .slice(0, count)
-            .map((comment, i) => <Comment comment={comment} key={i} />)}
+            .map((comment, i) => (
+              <Comment
+                comment={comment}
+                repliesSecond={getReplies(comment?._id)}
+                repliesThird={[]}
+                getReplies={getReplies}
+                key={i}
+              />
+            ))}
         {count < comments.length && (
           <div className="view_comments" onClick={() => showMore()}>
             View more comments

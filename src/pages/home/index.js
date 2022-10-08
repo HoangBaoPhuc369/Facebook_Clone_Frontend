@@ -163,6 +163,20 @@ export default function Home({ setVisible,  loading, getAllPosts }) { //posts,
                 "_id": "6338e3dad2d7b99ea89f8a7a"
             },
             {
+              "comment": "comment lv2",
+              "image": "",
+              "parentId": "6338e3c0d2d7b99ea89f8a77",
+              "commentBy": {
+                  "_id": "63257d515b888dcf66525601",
+                  "first_name": "luan",
+                  "last_name": "nguyen",
+                  "username": "luannguyen_MrFyC2iag",
+                  "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
+              },
+              "commentAt": "2022-10-02T01:05:30.037Z",
+              "_id": "6338e3dad2d7b123789f8a7a"
+          },
+            {
                 "comment": "comment lv3",
                 "image": "",
                 "parentId": "6338e3dad2d7b99ea89f8a7a",
@@ -175,7 +189,21 @@ export default function Home({ setVisible,  loading, getAllPosts }) { //posts,
                 },
                 "commentAt": "2022-10-02T01:05:55.154Z",
                 "_id": "6338e3f3d2d7b99ea89f8a7d"
-            }
+            },
+            {
+              "comment": "comment lv3",
+              "image": "",
+              "parentId": "6338e3dad2d7b99ea89f8a7a",
+              "commentBy": {
+                  "_id": "63257d515b888dcf66525601",
+                  "first_name": "luan",
+                  "last_name": "nguyen",
+                  "username": "luannguyen_MrFyC2iag",
+                  "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
+              },
+              "commentAt": "2022-10-02T01:05:55.154Z",
+              "_id": "6338e3ber2d7b99ea89f8a7d"
+          }
         ],
         "createdAt": "2022-09-17T13:38:50.019Z",
         "updatedAt": "2022-10-02T01:05:55.155Z",
@@ -239,7 +267,7 @@ export default function Home({ setVisible,  loading, getAllPosts }) { //posts,
         {user.verified === false && <SendVerification user={user} />}
         <CreatePost user={user} setVisible={setVisible} />
         {loading ? (
-          <div className="sekelton_loader">
+          <div className="skeleton_loader">
             <HashLoader color="#1876f2" />
           </div>
         ) : (
