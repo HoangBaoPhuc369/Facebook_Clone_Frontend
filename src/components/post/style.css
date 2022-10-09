@@ -491,6 +491,7 @@
 }
 /*----Comment-----------*/
 .comment {
+  position: relative;
   display: flex;
   gap: 5px;
   font-size: 14px;

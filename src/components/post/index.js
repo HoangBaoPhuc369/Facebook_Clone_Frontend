@@ -280,13 +280,15 @@ export default function Post({ user, post, profile }) {
             })
             .slice(0, count)
             .map((comment, i) => (
-              <Comment
-                comment={comment}
-                repliesSecond={getReplies(comment?._id)}
-                repliesThird={[]}
-                getReplies={getReplies}
-                key={i}
-              />
+             <>
+                <Comment
+                  comment={comment}
+                  repliesSecond={getReplies(comment?._id)}
+                  repliesThird={[]}
+                  getReplies={getReplies}
+                  key={i}
+                />
+             </>
             ))}
         {count < comments.length && (
           <div className="view_comments" onClick={() => showMore()}>
