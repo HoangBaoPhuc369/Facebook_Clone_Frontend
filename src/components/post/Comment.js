@@ -1,14 +1,37 @@
 import Moment from "react-moment";
+import CreateComment from "./CreateComment";
+import { useState } from "react";
 
 export default function Comment({
+  user,
   comment,
+  first,
+  second,
+  third,
   repliesSecond = [],
-  repliesThird,
+  repliesThird = [],
+  setActiveComment,
+  activeComment,
   getReplies,
 }) {
+  const isReplying =
+    activeComment &&
+    activeComment.id === comment?._id &&
+    activeComment.type === "replying";
+
   return (
     <>
-      <div className="comment">
+      <div
+        className={
+          first
+            ? "comment"
+            : second
+            ? "comment comment-second"
+            : third
+            ? "comment comment-third"
+            : ""
+        }
+      >
         <img src={comment.commentBy.picture} alt="" className="comment_img" />
         <div className="comment_col">
           <div className="comment_wrap">
@@ -21,8 +44,21 @@ export default function Comment({
             <img src={comment.image} alt="" className="comment_image" />
           )}
           <div className="comment_actions">
-            <span>Like</span>
-            <span>Reply</span>
+            <div>Like</div>
+            <div
+              onClick={() => {
+                setActiveComment({
+                  id: comment?._id,
+                  name:
+                    comment.commentBy.first_name +
+                    " " +
+                    comment.commentBy.last_name,
+                  type: "replying",
+                });
+              }}
+            >
+              Reply
+            </div>
             <span>
               <Moment fromNow interval={30}>
                 {comment.commentAt}
@@ -30,28 +66,47 @@ export default function Comment({
             </span>
           </div>
         </div>
-
-        <span className="recursive"></span>
       </div>
 
-      {repliesSecond && repliesSecond.length > 0 && (
-        <div className="replies-second">
-          {repliesSecond.map((reply, i) => (
-            <Comment
-              comment={reply}
-              repliesThird={getReplies(reply?._id)}
-              key={i}
-            />
-          ))}
-        </div>
-      )}
+      {repliesSecond &&
+        repliesSecond.length > 0 &&
+        repliesSecond.map((reply, i) => (
+          <Comment
+            user={user}
+            comment={reply}
+            repliesThird={getReplies(reply?._id)}
+            first={false}
+            second={true}
+            third={false}
+            key={i}
+            setActiveComment={setActiveComment}
+            activeComment={activeComment}
+          />
+        ))}
 
-      {repliesThird && repliesThird.length > 0 && (
-        <div className="replies-third">
-          {repliesThird.map((reply, i) => (
-            <Comment comment={reply} key={i} />
-          ))}
-        </div>
+      {first && isReplying && <CreateComment user={user} createRelyFirstCm={true} />}
+
+      {repliesThird &&
+        repliesThird.length > 0 &&
+        repliesThird.map((reply, i) => (
+          <Comment
+            user={user}
+            comment={reply}
+            first={false}
+            second={false}
+            third={true}
+            key={i}
+            setActiveComment={setActiveComment}
+            activeComment={activeComment}
+          />
+        ))}
+
+      {second && isReplying && (
+        <CreateComment
+          user={user}
+          createRelyFirstCm={false}
+          createRelySecondCm={true}
+        />
       )}
     </>
   );

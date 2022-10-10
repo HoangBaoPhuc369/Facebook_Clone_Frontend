@@ -4,7 +4,14 @@ import { comment } from "../../functions/post";
 import { uploadImages } from "../../functions/uploadImages";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
 import { ClipLoader } from "react-spinners";
-export default function CreateComment({ user, postId, setComments, setCount }) {
+export default function CreateComment({
+  user,
+  postId,
+  setComments,
+  setCount,
+  createRelyFirstCm,
+  createRelySecondCm,
+}) {
   const [picker, setPicker] = useState(false);
   const [text, setText] = useState("");
   const [error, setError] = useState("");
@@ -81,9 +88,21 @@ export default function CreateComment({ user, postId, setComments, setCount }) {
     }
   };
   return (
-    <div className="create_comment_wrap">
+    <div
+      className={
+        createRelyFirstCm
+          ? "create_comment_wrap create_comment-reply-first"
+          : createRelySecondCm
+          ? "create_comment_wrap create_comment-reply-second"
+          : "create_comment_wrap"
+      }
+    >
       <div className="create_comment">
-        <img src={user?.picture} alt="" />
+        <img
+          src={user?.picture}
+          className="rely-comment-img"
+          alt=""
+        />
         <div className="comment_input_wrap">
           {picker && (
             <div className="comment_emoji_picker">

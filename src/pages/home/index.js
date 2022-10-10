@@ -273,7 +273,7 @@ export default function Home({ setVisible,  loading, getAllPosts }) { //posts,
         ) : (
           <div className="posts">
             {posts.map((post, i) => (
-              <Post key={i} post={post} user={user} />
+              <Post key={post?._id} post={post} user={user} />
             ))}
           </div>
         )}

@@ -20,6 +20,7 @@ export default function Post({ user, post, profile }) {
   const postRef = useRef(null);
 
   const [comments, setComments] = useState([]);
+  const [activeComment, setActiveComment] = useState(null);
 
   useEffect(() => {
     getPostReacts();
@@ -80,6 +81,8 @@ export default function Post({ user, post, profile }) {
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
+
+  // console.log(activeComment);
 
   return (
     <div
@@ -267,12 +270,7 @@ export default function Post({ user, post, profile }) {
       </div>
       <div className="comments_wrap">
         <div className="comments_order"></div>
-        <CreateComment
-          user={user}
-          postId={post._id}
-          setComments={setComments}
-          setCount={setCount}
-        />
+
         {comments &&
           comments
             .sort((a, b) => {
@@ -280,16 +278,26 @@ export default function Post({ user, post, profile }) {
             })
             .slice(0, count)
             .map((comment, i) => (
-             <>
+              <>
                 <Comment
+                  user={user}
                   comment={comment}
+                  first={true}
+                  activeComment={activeComment}
+                  setActiveComment={setActiveComment}
                   repliesSecond={getReplies(comment?._id)}
-                  repliesThird={[]}
                   getReplies={getReplies}
                   key={i}
                 />
-             </>
+              </>
             ))}
+
+        <CreateComment
+          user={user}
+          postId={post._id}
+          setComments={setComments}
+          setCount={setCount}
+        />
         {count < comments.length && (
           <div className="view_comments" onClick={() => showMore()}>
             View more comments
