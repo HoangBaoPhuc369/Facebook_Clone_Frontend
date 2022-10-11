@@ -357,7 +357,7 @@
 }
 
 .create_comment_wrap {
-  /* display: none; */
+  margin: 5px 0;
 }
 
 .create_comment {

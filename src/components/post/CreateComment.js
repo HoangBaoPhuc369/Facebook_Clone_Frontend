@@ -11,6 +11,7 @@ export default function CreateComment({
   setCount,
   createRelyFirstCm,
   createRelySecondCm,
+  createRelyThirdCm,
 }) {
   const [picker, setPicker] = useState(false);
   const [text, setText] = useState("");
@@ -92,10 +93,11 @@ export default function CreateComment({
       className={
         createRelyFirstCm
           ? "create_comment_wrap create_comment-reply-first"
-          : createRelySecondCm
+          : createRelySecondCm || createRelyThirdCm
           ? "create_comment_wrap create_comment-reply-second"
           : "create_comment_wrap"
       }
+
     >
       <div className="create_comment">
         <img

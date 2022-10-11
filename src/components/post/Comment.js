@@ -13,11 +13,21 @@ export default function Comment({
   setActiveComment,
   activeComment,
   getReplies,
+  showReplies,
+  setShowReplies,
+  RelyId,
 }) {
   const isReplying =
     activeComment &&
     activeComment.id === comment?._id &&
     activeComment.type === "replying";
+
+  const showReplyForm = (relyId) => {
+    if (relyId) {
+      const element = document.getElementById(relyId);
+      element.style.display = "block";
+    }
+  };
 
   return (
     <>
@@ -55,6 +65,10 @@ export default function Comment({
                     comment.commentBy.last_name,
                   type: "replying",
                 });
+                setShowReplies(true);
+                first  && showReplyForm(comment?._id);
+                second && showReplyForm(comment?._id);
+                third && showReplyForm(RelyId);
               }}
             >
               Reply
@@ -81,10 +95,17 @@ export default function Comment({
             key={i}
             setActiveComment={setActiveComment}
             activeComment={activeComment}
+            showReplies={showReplies}
+            setShowReplies={setShowReplies}
+            getReplies={getReplies}
           />
         ))}
 
-      {first && isReplying && <CreateComment user={user} createRelyFirstCm={true} />}
+      {first && (
+        <div id={comment?._id} style={{ display: "none" }}>
+          <CreateComment user={user} createRelyFirstCm={true} />
+        </div>
+      )}
 
       {repliesThird &&
         repliesThird.length > 0 &&
@@ -92,22 +113,37 @@ export default function Comment({
           <Comment
             user={user}
             comment={reply}
+            RelyId={comment?._id}
             first={false}
             second={false}
             third={true}
             key={i}
             setActiveComment={setActiveComment}
             activeComment={activeComment}
+            setShowReplies={setShowReplies}
+            getReplies={getReplies}
           />
         ))}
 
-      {second && isReplying && (
+      {second && (
+        <div id={comment?._id} style={{ display: "none" }}>
+          <CreateComment
+            user={user}
+            createRelyFirstCm={false}
+            createRelySecondCm={true}
+          />
+        </div>
+      )}
+
+      {/* {third && (
         <CreateComment
           user={user}
+          RelyId={comment?._id}
           createRelyFirstCm={false}
-          createRelySecondCm={true}
+          createRelySecondCm={false}
+          createRelyThirdCm={true}
         />
-      )}
+      )} */}
     </>
   );
 }

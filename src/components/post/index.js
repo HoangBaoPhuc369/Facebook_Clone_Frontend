@@ -81,9 +81,10 @@ export default function Post({ user, post, profile }) {
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
+  
 
-  // console.log(activeComment);
-
+      const [showReplies, setShowReplies] = useState(false);
+    
   return (
     <div
       className="post"
@@ -271,6 +272,13 @@ export default function Post({ user, post, profile }) {
       <div className="comments_wrap">
         <div className="comments_order"></div>
 
+        <CreateComment
+          user={user}
+          postId={post._id}
+          setComments={setComments}
+          setCount={setCount}
+        />
+
         {comments &&
           comments
             .sort((a, b) => {
@@ -287,17 +295,14 @@ export default function Post({ user, post, profile }) {
                   setActiveComment={setActiveComment}
                   repliesSecond={getReplies(comment?._id)}
                   getReplies={getReplies}
+                  showReplies={showReplies}
+                  setShowReplies={setShowReplies}
                   key={i}
                 />
               </>
             ))}
 
-        <CreateComment
-          user={user}
-          postId={post._id}
-          setComments={setComments}
-          setCount={setCount}
-        />
+       
         {count < comments.length && (
           <div className="view_comments" onClick={() => showMore()}>
             View more comments
