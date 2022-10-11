@@ -16,6 +16,8 @@ export default function Comment({
   showReplies,
   setShowReplies,
   RelyId,
+  getName, 
+  setGetName,
 }) {
   const isReplying =
     activeComment &&
@@ -28,6 +30,8 @@ export default function Comment({
       element.style.display = "block";
     }
   };
+
+ 
 
   return (
     <>
@@ -66,7 +70,7 @@ export default function Comment({
                   type: "replying",
                 });
                 setShowReplies(true);
-                first  && showReplyForm(comment?._id);
+                first  && showReplyForm(comment?._id) && setGetName(comment.commentBy.first_name + " " + comment.commentBy.last_name);
                 second && showReplyForm(comment?._id);
                 third && showReplyForm(RelyId);
               }}
@@ -103,7 +107,7 @@ export default function Comment({
 
       {first && (
         <div id={comment?._id} style={{ display: "none" }}>
-          <CreateComment user={user} createRelyFirstCm={true} />
+          <CreateComment user={user} createRelyFirstCm={true} getName={isReplying ? activeComment.name : ""} />
         </div>
       )}
 
@@ -135,15 +139,6 @@ export default function Comment({
         </div>
       )}
 
-      {/* {third && (
-        <CreateComment
-          user={user}
-          RelyId={comment?._id}
-          createRelyFirstCm={false}
-          createRelySecondCm={false}
-          createRelyThirdCm={true}
-        />
-      )} */}
     </>
   );
 }

@@ -7,11 +7,11 @@ import { ClipLoader } from "react-spinners";
 export default function CreateComment({
   user,
   postId,
+  getName,
   setComments,
   setCount,
   createRelyFirstCm,
   createRelySecondCm,
-  createRelyThirdCm,
 }) {
   const [picker, setPicker] = useState(false);
   const [text, setText] = useState("");
@@ -93,7 +93,7 @@ export default function CreateComment({
       className={
         createRelyFirstCm
           ? "create_comment_wrap create_comment-reply-first"
-          : createRelySecondCm || createRelyThirdCm
+          : createRelySecondCm 
           ? "create_comment_wrap create_comment-reply-second"
           : "create_comment_wrap"
       }
@@ -130,7 +130,7 @@ export default function CreateComment({
             type="text"
             ref={textRef}
             value={text}
-            placeholder="Write a comment..."
+            placeholder={getName ? `Reply to ${getName}` : "Write a comment..."}
             onChange={(e) => setText(e.target.value)}
             onKeyUp={handleComment}
           />

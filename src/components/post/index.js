@@ -84,7 +84,9 @@ export default function Post({ user, post, profile }) {
   
 
       const [showReplies, setShowReplies] = useState(false);
-    
+      const [getName, setGetName] = useState("");
+
+      console.log(getName);
   return (
     <div
       className="post"
@@ -297,6 +299,8 @@ export default function Post({ user, post, profile }) {
                   getReplies={getReplies}
                   showReplies={showReplies}
                   setShowReplies={setShowReplies}
+                  getName={getName}
+                  setGetName={setGetName}
                   key={i}
                 />
               </>
