@@ -16,6 +16,7 @@ export default function Post({ user, post, profile }) {
   const [total, setTotal] = useState(0);
   const [count, setCount] = useState(1);
   const [checkSaved, setCheckSaved] = useState();
+  
   // const [comments, setComments] = useState([]);
   const postRef = useRef(null);
 
@@ -81,12 +82,7 @@ export default function Post({ user, post, profile }) {
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-  
 
-      const [showReplies, setShowReplies] = useState(false);
-      const [getName, setGetName] = useState("");
-
-      console.log(getName);
   return (
     <div
       className="post"
@@ -290,18 +286,17 @@ export default function Post({ user, post, profile }) {
             .map((comment, i) => (
               <>
                 <Comment
+                  key={i}
                   user={user}
-                  comment={comment}
                   first={true}
+                  postId={post._id}
+                  comment={comment}
+                  setCount={setCount}
+                  getReplies={getReplies}
+                  setComments={setComments}
                   activeComment={activeComment}
                   setActiveComment={setActiveComment}
                   repliesSecond={getReplies(comment?._id)}
-                  getReplies={getReplies}
-                  showReplies={showReplies}
-                  setShowReplies={setShowReplies}
-                  getName={getName}
-                  setGetName={setGetName}
-                  key={i}
                 />
               </>
             ))}

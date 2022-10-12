@@ -1,9 +1,12 @@
 import Moment from "react-moment";
 import CreateComment from "./CreateComment";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Comment({
   user,
+  postId,
+  setComments,
+  setCount,
   comment,
   first,
   second,
@@ -13,12 +16,14 @@ export default function Comment({
   setActiveComment,
   activeComment,
   getReplies,
-  showReplies,
-  setShowReplies,
   RelyId,
-  getName, 
-  setGetName,
+  setGetParentId,
+
 }) {
+  
+  const [parentId, setParentId] = useState(null);
+  const [parentIdSecond, setParentIdSecond] = useState(null);
+
   const isReplying =
     activeComment &&
     activeComment.id === comment?._id &&
@@ -30,8 +35,6 @@ export default function Comment({
       element.style.display = "block";
     }
   };
-
- 
 
   return (
     <>
@@ -63,16 +66,19 @@ export default function Comment({
               onClick={() => {
                 setActiveComment({
                   id: comment?._id,
-                  name:
-                    comment.commentBy.first_name +
-                    " " +
-                    comment.commentBy.last_name,
+                  parentId: comment?.parentId,
                   type: "replying",
                 });
-                setShowReplies(true);
-                first  && showReplyForm(comment?._id) && setGetName(comment.commentBy.first_name + " " + comment.commentBy.last_name);
-                second && showReplyForm(comment?._id);
-                third && showReplyForm(RelyId);
+
+                if (first || second) {
+                  showReplyForm(comment?._id);
+                } else if(third) {
+                  showReplyForm(RelyId);
+                }
+
+                first && setParentId(comment?._id);
+                second && setParentIdSecond(comment?._id);
+                third && setGetParentId(comment.parentId);
               }}
             >
               Reply
@@ -91,23 +97,33 @@ export default function Comment({
         repliesSecond.map((reply, i) => (
           <Comment
             user={user}
-            comment={reply}
-            repliesThird={getReplies(reply?._id)}
             first={false}
             second={true}
             third={false}
-            key={i}
-            setActiveComment={setActiveComment}
+            getParentId={parentId}
+            setGetParentId={setParentId}
+            comment={reply}
+            postId={postId}
+            setCount={setCount}
+            setComments={setComments}
             activeComment={activeComment}
-            showReplies={showReplies}
-            setShowReplies={setShowReplies}
-            getReplies={getReplies}
+            setActiveComment={setActiveComment}
+            repliesThird={getReplies(reply?._id)}
+            key={i}
           />
         ))}
 
       {first && (
         <div id={comment?._id} style={{ display: "none" }}>
-          <CreateComment user={user} createRelyFirstCm={true} getName={isReplying ? activeComment.name : ""} />
+          <CreateComment
+            user={user}
+            postId={postId}
+            setCount={setCount}
+            getParentId={isReplying ? parentId : undefined}
+            createRelyFirstCm={true}
+            setComments={setComments}
+            activeComment={isReplying ? activeComment : undefined}
+          />
         </div>
       )}
 
@@ -115,17 +131,20 @@ export default function Comment({
         repliesThird.length > 0 &&
         repliesThird.map((reply, i) => (
           <Comment
+            key={i}
             user={user}
-            comment={reply}
-            RelyId={comment?._id}
+            third={true}
             first={false}
             second={false}
-            third={true}
-            key={i}
-            setActiveComment={setActiveComment}
+            postId={postId}
+            comment={reply}
+            setCount={setCount}
+            // getParentId={parentIdSecond}
+            setGetParentId={setParentIdSecond}
+            RelyId={comment?._id}
+            setComments={setComments}
             activeComment={activeComment}
-            setShowReplies={setShowReplies}
-            getReplies={getReplies}
+            setActiveComment={setActiveComment}
           />
         ))}
 
@@ -133,12 +152,16 @@ export default function Comment({
         <div id={comment?._id} style={{ display: "none" }}>
           <CreateComment
             user={user}
+            postId={postId}
+            setCount={setCount}
             createRelyFirstCm={false}
             createRelySecondCm={true}
+            getParentId={(isReplying || comment?._id === activeComment?.parentId) ? parentIdSecond : undefined}
+            setComments={setComments}
+            activeComment={(isReplying || comment?._id === activeComment?.parentId) ? activeComment : undefined}
           />
         </div>
       )}
-
     </>
   );
 }

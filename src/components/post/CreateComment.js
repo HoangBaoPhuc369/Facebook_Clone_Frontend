@@ -7,12 +7,15 @@ import { ClipLoader } from "react-spinners";
 export default function CreateComment({
   user,
   postId,
-  getName,
-  setComments,
   setCount,
+  setComments,
+  getParentId,
+  activeComment,
   createRelyFirstCm,
   createRelySecondCm,
 }) {
+
+  
   const [picker, setPicker] = useState(false);
   const [text, setText] = useState("");
   const [error, setError] = useState("");
@@ -24,6 +27,12 @@ export default function CreateComment({
   useEffect(() => {
     textRef.current.selectionEnd = cursorPosition;
   }, [cursorPosition]);
+
+  useEffect(() => {
+    if (getParentId) {
+      textRef.current.focus();
+    }
+  }, [getParentId, activeComment]);
   const handleEmoji = (e, { emoji }) => {
     const ref = textRef.current;
     ref.focus();
@@ -130,7 +139,7 @@ export default function CreateComment({
             type="text"
             ref={textRef}
             value={text}
-            placeholder={getName ? `Reply to ${getName}` : "Write a comment..."}
+            placeholder={getParentId ? getParentId : "Write a comment..."}
             onChange={(e) => setText(e.target.value)}
             onKeyUp={handleComment}
           />
