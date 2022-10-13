@@ -77,6 +77,7 @@ export default function CreateComment({
         const comments = await comment(
           postId,
           text,
+          getParentId,
           imgComment[0].url,
           user.token
         );
@@ -88,7 +89,7 @@ export default function CreateComment({
       } else {
         setLoading(true);
 
-        const comments = await comment(postId, text, "", user.token);
+        const comments = await comment(postId, getParentId, text, "", user.token);
         setComments(comments);
         setCount((prev) => ++prev);
         setLoading(false);

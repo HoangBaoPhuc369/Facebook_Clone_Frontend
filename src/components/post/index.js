@@ -16,7 +16,7 @@ export default function Post({ user, post, profile }) {
   const [total, setTotal] = useState(0);
   const [count, setCount] = useState(1);
   const [checkSaved, setCheckSaved] = useState();
-  
+
   // const [comments, setComments] = useState([]);
   const postRef = useRef(null);
 
@@ -25,17 +25,13 @@ export default function Post({ user, post, profile }) {
 
   useEffect(() => {
     getPostReacts();
+    setComments(post?.comments.filter((backendComment) => backendComment.parentId === ""));
   }, [post]);
   // useEffect(() => {
   //   setComments(post?.comments);
   // }, [post]);
 
-  useEffect(() => {
-    const getRootComment = post.comments.filter(
-      (backendComment) => backendComment.parentId === ""
-    );
-    setComments(() => [...getRootComment]);
-  }, [post]);
+  console.log(post?.comments.filter((backendComment) => backendComment.parentId === ""));
 
   const getPostReacts = async () => {
     const res = await getReacts(post._id, user.token);
@@ -189,9 +185,9 @@ export default function Post({ user, post, profile }) {
                   (react, i) =>
                     react.count > 0 && (
                       <img
+                        key={i}
                         src={`../../../reacts/${react.react}.svg`}
                         alt=""
-                        key={i}
                       />
                     )
                 )}
@@ -301,7 +297,6 @@ export default function Post({ user, post, profile }) {
               </>
             ))}
 
-       
         {count < comments.length && (
           <div className="view_comments" onClick={() => showMore()}>
             View more comments
