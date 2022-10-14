@@ -25,7 +25,7 @@ export default function Post({ user, post, profile }) {
 
   useEffect(() => {
     getPostReacts();
-    setComments(post?.comments.filter((backendComment) => backendComment.parentId === ""));
+    setComments(post?.comments);
   }, [post]);
   // useEffect(() => {
   //   setComments(post?.comments);
@@ -72,7 +72,7 @@ export default function Post({ user, post, profile }) {
   };
 
   const getReplies = (commentId) =>
-    post?.comments
+  comments
       .filter((comment) => comment.parentId === commentId)
       .sort(
         (a, b) =>
@@ -274,7 +274,7 @@ export default function Post({ user, post, profile }) {
         />
 
         {comments &&
-          comments
+          comments.filter((backendComment) => backendComment.parentId === "")
             .sort((a, b) => {
               return new Date(b.commentAt) - new Date(a.commentAt);
             })
