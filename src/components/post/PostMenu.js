@@ -34,6 +34,7 @@ export default function PostMenu({
   };
   const deleteHandler = async () => {
     const res = await deletePost(postId, token);
+    console.log(res.status);
     if (res.status === "ok") {
       postRef.current.remove();
     }

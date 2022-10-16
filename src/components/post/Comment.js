@@ -1,6 +1,9 @@
 import Moment from "react-moment";
 import CreateComment from "./CreateComment";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
+import CommentOptions from "./CommentOptions";
+import { useRef } from "react";
+import useClickOutside from "./../../helpers/clickOutside";
 
 export default function Comment({
   user,
@@ -18,16 +21,26 @@ export default function Comment({
   getReplies,
   RelyId,
   setGetParentId,
-
+  setVisibleDelPost,
 }) {
-  
   const [parentId, setParentId] = useState(null);
   const [parentIdSecond, setParentIdSecond] = useState(null);
+  const [showOptionComment, setShowOptionComment] = useState(false);
+
+  const commentOptionsRef = useRef(null);
+  useClickOutside(commentOptionsRef, () => {
+    setShowOptionComment(false);
+  });
 
   const isReplying =
     activeComment &&
     activeComment.id === comment?._id &&
     activeComment.type === "replying";
+
+  const isChooseOptions =
+    activeComment &&
+    activeComment.id === comment?._id &&
+    activeComment.type === "chooseOptions";
 
   const showReplyForm = (relyId) => {
     if (relyId) {
@@ -52,10 +65,31 @@ export default function Comment({
         <img src={comment.commentBy.picture} alt="" className="comment_img" />
         <div className="comment_col">
           <div className="comment_wrap">
-            <div className="comment_name">
-              {comment.commentBy.first_name} {comment.commentBy.last_name}
+            <div className="comment_wrap_comment">
+              <div className="comment_name">
+                {comment.commentBy.first_name} {comment.commentBy.last_name}
+              </div>
+              <div className="comment_text">{comment.comment}</div>
             </div>
-            <div className="comment_text">{comment.comment}</div>
+
+            <div className="comment_options">
+              <div className="comment_options-wrap" ref={commentOptionsRef}>
+                <div
+                  className="comment_options_icon"
+                  onClick={() => {
+                    setActiveComment({
+                      id: comment?._id,
+                      type: "chooseOptions",
+                    });
+
+                    setShowOptionComment((prev) => !prev);
+                  }}
+                >
+                  <span>...</span>
+                </div>
+                {isChooseOptions && showOptionComment && <CommentOptions />}
+              </div>
+            </div>
           </div>
           {comment.image && (
             <img src={comment.image} alt="" className="comment_image" />
@@ -72,7 +106,7 @@ export default function Comment({
 
                 if (first || second) {
                   showReplyForm(comment?._id);
-                } else if(third) {
+                } else if (third) {
                   showReplyForm(RelyId);
                 }
 
@@ -109,6 +143,7 @@ export default function Comment({
             activeComment={activeComment}
             setActiveComment={setActiveComment}
             repliesThird={getReplies(reply?._id)}
+            setVisibleDelPost={setVisibleDelPost}
             key={i}
           />
         ))}
@@ -139,12 +174,12 @@ export default function Comment({
             postId={postId}
             comment={reply}
             setCount={setCount}
-            // getParentId={parentIdSecond}
-            setGetParentId={setParentIdSecond}
             RelyId={comment?._id}
             setComments={setComments}
             activeComment={activeComment}
+            setGetParentId={setParentIdSecond}
             setActiveComment={setActiveComment}
+            setVisibleDelPost={setVisibleDelPost}
           />
         ))}
 
@@ -156,9 +191,17 @@ export default function Comment({
             setCount={setCount}
             createRelyFirstCm={false}
             createRelySecondCm={true}
-            getParentId={(isReplying || comment?._id === activeComment?.parentId) ? parentIdSecond : undefined}
+            getParentId={
+              isReplying || comment?._id === activeComment?.parentId
+                ? parentIdSecond
+                : undefined
+            }
             setComments={setComments}
-            activeComment={(isReplying || comment?._id === activeComment?.parentId) ? activeComment : undefined}
+            activeComment={
+              isReplying || comment?._id === activeComment?.parentId
+                ? activeComment
+                : undefined
+            }
           />
         </div>
       )}

@@ -104,7 +104,7 @@ export const savePost = async (postId, token) => {
 export const deletePost = async (postId, token) => {
   try {
     const { data } = await axios.delete(
-      `${process.env.REACT_APP_BACKEND_URL}/deletePost/${postId}`,
+      `${process.env.REACT_APP_BACKEND_URL}/posts/delete-post/${postId}`,
 
       {
         headers: {

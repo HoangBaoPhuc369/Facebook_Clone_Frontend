@@ -11,7 +11,13 @@ import Stories from "../../components/home/stories";
 import Post from "../../components/post";
 import "./style.css";
 
-export default function Home({ setVisible, posts, loading, getAllPosts }) { 
+export default function Home({
+  setVisible,
+  posts,
+  loading,
+  getAllPosts,
+  setVisibleDelPost,
+}) {
   const { user } = useSelector((state) => ({ ...state }));
   const middle = useRef(null);
   const [height, setHeight] = useState(0);
@@ -64,7 +70,7 @@ export default function Home({ setVisible, posts, loading, getAllPosts }) {
         ) : (
           <div className="posts">
             {posts.map((post, i) => (
-              <Post key={post?._id} post={post} user={user} />
+              <Post key={post?._id} post={post} user={user} setVisibleDelPost={setVisibleDelPost} />
             ))}
           </div>
         )}

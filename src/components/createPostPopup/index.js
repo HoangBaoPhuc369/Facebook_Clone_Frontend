@@ -88,7 +88,7 @@ export default function CreatePostPopup({
         null,
         null,
         text,
-        null,
+        [],
         user.id,
         user.token
       );

@@ -372,7 +372,6 @@
   object-fit: cover;
 }
 .comment_input_wrap {
-  position: relative;
   width: 100%;
   height: 100%;
   display: flex;
@@ -564,10 +563,21 @@
   border-radius: 5px;
   object-fit: cover;
 }
+
+.comment_col {
+  /* max-width: 90%; */
+}
+
 .comment_wrap {
+  display: flex;
+}
+
+.comment_wrap_comment {
+  /* max-width: 90%; */
   background: var(--bg-forth);
   padding: 8px 12px;
   border-radius: 18px;
+  word-break: break-word;
 }
 
 .comment_name {
@@ -597,6 +607,74 @@
   text-decoration: underline;
 }
 
+.comment_options {
+ 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 5px;
+  min-width: 35px;
+}
+
+.comment_options:hover .comment_options_icon {
+  display: flex;
+}
+
+.comment_options-wrap {
+  height: 35px;
+    width: 35px;
+    position: relative;
+}
+
+.comment_options_icon {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  color: grey;
+}
+
+.comment_options_icon:hover {
+  background: var(--bg-forth);
+  cursor: pointer;
+}
+
+.comment_options_icon span {
+  transform: translateY(-24%);
+  font-size: 22px;
+}
+
+.comment_options-form {
+  position: absolute;
+  width: 344px;
+  background: var(--bg-primary);
+  top: calc(100% - -6px);
+  left: calc(100% - 191px);
+  border-radius: 8px;
+  padding: 8px 0;
+  box-shadow: 0 -3px 28px 0 var(--shadow-1), 0 2px 4px 0 var(--shadow-2);
+  z-index: 10;
+}
+
+.comment-option-item {
+  padding: 12px 8px;
+  margin: 0 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.comment-option-item:hover {
+  background: var(--bg-forth);
+  cursor: pointer;
+}
+
+.comment_options-form-wrapper {
+  position: relative;
+}
+
 .recursive {
   position: absolute;
   width: 18px;
@@ -604,6 +682,14 @@
   top: 38px;
   left: 17px;
   border-left: 2px solid #f0f2f5;
+}
+
+.bubble-top {
+  position: absolute;
+  left: calc(100% - 175px);
+  top: -20px;
+  z-index: 15;
+  transform: scale(1, -1) translate(0px, 0px);
 }
 
 .view_comments {

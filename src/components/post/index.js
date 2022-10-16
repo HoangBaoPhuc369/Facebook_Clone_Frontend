@@ -8,7 +8,7 @@ import CreateComment from "./CreateComment";
 import PostMenu from "./PostMenu";
 import { getReacts, reactPost } from "../../functions/post";
 import Comment from "./Comment";
-export default function Post({ user, post, profile }) {
+export default function Post({ user, post, profile, setVisibleDelPost }) {
   const [visible, setVisible] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
@@ -27,12 +27,7 @@ export default function Post({ user, post, profile }) {
     getPostReacts();
     setComments(post?.comments);
   }, [post]);
-  // useEffect(() => {
-  //   setComments(post?.comments);
-  // }, [post]);
-
-  console.log(post?.comments.filter((backendComment) => backendComment.parentId === ""));
-
+  
   const getPostReacts = async () => {
     const res = await getReacts(post._id, user.token);
     setReacts(res.reacts);
@@ -72,7 +67,7 @@ export default function Post({ user, post, profile }) {
   };
 
   const getReplies = (commentId) =>
-  comments
+    comments
       .filter((comment) => comment.parentId === commentId)
       .sort(
         (a, b) =>
@@ -145,7 +140,7 @@ export default function Post({ user, post, profile }) {
               }
             >
               {post.images.slice(0, 5).map((image, i) => (
-                <img src={image.url} key={i} alt="" className={`img-${i}`} />
+                <img src={image.url} key={i + image.url} alt="" className={`img-${i}`} />
               ))}
               {post.images.length > 5 && (
                 <div className="more-pics-shadow">
@@ -274,27 +269,27 @@ export default function Post({ user, post, profile }) {
         />
 
         {comments &&
-          comments.filter((backendComment) => backendComment.parentId === "")
+          comments
+            .filter((backendComment) => backendComment.parentId === "")
             .sort((a, b) => {
               return new Date(b.commentAt) - new Date(a.commentAt);
             })
             .slice(0, count)
             .map((comment, i) => (
-              <>
-                <Comment
-                  key={i}
-                  user={user}
-                  first={true}
-                  postId={post._id}
-                  comment={comment}
-                  setCount={setCount}
-                  getReplies={getReplies}
-                  setComments={setComments}
-                  activeComment={activeComment}
-                  setActiveComment={setActiveComment}
-                  repliesSecond={getReplies(comment?._id)}
-                />
-              </>
+              <Comment
+                key={i}
+                user={user}
+                first={true}
+                postId={post._id}
+                comment={comment}
+                setCount={setCount}
+                getReplies={getReplies}
+                setComments={setComments}
+                activeComment={activeComment}
+                setActiveComment={setActiveComment}
+                setVisibleDelPost={setVisibleDelPost}
+                repliesSecond={getReplies(comment?._id)}
+              />
             ))}
 
         {count < comments.length && (

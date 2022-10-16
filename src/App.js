@@ -12,10 +12,11 @@ import { useEffect, useReducer, useState } from "react";
 import axios from "axios";
 import { postsReducer } from "./functions/reducers";
 import Friends from "./pages/friends";
-
+import DeletePostPopUp from "./components/deletePost";
 
 function App() {
   const [visible, setVisible] = useState(false);
+  const [visibleDelPost, setVisibleDelPost] = useState(false);
   const { user, darkTheme } = useSelector((state) => ({ ...state }));
   const [{ loading, error, posts }, dispatch] = useReducer(postsReducer, {
     loading: false,
@@ -49,57 +50,59 @@ function App() {
       });
     }
   };
+
   return (
+    <div className={darkTheme ? "dark" : ""}>
+      {visible && (
+        <CreatePostPopup
+          user={user}
+          setVisible={setVisible}
+          posts={posts}
+          dispatch={dispatch}
+        />
+      )}
 
-      <div className={darkTheme ? "dark" : ""}>
-        {visible && (
-          <CreatePostPopup
-            user={user}
-            setVisible={setVisible}
-            posts={posts}
-            dispatch={dispatch}
+      {visibleDelPost && <DeletePostPopUp />}
+
+      <Routes>
+        <Route element={<LoggedInRoutes />}>
+          <Route
+            path="/profile"
+            element={
+              <Profile setVisible={setVisible} getAllPosts={getAllPosts} />
+            }
+            exact
           />
-        )}
-        <Routes>
-          <Route element={<LoggedInRoutes />}>
-            <Route
-              path="/profile"
-              element={
-                <Profile setVisible={setVisible} getAllPosts={getAllPosts} />
-              }
-              exact
-            />
-            <Route
-              path="/profile/:username"
-              element={
-                <Profile setVisible={setVisible} getAllPosts={getAllPosts} />
-              }
-              exact
-            />
-            <Route path="/friends" element={<Friends />} exact />
-            <Route path="/friends/:type" element={<Friends />} exact />
-            <Route
-              path="/"
-              element={
-                <Home
-                  setVisible={setVisible}
-                  posts={posts}
-                  loading={loading}
-                  getAllPosts={getAllPosts}
-                />
-              }
-              exact
-            />
-            <Route path="/activate/:token" element={<Activate />} exact />
-          </Route>
-          <Route element={<NotLoggedInRoutes />}>
-            <Route path="/login" element={<Login />} exact />
-          </Route>
-          <Route path="/reset" element={<Reset />} />
-        </Routes>
-
-      </div>
-
+          <Route
+            path="/profile/:username"
+            element={
+              <Profile setVisible={setVisible} getAllPosts={getAllPosts} />
+            }
+            exact
+          />
+          <Route path="/friends" element={<Friends />} exact />
+          <Route path="/friends/:type" element={<Friends />} exact />
+          <Route
+            path="/"
+            element={
+              <Home
+                setVisible={setVisible}
+                setVisibleDelPost={setVisibleDelPost}
+                posts={posts}
+                loading={loading}
+                getAllPosts={getAllPosts}
+              />
+            }
+            exact
+          />
+          <Route path="/activate/:token" element={<Activate />} exact />
+        </Route>
+        <Route element={<NotLoggedInRoutes />}>
+          <Route path="/login" element={<Login />} exact />
+        </Route>
+        <Route path="/reset" element={<Reset />} />
+      </Routes>
+    </div>
   );
 }
 
