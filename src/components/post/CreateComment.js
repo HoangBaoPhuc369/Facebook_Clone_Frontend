@@ -15,7 +15,6 @@ export default function CreateComment({
   createRelySecondCm,
 }) {
 
-  
   const [picker, setPicker] = useState(false);
   const [text, setText] = useState("");
   const [error, setError] = useState("");
@@ -65,36 +64,46 @@ export default function CreateComment({
   };
   const handleComment = async (e) => {
     if (e.key === "Enter") {
-      if (commentImage != "") {
-        setLoading(true);
-        const img = dataURItoBlob(commentImage);
-        const path = `${user.username}/post_images/${postId}`;
-        let formData = new FormData();
-        formData.append("path", path);
-        formData.append("file", img);
-        const imgComment = await uploadImages(formData, path, user.token);
-
-        const comments = await comment(
-          postId,
-          text,
-          getParentId,
-          imgComment[0].url,
-          user.token
-        );
-        setComments(comments);
-        setCount((prev) => ++prev);
-        setLoading(false);
-        setText("");
-        setCommentImage("");
+      if (activeComment?.type === "editing") {
+        console.log(activeComment);
       } else {
-        setLoading(true);
+        if (commentImage != "") {
+          setLoading(true);
+          const img = dataURItoBlob(commentImage);
+          const path = `${user.username}/post_images/${postId}`;
+          let formData = new FormData();
+          formData.append("path", path);
+          formData.append("file", img);
+          const imgComment = await uploadImages(formData, path, user.token);
 
-        const comments = await comment(postId, getParentId, text, "", user.token);
-        setComments(comments);
-        setCount((prev) => ++prev);
-        setLoading(false);
-        setText("");
-        setCommentImage("");
+          const comments = await comment(
+            postId,
+            text,
+            getParentId,
+            imgComment[0].url,
+            user.token
+          );
+          setComments(comments);
+          setCount((prev) => ++prev);
+          setLoading(false);
+          setText("");
+          setCommentImage("");
+        } else {
+          setLoading(true);
+
+          const comments = await comment(
+            postId,
+            getParentId,
+            text,
+            "",
+            user.token
+          );
+          setComments(comments);
+          setCount((prev) => ++prev);
+          setLoading(false);
+          setText("");
+          setCommentImage("");
+        }
       }
     }
   };
@@ -103,18 +112,18 @@ export default function CreateComment({
       className={
         createRelyFirstCm
           ? "create_comment_wrap create_comment-reply-first"
-          : createRelySecondCm 
+          : createRelySecondCm
           ? "create_comment_wrap create_comment-reply-second"
           : "create_comment_wrap"
       }
-
     >
       <div className="create_comment">
-        <img
-          src={user?.picture}
-          className="rely-comment-img"
-          alt=""
-        />
+        {activeComment?.type === "editing" ? (
+          <div></div>
+        ) : (
+          <img src={user?.picture} className="rely-comment-img" alt="" />
+        )}
+
         <div className="comment_input_wrap">
           {picker && (
             <div className="comment_emoji_picker">
@@ -140,7 +149,7 @@ export default function CreateComment({
             type="text"
             ref={textRef}
             value={text}
-            placeholder={getParentId ? getParentId : "Write a comment..."}
+            placeholder="Write a comment..."
             onChange={(e) => setText(e.target.value)}
             onKeyUp={handleComment}
           />

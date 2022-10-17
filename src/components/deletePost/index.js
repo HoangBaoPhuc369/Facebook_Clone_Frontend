@@ -1,29 +1,26 @@
 import React from "react";
 import ReactDom from "react-dom";
+import { deleteComment } from "../../functions/post";
 import "./style.css";
 
-const MODAL_STYLES = {
-  position: "fixed",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  backgroundColor: "#FFF",
-  padding: "50px",
-  zIndex: 1000,
-};
-
-const OVERLAY_STYLES = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: "rgba(0, 0, 0, .7)",
-  zIndex: 1000,
-};
-
-export default function DeletePostPopUp({ open, children, onClose }) {
+export default function DeletePostPopUp({
+  open,
+  props,
+  onClose,
+  children,
+  setComments,
+}) {
   if (!open) return null;
+
+  const handleDeleteComment = async () => {
+    const response = await deleteComment(props);
+    if (response.status === "ok") {
+      setComments(response.data);
+      onClose();
+    }else {
+      console.log("Something went wrong");
+    }
+  }
 
   return ReactDom.createPortal(
     <>
@@ -40,20 +37,14 @@ export default function DeletePostPopUp({ open, children, onClose }) {
             <button
               className="box_action"
               onClick={() => {
-                // postSubmit();
+                handleDeleteComment();
               }}
             >
               Delete
             </button>
-            <button
-              className="box_cancle"
-              onClick={() => {
-                // postSubmit();
-              }}
-            >
-              Cancle
+            <button className="box_cancel" onClick={onClose}>
+              No
             </button>
-            {/* <span>Cancle</span> */}
           </div>
         </div>
       </div>

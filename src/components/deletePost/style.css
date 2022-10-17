@@ -7,7 +7,7 @@
   box-shadow: 0 12px 28px 0 var(--shadow-1), 0 2px 4px 0 var(--shadow-2),
     inset 0 0 0 1px var(--shadow-inset);
   min-height: 180px;
-  width: 500px;
+  width: 550px;
   border-radius: 5px;
 }
 
@@ -23,33 +23,43 @@
 }
 
 .box_footer {
-  border-top: 1px solid var(--bg-third);
+  /* border-top: 1px solid var(--bg-third); */
 }
 
 .box_action {
   float: right;
-  width: 80px;
+  width: 125px;
   margin: 10px;
   padding: 10px;
   outline: none;
   border: none;
   background: var(--blue-color);
   color: #fff;
+  font-size: 15px;
   font-weight: 600;
   border-radius: 5px;
   cursor: pointer;
 }
 
-.box_cancle {
+.box_action:hover {
+  background: #0760d5;
+}
+
+.box_cancel {
   float: right;
-  width: 80px;
+  width: 45px;
   margin: 10px 0;
   padding: 10px;
   outline: none;
   border: none;
-  background: var(--bg-third);
-  color: #fff;
+  background: #fff;
+  color: var(--blue-color);
+  font-size: 15px;
   font-weight: 600;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.box_cancel:hover {
+  background: var(--bg-forth);
 }

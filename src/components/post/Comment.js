@@ -22,6 +22,9 @@ export default function Comment({
   RelyId,
   setGetParentId,
   setVisibleDelPost,
+  setIsOpen,
+  activeOptions,
+  setActiveOptions,
 }) {
   const [parentId, setParentId] = useState(null);
   const [parentIdSecond, setParentIdSecond] = useState(null);
@@ -37,10 +40,15 @@ export default function Comment({
     activeComment.id === comment?._id &&
     activeComment.type === "replying";
 
-  const isChooseOptions =
+  const isEditing =
     activeComment &&
     activeComment.id === comment?._id &&
-    activeComment.type === "chooseOptions";
+    activeComment.type === "editing";
+
+  const isChooseOptions =
+    activeOptions &&
+    activeOptions.id === comment?._id &&
+    activeOptions.type === "chooseOptions";
 
   const showReplyForm = (relyId) => {
     if (relyId) {
@@ -65,19 +73,30 @@ export default function Comment({
         <img src={comment.commentBy.picture} alt="" className="comment_img" />
         <div className="comment_col">
           <div className="comment_wrap">
-            <div className="comment_wrap_comment">
-              <div className="comment_name">
-                {comment.commentBy.first_name} {comment.commentBy.last_name}
+            {!isEditing && (
+              <div className="comment_wrap_comment">
+                <div className="comment_name">
+                  {comment.commentBy.first_name} {comment.commentBy.last_name}
+                </div>
+                <div className="comment_text">{comment.comment}</div>
               </div>
-              <div className="comment_text">{comment.comment}</div>
-            </div>
+            )}
+            {isEditing && (
+              <CreateComment
+                user={user}
+                postId={postId}
+                setCount={setCount}
+                setComments={setComments}
+                activeComment={isEditing ? activeComment : undefined}
+              />
+            )}
 
             <div className="comment_options">
               <div className="comment_options-wrap" ref={commentOptionsRef}>
                 <div
                   className="comment_options_icon"
                   onClick={() => {
-                    setActiveComment({
+                    setActiveOptions({
                       id: comment?._id,
                       type: "chooseOptions",
                     });
@@ -87,7 +106,14 @@ export default function Comment({
                 >
                   <span>...</span>
                 </div>
-                {isChooseOptions && showOptionComment && <CommentOptions />}
+                {isChooseOptions && showOptionComment && (
+                  <CommentOptions
+                    setIsOpen={setIsOpen}
+                    commentId={comment?._id}
+                    setActiveComment={setActiveComment}
+                    setShowOptionComment={setShowOptionComment}
+                  />
+                )}
               </div>
             </div>
           </div>
@@ -134,13 +160,16 @@ export default function Comment({
             first={false}
             second={true}
             third={false}
-            getParentId={parentId}
-            setGetParentId={setParentId}
             comment={reply}
             postId={postId}
             setCount={setCount}
+            setIsOpen={setIsOpen}
+            getParentId={parentId}
             setComments={setComments}
+            setGetParentId={setParentId}
             activeComment={activeComment}
+            activeOptions={activeOptions}
+            setActiveOptions={setActiveOptions}
             setActiveComment={setActiveComment}
             repliesThird={getReplies(reply?._id)}
             setVisibleDelPost={setVisibleDelPost}
@@ -154,9 +183,9 @@ export default function Comment({
             user={user}
             postId={postId}
             setCount={setCount}
-            getParentId={isReplying ? parentId : undefined}
             createRelyFirstCm={true}
             setComments={setComments}
+            getParentId={isReplying ? parentId : undefined}
             activeComment={isReplying ? activeComment : undefined}
           />
         </div>
@@ -174,10 +203,13 @@ export default function Comment({
             postId={postId}
             comment={reply}
             setCount={setCount}
+            setIsOpen={setIsOpen}
             RelyId={comment?._id}
             setComments={setComments}
             activeComment={activeComment}
+            activeOptions={activeOptions}
             setGetParentId={setParentIdSecond}
+            setActiveOptions={setActiveOptions}
             setActiveComment={setActiveComment}
             setVisibleDelPost={setVisibleDelPost}
           />

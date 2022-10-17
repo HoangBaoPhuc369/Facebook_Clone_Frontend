@@ -8,6 +8,7 @@ import CreateComment from "./CreateComment";
 import PostMenu from "./PostMenu";
 import { getReacts, reactPost } from "../../functions/post";
 import Comment from "./Comment";
+import DeletePostPopUp from "../deletePost";
 export default function Post({ user, post, profile, setVisibleDelPost }) {
   const [visible, setVisible] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -20,14 +21,18 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
   // const [comments, setComments] = useState([]);
   const postRef = useRef(null);
 
+  const [isOpen, setIsOpen] = useState(false);
   const [comments, setComments] = useState([]);
   const [activeComment, setActiveComment] = useState(null);
+  const [activeOptions, setActiveOptions] = useState(null);
+
+  // console.log(activeComment?.type === "editing" ? activeComment : "Nothing")
 
   useEffect(() => {
     getPostReacts();
     setComments(post?.comments);
   }, [post]);
-  
+
   const getPostReacts = async () => {
     const res = await getReacts(post._id, user.token);
     setReacts(res.reacts);
@@ -140,7 +145,12 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
               }
             >
               {post.images.slice(0, 5).map((image, i) => (
-                <img src={image.url} key={i + image.url} alt="" className={`img-${i}`} />
+                <img
+                  src={image.url}
+                  key={i + image.url}
+                  alt=""
+                  className={`img-${i}`}
+                />
               ))}
               {post.images.length > 5 && (
                 <div className="more-pics-shadow">
@@ -264,8 +274,8 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
         <CreateComment
           user={user}
           postId={post._id}
-          setComments={setComments}
           setCount={setCount}
+          setComments={setComments}
         />
 
         {comments &&
@@ -280,12 +290,16 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
                 key={i}
                 user={user}
                 first={true}
+                isOpen={isOpen}
                 postId={post._id}
                 comment={comment}
                 setCount={setCount}
+                setIsOpen={setIsOpen}
                 getReplies={getReplies}
                 setComments={setComments}
                 activeComment={activeComment}
+                activeOptions={activeOptions}
+                setActiveOptions={setActiveOptions}
                 setActiveComment={setActiveComment}
                 setVisibleDelPost={setVisibleDelPost}
                 repliesSecond={getReplies(comment?._id)}
@@ -301,17 +315,33 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
       {showMenu && (
         <PostMenu
           userId={user.id}
-          postUserId={post.user._id}
-          imagesLength={post?.images?.length}
-          setShowMenu={setShowMenu}
+          postRef={postRef}
           postId={post._id}
           token={user.token}
-          checkSaved={checkSaved}
-          setCheckSaved={setCheckSaved}
           images={post.images}
-          postRef={postRef}
+          checkSaved={checkSaved}
+          setShowMenu={setShowMenu}
+          postUserId={post.user._id}
+          setCheckSaved={setCheckSaved}
+          imagesLength={post?.images?.length}
         />
       )}
+
+      <DeletePostPopUp
+        open={isOpen}
+        setComments={setComments}
+        onClose={() => setIsOpen(false)}
+        props={{
+          postId: post._id,
+          commentId:
+            activeComment?.type === "deleteComment"
+              ? activeComment?.id
+              : undefined,
+          token: user.token,
+        }}
+      >
+        Are you sure you want to delete this comment?
+      </DeletePostPopUp>
     </div>
   );
 }

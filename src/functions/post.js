@@ -84,6 +84,28 @@ export const comment = async (postId, getParentId="", comment, image, token) => 
     return error.response.data.message;
   }
 };
+
+export const deleteComment = async (props) => {
+  try {
+    const { data } = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/posts/delete-comment`,
+      {
+        "id": props.commentId,
+        "post": props.postId,
+      },
+
+      {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      }
+    );
+    return { status: "ok", data };
+  } catch (error) {
+    return error.response.data.message;
+  }
+};
+
 export const savePost = async (postId, token) => {
   try {
     const { data } = await axios.put(
