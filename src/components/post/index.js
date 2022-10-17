@@ -200,7 +200,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
           <div className="reacts_count_num">{total > 0 && total}</div>
         </div>
         <div className="to_right">
-          <div className="comments_count">{post.comments?.length} comments</div>
+          <div className="comments_count">{comments?.length} comments</div>
           <div className="share_count">0 share</div>
         </div>
       </div>

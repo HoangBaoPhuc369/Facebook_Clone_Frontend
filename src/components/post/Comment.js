@@ -1,8 +1,7 @@
 import Moment from "react-moment";
 import CreateComment from "./CreateComment";
-import { useState, useEffect, Fragment } from "react";
+import { useState, useRef } from "react";
 import CommentOptions from "./CommentOptions";
-import { useRef } from "react";
 import useClickOutside from "./../../helpers/clickOutside";
 
 export default function Comment({
@@ -29,6 +28,9 @@ export default function Comment({
   const [parentId, setParentId] = useState(null);
   const [parentIdSecond, setParentIdSecond] = useState(null);
   const [showOptionComment, setShowOptionComment] = useState(false);
+
+  const triggerRef = useRef(null);
+  const triggerEditRef = useRef(null);
 
   const commentOptionsRef = useRef(null);
   useClickOutside(commentOptionsRef, () => {
@@ -57,6 +59,14 @@ export default function Comment({
     }
   };
 
+  const handleTrigger = () => {
+    triggerRef.current.click();
+  };
+
+  const handleTriggerEdit = () => {
+    triggerEditRef.current.click();
+  };
+
   return (
     <>
       <div
@@ -73,50 +83,75 @@ export default function Comment({
         <img src={comment.commentBy.picture} alt="" className="comment_img" />
         <div className="comment_col">
           <div className="comment_wrap">
+            <input
+              ref={triggerEditRef}
+              type="hidden"
+              onClick={() => {
+                setActiveComment({ id: comment?._id, type: "editing" });
+              }}
+            />
+            <input
+              type="hidden"
+              ref={triggerRef}
+              onClick={() => {
+                setActiveComment({
+                  id: comment?._id,
+                  parentId: comment?.parentId,
+                  type: "replying",
+                });
+              }}
+            />
             {!isEditing && (
-              <div className="comment_wrap_comment">
-                <div className="comment_name">
-                  {comment.commentBy.first_name} {comment.commentBy.last_name}
+              <>
+                <div className="comment_wrap_comment">
+                  <div className="comment_name">
+                    {comment.commentBy.first_name} {comment.commentBy.last_name}
+                  </div>
+                  <div className="comment_text">{comment.comment}</div>
                 </div>
-                <div className="comment_text">{comment.comment}</div>
-              </div>
+                <div className="comment_options">
+                  <div className="comment_options-wrap" ref={commentOptionsRef}>
+                    <div
+                      className="comment_options_icon"
+                      onClick={() => {
+                        setActiveOptions({
+                          id: comment?._id,
+                          type: "chooseOptions",
+                        });
+
+                        setShowOptionComment((prev) => !prev);
+                      }}
+                    >
+                      <span>...</span>
+                    </div>
+
+                    {isChooseOptions && showOptionComment && (
+                      <CommentOptions
+                        setIsOpen={setIsOpen}
+                        commentId={comment?._id}
+                        setActiveComment={setActiveComment}
+                        setShowOptionComment={setShowOptionComment}
+                      />
+                    )}
+                  </div>
+                </div>
+              </>
             )}
+
             {isEditing && (
               <CreateComment
                 user={user}
                 postId={postId}
                 setCount={setCount}
                 setComments={setComments}
+                initialText={comment.comment}
+                setActiveComment={setActiveComment}
+                handleTriggerEdit={handleTriggerEdit}
                 activeComment={isEditing ? activeComment : undefined}
               />
             )}
-
-            <div className="comment_options">
-              <div className="comment_options-wrap" ref={commentOptionsRef}>
-                <div
-                  className="comment_options_icon"
-                  onClick={() => {
-                    setActiveOptions({
-                      id: comment?._id,
-                      type: "chooseOptions",
-                    });
-
-                    setShowOptionComment((prev) => !prev);
-                  }}
-                >
-                  <span>...</span>
-                </div>
-                {isChooseOptions && showOptionComment && (
-                  <CommentOptions
-                    setIsOpen={setIsOpen}
-                    commentId={comment?._id}
-                    setActiveComment={setActiveComment}
-                    setShowOptionComment={setShowOptionComment}
-                  />
-                )}
-              </div>
-            </div>
           </div>
+
           {comment.image && (
             <img src={comment.image} alt="" className="comment_image" />
           )}
@@ -156,6 +191,7 @@ export default function Comment({
         repliesSecond.length > 0 &&
         repliesSecond.map((reply, i) => (
           <Comment
+            key={i}
             user={user}
             first={false}
             second={true}
@@ -173,7 +209,6 @@ export default function Comment({
             setActiveComment={setActiveComment}
             repliesThird={getReplies(reply?._id)}
             setVisibleDelPost={setVisibleDelPost}
-            key={i}
           />
         ))}
 
@@ -185,6 +220,7 @@ export default function Comment({
             setCount={setCount}
             createRelyFirstCm={true}
             setComments={setComments}
+            handleTrigger={handleTrigger}
             getParentId={isReplying ? parentId : undefined}
             activeComment={isReplying ? activeComment : undefined}
           />
@@ -223,6 +259,7 @@ export default function Comment({
             setCount={setCount}
             createRelyFirstCm={false}
             createRelySecondCm={true}
+            handleTrigger={handleTrigger}
             getParentId={
               isReplying || comment?._id === activeComment?.parentId
                 ? parentIdSecond

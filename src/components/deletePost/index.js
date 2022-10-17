@@ -17,10 +17,10 @@ export default function DeletePostPopUp({
     if (response.status === "ok") {
       setComments(response.data);
       onClose();
-    }else {
+    } else {
       console.log("Something went wrong");
     }
-  }
+  };
 
   return ReactDom.createPortal(
     <>
