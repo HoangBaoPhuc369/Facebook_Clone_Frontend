@@ -198,8 +198,9 @@ export default function CreateComment({
             }
             onKeyUp={handleComment}
             onChange={(e) => setText(e.target.value)}
-            placeholder={getParentId ? getParentId : "Write a comment..."}
+            placeholder="Write a comment..."
           />
+          {/* {getParentId ? getParentId : "Write a comment..."} */}
           <div className="comment_circle" style={{ marginTop: "5px" }}>
             <ClipLoader size={20} color="#1876f2" loading={loading} />
           </div>
