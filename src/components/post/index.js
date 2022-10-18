@@ -306,7 +306,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
               />
             ))}
 
-        {count < comments.length && (
+        {count < comments.filter((backendComment) => backendComment.parentId === "").length && (
           <div className="view_comments" onClick={() => showMore()}>
             View more comments
           </div>

@@ -89,7 +89,7 @@ export default function CreateComment({
           setText("");
           setCommentImage("");
           setActiveComment(null);
-        } else {
+        } else if (text != "") {
           setLoading(true);
 
           const comments = await editComment(
@@ -118,8 +118,8 @@ export default function CreateComment({
 
           const comments = await comment(
             postId,
-            text,
             getParentId,
+            text,
             imgComment[0].url,
             user.token
           );
@@ -128,8 +128,7 @@ export default function CreateComment({
           setLoading(false);
           setText("");
           setCommentImage("");
-          setActiveComment(null);
-        } else {
+        } else if (text != "") {
           setLoading(true);
 
           const comments = await comment(
@@ -144,7 +143,6 @@ export default function CreateComment({
           setLoading(false);
           setText("");
           setCommentImage("");
-          setActiveComment(null);
         }
       }
     }

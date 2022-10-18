@@ -156,33 +156,46 @@ export default function Comment({
             <img src={comment.image} alt="" className="comment_image" />
           )}
           <div className="comment_actions">
-            <div>Like</div>
-            <div
-              onClick={() => {
-                setActiveComment({
-                  id: comment?._id,
-                  parentId: comment?.parentId,
-                  type: "replying",
-                });
+            {!isEditing && (
+              <>
+                <div>Like</div>
+                <div
+                  onClick={() => {
+                    setActiveComment({
+                      id: comment?._id,
+                      parentId: comment?.parentId,
+                      type: "replying",
+                    });
 
-                if (first || second) {
-                  showReplyForm(comment?._id);
-                } else if (third) {
-                  showReplyForm(RelyId);
-                }
+                    if (first || second) {
+                      showReplyForm(comment?._id);
+                    } else if (third) {
+                      showReplyForm(RelyId);
+                    }
 
-                first && setParentId(comment?._id);
-                second && setParentIdSecond(comment?._id);
-                third && setGetParentId(comment.parentId);
-              }}
-            >
-              Reply
-            </div>
-            <span>
-              <Moment fromNow interval={30}>
-                {comment.commentAt}
-              </Moment>
-            </span>
+                    first && setParentId(comment?._id);
+                    second && setParentIdSecond(comment?._id);
+                    third && setGetParentId(comment.parentId);
+                  }}
+                >
+                  Reply
+                </div>
+                <span>
+                  <Moment fromNow interval={30}>
+                    {comment.commentAt}
+                  </Moment>
+                </span>
+              </>
+            )}
+
+            {isEditing && (
+              <div
+                className="comment_actions-cancel"
+                onClick={() => setActiveComment(null)}
+              >
+                Cancel
+              </div>
+            )}
           </div>
         </div>
       </div>

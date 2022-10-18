@@ -559,9 +559,9 @@
 }
 .comment_image {
   margin-top: 5px;
-  width: 200px;
-  height: 150px;
-  border-radius: 5px;
+  width: 260px;
+  height: 146px;
+  border-radius: 20px;
   object-fit: cover;
 }
 
@@ -608,8 +608,11 @@
   text-decoration: underline;
 }
 
+.comment_actions-cancel {
+  color: var(--blue-color);
+}
+
 .comment_options {
- 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -623,8 +626,8 @@
 
 .comment_options-wrap {
   height: 35px;
-    width: 35px;
-    position: relative;
+  width: 35px;
+  position: relative;
 }
 
 .comment_options_icon {
