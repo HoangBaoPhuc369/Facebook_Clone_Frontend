@@ -706,6 +706,37 @@
 .view_comments:hover {
   text-decoration: underline;
 }
+
+.view_replies {
+  display: flex;
+  align-items: center;
+  padding-left: 49px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-secondary);
+}
+.view_replies:hover {
+  text-decoration: underline;
+}
+
+.view_replies_third {
+  display: flex;
+  align-items: center;
+  padding-left: 88px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-secondary);
+}
+.view_replies_third:hover {
+  text-decoration: underline;
+}
+
+.mg-right-5 {
+  margin-right: 5px;
+}
+
 /*----Comment-----------*/
 /*------Post menu------*/
 @media (max-width: 435px) {

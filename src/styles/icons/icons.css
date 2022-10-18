@@ -774,3 +774,13 @@
   background-repeat: no-repeat;
   display: inline-block;
 }
+
+.show_replies_icon {
+  background-image: url(../../../public/icons/iconOnFacebooks.png);
+  background-position: 0px -646px;
+  background-size: auto;
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  display: inline-block;
+}

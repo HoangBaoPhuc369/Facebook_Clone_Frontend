@@ -18,15 +18,15 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
   const [count, setCount] = useState(1);
   const [checkSaved, setCheckSaved] = useState();
 
-  // const [comments, setComments] = useState([]);
   const postRef = useRef(null);
 
   const [isOpen, setIsOpen] = useState(false);
   const [comments, setComments] = useState([]);
+  const [countReplies, setCountReplies] = useState(0);
+  const [countRepliesThird, setCountRepliesThird] = useState(0);
   const [activeComment, setActiveComment] = useState(null);
   const [activeOptions, setActiveOptions] = useState(null);
 
-  // console.log(activeComment?.type === "editing" ? activeComment : "Nothing")
 
   useEffect(() => {
     getPostReacts();
@@ -69,6 +69,14 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
 
   const showMore = () => {
     setCount((prev) => prev + 3);
+  };
+
+  const showMoreReplies = () => {
+    setCountReplies((prev) => prev + 3);
+  };
+  
+  const showMoreRepliesThird = () => {
+    setCountRepliesThird((prev) => prev + 3);
   };
 
   const getReplies = (commentId) =>
@@ -297,12 +305,17 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
                 setIsOpen={setIsOpen}
                 getReplies={getReplies}
                 setComments={setComments}
-                activeComment={activeComment}
+                countReplies={countReplies}
                 activeOptions={activeOptions}
+                activeComment={activeComment}
+                setCountReplies={setCountReplies}
+                showMoreReplies={showMoreReplies}
                 setActiveOptions={setActiveOptions}
                 setActiveComment={setActiveComment}
                 setVisibleDelPost={setVisibleDelPost}
+                countRepliesThird={countRepliesThird}
                 repliesSecond={getReplies(comment?._id)}
+                showMoreRepliesThird={showMoreRepliesThird}
               />
             ))}
 

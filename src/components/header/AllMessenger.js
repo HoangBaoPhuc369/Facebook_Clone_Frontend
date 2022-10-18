@@ -73,7 +73,6 @@ export default function AllMessenger({
                       registerPopup(c._id);
                       setShowAllMessenger(false);
                       setScrollBottom(prev => !prev);
-                      // setCloseArrivalMessage(true);
                     }}
                   >
                     <AllMessengerItem

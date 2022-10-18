@@ -24,6 +24,10 @@ export default function Comment({
   setIsOpen,
   activeOptions,
   setActiveOptions,
+  countReplies,
+  showMoreReplies,
+  countRepliesThird,
+  showMoreRepliesThird,
 }) {
   const [parentId, setParentId] = useState(null);
   const [parentIdSecond, setParentIdSecond] = useState(null);
@@ -127,8 +131,9 @@ export default function Comment({
 
                     {isChooseOptions && showOptionComment && (
                       <CommentOptions
+                        user={user}
                         setIsOpen={setIsOpen}
-                        commentId={comment?._id}
+                        comment={comment}
                         setActiveComment={setActiveComment}
                         setShowOptionComment={setShowOptionComment}
                       />
@@ -202,28 +207,41 @@ export default function Comment({
 
       {repliesSecond &&
         repliesSecond.length > 0 &&
-        repliesSecond.map((reply, i) => (
-          <Comment
-            key={i}
-            user={user}
-            first={false}
-            second={true}
-            third={false}
-            comment={reply}
-            postId={postId}
-            setCount={setCount}
-            setIsOpen={setIsOpen}
-            getParentId={parentId}
-            setComments={setComments}
-            setGetParentId={setParentId}
-            activeComment={activeComment}
-            activeOptions={activeOptions}
-            setActiveOptions={setActiveOptions}
-            setActiveComment={setActiveComment}
-            repliesThird={getReplies(reply?._id)}
-            setVisibleDelPost={setVisibleDelPost}
-          />
-        ))}
+        repliesSecond
+          .slice(0, countReplies)
+          .map((reply, i) => (
+            <Comment
+              key={i}
+              user={user}
+              first={false}
+              second={true}
+              third={false}
+              comment={reply}
+              postId={postId}
+              setCount={setCount}
+              setIsOpen={setIsOpen}
+              getParentId={parentId}
+              setComments={setComments}
+              countReplies={countReplies}
+              setGetParentId={setParentId}
+              activeComment={activeComment}
+              activeOptions={activeOptions}
+              showMoreReplies={showMoreReplies}
+              setActiveOptions={setActiveOptions}
+              setActiveComment={setActiveComment}
+              repliesThird={getReplies(reply?._id)}
+              setVisibleDelPost={setVisibleDelPost}
+              countRepliesThird={countRepliesThird}
+              showMoreRepliesThird={showMoreRepliesThird}
+            />
+          ))}
+
+      {countReplies < repliesSecond.length && (
+        <div className="view_replies" onClick={() => showMoreReplies()}>
+          <i className="show_replies_icon mg-right-5"></i>{" "}
+          {`${repliesSecond.length} Replies`}
+        </div>
+      )}
 
       {first && (
         <div id={comment?._id} style={{ display: "none" }}>
@@ -242,27 +260,41 @@ export default function Comment({
 
       {repliesThird &&
         repliesThird.length > 0 &&
-        repliesThird.map((reply, i) => (
-          <Comment
-            key={i}
-            user={user}
-            third={true}
-            first={false}
-            second={false}
-            postId={postId}
-            comment={reply}
-            setCount={setCount}
-            setIsOpen={setIsOpen}
-            RelyId={comment?._id}
-            setComments={setComments}
-            activeComment={activeComment}
-            activeOptions={activeOptions}
-            setGetParentId={setParentIdSecond}
-            setActiveOptions={setActiveOptions}
-            setActiveComment={setActiveComment}
-            setVisibleDelPost={setVisibleDelPost}
-          />
-        ))}
+        repliesThird
+          .slice(0, countRepliesThird)
+          .map((reply, i) => (
+            <Comment
+              key={i}
+              user={user}
+              third={true}
+              first={false}
+              second={false}
+              postId={postId}
+              comment={reply}
+              setCount={setCount}
+              setIsOpen={setIsOpen}
+              RelyId={comment?._id}
+              setComments={setComments}
+              activeComment={activeComment}
+              activeOptions={activeOptions}
+              setGetParentId={setParentIdSecond}
+              setActiveOptions={setActiveOptions}
+              setActiveComment={setActiveComment}
+              setVisibleDelPost={setVisibleDelPost}
+              countRepliesThird={countRepliesThird}
+              showMoreRepliesThird={showMoreRepliesThird}
+            />
+          ))}
+
+      {countRepliesThird < repliesThird.length && (
+        <div
+          className="view_replies_third"
+          onClick={() => showMoreRepliesThird()}
+        >
+          <i className="show_replies_icon mg-right-5"></i>{" "}
+          {`${repliesThird.length} Replies`}
+        </div>
+      )}
 
       {second && (
         <div id={comment?._id} style={{ display: "none" }}>
