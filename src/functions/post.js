@@ -62,11 +62,56 @@ export const getReacts = async (postId, token) => {
     return error.response.data.message;
   }
 };
-export const comment = async (postId, comment, image, token) => {
+export const comment = async (postId, getParentId="", comment, image, token) => {
   try {
     const { data } = await axios.put(
       `${process.env.REACT_APP_BACKEND_URL}/posts/comment`,
       {
+        postId,
+        comment,
+        "parentId": getParentId,
+        image,
+      },
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    return error.response.data.message;
+  }
+};
+
+export const deleteComment = async (props) => {
+  try {
+    const { data } = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/posts/delete-comment`,
+      {
+        "id": props.commentId,
+        "post": props.postId,
+      },
+
+      {
+        headers: {
+          Authorization: `Bearer ${props.token}`,
+        },
+      }
+    );
+    return { status: "ok", data };
+  } catch (error) {
+    return error.response.data.message;
+  }
+};
+
+export const editComment = async (id, postId, comment, image, token) => {
+  try {
+    const { data } = await axios.put(
+      `${process.env.REACT_APP_BACKEND_URL}/posts/update-comment`,
+      {
+        id,
         postId,
         comment,
         image,
@@ -83,6 +128,7 @@ export const comment = async (postId, comment, image, token) => {
     return error.response.data.message;
   }
 };
+
 export const savePost = async (postId, token) => {
   try {
     const { data } = await axios.put(
@@ -103,7 +149,7 @@ export const savePost = async (postId, token) => {
 export const deletePost = async (postId, token) => {
   try {
     const { data } = await axios.delete(
-      `${process.env.REACT_APP_BACKEND_URL}/deletePost/${postId}`,
+      `${process.env.REACT_APP_BACKEND_URL}/posts/delete-post/${postId}`,
 
       {
         headers: {

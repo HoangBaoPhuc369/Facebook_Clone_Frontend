@@ -47,7 +47,7 @@ export default function Friends() {
               }`}
             >
               <div className="small_circle">
-                <i className="friends_home_icon "></i>
+                <i className="friends_home_icon"></i>
               </div>
               <span>Home</span>
               <div className="rArrow">

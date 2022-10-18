@@ -1,12 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import Picker from "emoji-picker-react";
-import { comment } from "../../functions/post";
+import { comment, editComment } from "../../functions/post";
 import { uploadImages } from "../../functions/uploadImages";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
 import { ClipLoader } from "react-spinners";
-export default function CreateComment({ user, postId, setComments, setCount }) {
+export default function CreateComment({
+  user,
+  postId,
+  setCount,
+  setComments,
+  getParentId,
+  handleTrigger,
+  activeComment,
+  setActiveComment=null,
+  initialText = "",
+  createRelyFirstCm,
+  handleTriggerEdit,
+  createRelySecondCm,
+}) {
   const [picker, setPicker] = useState(false);
-  const [text, setText] = useState("");
+  const [text, setText] = useState(initialText);
   const [error, setError] = useState("");
   const [commentImage, setCommentImage] = useState("");
   const [cursorPosition, setCursorPosition] = useState();
@@ -16,6 +29,12 @@ export default function CreateComment({ user, postId, setComments, setCount }) {
   useEffect(() => {
     textRef.current.selectionEnd = cursorPosition;
   }, [cursorPosition]);
+
+  useEffect(() => {
+    if (getParentId) {
+      textRef.current.focus();
+    }
+  }, [getParentId, activeComment]);
   const handleEmoji = (e, { emoji }) => {
     const ref = textRef.current;
     ref.focus();
@@ -48,42 +67,103 @@ export default function CreateComment({ user, postId, setComments, setCount }) {
   };
   const handleComment = async (e) => {
     if (e.key === "Enter") {
-      if (commentImage != "") {
-        setLoading(true);
-        const img = dataURItoBlob(commentImage);
-        const path = `${user.username}/post_images/${postId}`;
-        let formData = new FormData();
-        formData.append("path", path);
-        formData.append("file", img);
-        const imgComment = await uploadImages(formData, path, user.token);
+      if (activeComment?.type === "editing") {
+        if (commentImage != "") {
+          setLoading(true);
+          const img = dataURItoBlob(commentImage);
+          const path = `${user.username}/post_images/${postId}`;
+          let formData = new FormData();
+          formData.append("path", path);
+          formData.append("file", img);
+          const imgComment = await uploadImages(formData, path, user.token);
 
-        const comments = await comment(
-          postId,
-          text,
-          imgComment[0].url,
-          user.token
-        );
-        setComments(comments);
-        setCount((prev) => ++prev);
-        setLoading(false);
-        setText("");
-        setCommentImage("");
+          const comments = await editComment(
+            activeComment.id,
+            postId,
+            text,
+            imgComment[0].url,
+            user.token
+          );
+          setComments(comments);
+          setLoading(false);
+          setText("");
+          setCommentImage("");
+          setActiveComment(null);
+        } else if (text != "") {
+          setLoading(true);
+
+          const comments = await editComment(
+            activeComment.id,
+            postId,
+            text,
+            "",
+            user.token
+          );
+          setComments(comments);
+          setLoading(false);
+          setText("");
+          setCommentImage("");
+          setActiveComment(null);
+        }
       } else {
-        setLoading(true);
+        // console.log(activeComment);
+        if (commentImage != "") {
+          setLoading(true);
+          const img = dataURItoBlob(commentImage);
+          const path = `${user.username}/post_images/${postId}`;
+          let formData = new FormData();
+          formData.append("path", path);
+          formData.append("file", img);
+          const imgComment = await uploadImages(formData, path, user.token);
 
-        const comments = await comment(postId, text, "", user.token);
-        setComments(comments);
-        setCount((prev) => ++prev);
-        setLoading(false);
-        setText("");
-        setCommentImage("");
+          const comments = await comment(
+            postId,
+            getParentId,
+            text,
+            imgComment[0].url,
+            user.token
+          );
+          setComments(comments);
+          setCount((prev) => ++prev);
+          setLoading(false);
+          setText("");
+          setCommentImage("");
+        } else if (text != "") {
+          setLoading(true);
+
+          const comments = await comment(
+            postId,
+            getParentId,
+            text,
+            "",
+            user.token
+          );
+          setComments(comments);
+          setCount((prev) => ++prev);
+          setLoading(false);
+          setText("");
+          setCommentImage("");
+        }
       }
     }
   };
   return (
-    <div className="create_comment_wrap">
+    <div
+      className={
+        createRelyFirstCm
+          ? "create_comment_wrap create_comment-reply-first"
+          : createRelySecondCm
+          ? "create_comment_wrap create_comment-reply-second"
+          : "create_comment_wrap"
+      }
+    >
       <div className="create_comment">
-        <img src={user?.picture} alt="" />
+        {activeComment?.type === "editing" ? (
+          ""
+        ) : (
+          <img src={user?.picture} className="rely-comment-img" alt="" />
+        )}
+
         <div className="comment_input_wrap">
           {picker && (
             <div className="comment_emoji_picker">
@@ -107,12 +187,20 @@ export default function CreateComment({ user, postId, setComments, setCount }) {
           )}
           <input
             type="text"
-            ref={textRef}
             value={text}
-            placeholder="Write a comment..."
-            onChange={(e) => setText(e.target.value)}
+            ref={textRef}
+            onClick={() =>
+              handleTriggerEdit
+                ? handleTriggerEdit()
+                : handleTrigger
+                ? handleTrigger()
+                : console.log("no trigger")
+            }
             onKeyUp={handleComment}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Write a comment..."
           />
+          {/* {getParentId ? getParentId : "Write a comment..."} */}
           <div className="comment_circle" style={{ marginTop: "5px" }}>
             <ClipLoader size={20} color="#1876f2" loading={loading} />
           </div>

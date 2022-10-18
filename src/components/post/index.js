@@ -8,7 +8,8 @@ import CreateComment from "./CreateComment";
 import PostMenu from "./PostMenu";
 import { getReacts, reactPost } from "../../functions/post";
 import Comment from "./Comment";
-export default function Post({user, post, profile }) { 
+import DeletePostPopUp from "../deletePost";
+export default function Post({ user, post, profile, setVisibleDelPost }) {
   const [visible, setVisible] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
@@ -16,103 +17,19 @@ export default function Post({user, post, profile }) {
   const [total, setTotal] = useState(0);
   const [count, setCount] = useState(1);
   const [checkSaved, setCheckSaved] = useState();
-  // const [comments, setComments] = useState([]);
+
   const postRef = useRef(null);
 
-  
+  const [isOpen, setIsOpen] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [countReplies, setCountReplies] = useState(0);
+  const [countRepliesThird, setCountRepliesThird] = useState(0);
+  const [activeComment, setActiveComment] = useState(null);
+  const [activeOptions, setActiveOptions] = useState(null);
 
-  const Comments = [
-    {
-        "comment": "Mu vo doi",
-        "image": "",
-        "parentId": "",
-        "commentBy": {
-            "_id": "63257d515b888dcf66525601",
-            "first_name": "luan",
-            "last_name": "nguyen",
-            "username": "luannguyen_MrFyC2iag",
-            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
-        },
-        "commentAt": "2022-09-28T04:26:01.168Z",
-        "_id": "6333ccd902672eb73b386b66"
-    },
-    {
-        "comment": "haha",
-        "image": "",
-        "parentId": "6333ccd902672eb73b386b66",
-        "commentBy": {
-            "_id": "63257d515b888dcf66525601",
-            "first_name": "luan",
-            "last_name": "nguyen",
-            "username": "luannguyen_MrFyC2iag",
-            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
-        },
-        "commentAt": "2022-09-28T04:31:15.185Z",
-        "_id": "6333ce1302672eb73b386b6c"
-    },
-    {
-        "comment": "comment lv1",
-        "image": "",
-        "parentId": "",
-        "commentBy": {
-            "_id": "63257d515b888dcf66525601",
-            "first_name": "luan",
-            "last_name": "nguyen",
-            "username": "luannguyen_MrFyC2iag",
-            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
-        },
-        "commentAt": "2022-10-02T01:05:04.568Z",
-        "_id": "6338e3c0d2d7b99ea89f8a77"
-    },
-    {
-        "comment": "comment lv2",
-        "image": "",
-        "parentId": "6338e3c0d2d7b99ea89f8a77",
-        "commentBy": {
-            "_id": "63257d515b888dcf66525601",
-            "first_name": "luan",
-            "last_name": "nguyen",
-            "username": "luannguyen_MrFyC2iag",
-            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
-        },
-        "commentAt": "2022-10-02T01:05:30.037Z",
-        "_id": "6338e3dad2d7b99ea89f8a7a"
-    },
-    {
-        "comment": "comment lv3",
-        "image": "",
-        "parentId": "6338e3dad2d7b99ea89f8a7a",
-        "commentBy": {
-            "_id": "63257d515b888dcf66525601",
-            "first_name": "luan",
-            "last_name": "nguyen",
-            "username": "luannguyen_MrFyC2iag",
-            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
-        },
-        "commentAt": "2022-10-02T01:05:55.154Z",
-        "_id": "6338e3f3d2d7b99ea89f8a7d"
-    },
-    {
-        "comment": "comment lv3 1",
-        "image": "",
-        "parentId": "6338e3dad2d7b99ea89f8a7a",
-        "commentBy": {
-            "_id": "63257d515b888dcf66525601",
-            "first_name": "luan",
-            "last_name": "nguyen",
-            "username": "luannguyen_MrFyC2iag",
-            "picture": "https://res.cloudinary.com/same-cloud/image/upload/v1663426004/facebook-clone/luannguyen_MrFyC2iag/profile_pictures/kvcc3k5jy7wclhzwqei7.jpg"
-        },
-        "commentAt": "2022-10-02T01:10:46.776Z",
-        "_id": "6338e516d2d7b99ea89f8a8f"
-    }
-]
-  const [comments, setComments] = useState(Comments);
 
   useEffect(() => {
     getPostReacts();
-  }, [post]);
-  useEffect(() => {
     setComments(post?.comments);
   }, [post]);
 
@@ -153,7 +70,23 @@ export default function Post({user, post, profile }) {
   const showMore = () => {
     setCount((prev) => prev + 3);
   };
+
+  const showMoreReplies = () => {
+    setCountReplies((prev) => prev + 3);
+  };
   
+  const showMoreRepliesThird = () => {
+    setCountRepliesThird((prev) => prev + 3);
+  };
+
+  const getReplies = (commentId) =>
+    comments
+      .filter((comment) => comment.parentId === commentId)
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+
   return (
     <div
       className="post"
@@ -220,7 +153,12 @@ export default function Post({user, post, profile }) {
               }
             >
               {post.images.slice(0, 5).map((image, i) => (
-                <img src={image.url} key={i} alt="" className={`img-${i}`} />
+                <img
+                  src={image.url}
+                  key={i + image.url}
+                  alt=""
+                  className={`img-${i}`}
+                />
               ))}
               {post.images.length > 5 && (
                 <div className="more-pics-shadow">
@@ -260,9 +198,9 @@ export default function Post({user, post, profile }) {
                   (react, i) =>
                     react.count > 0 && (
                       <img
+                        key={i}
                         src={`../../../reacts/${react.react}.svg`}
                         alt=""
-                        key={i}
                       />
                     )
                 )}
@@ -270,7 +208,7 @@ export default function Post({user, post, profile }) {
           <div className="reacts_count_num">{total > 0 && total}</div>
         </div>
         <div className="to_right">
-          <div className="comments_count">{comments.length} comments</div>
+          <div className="comments_count">{comments?.length} comments</div>
           <div className="share_count">0 share</div>
         </div>
       </div>
@@ -340,20 +278,48 @@ export default function Post({user, post, profile }) {
       </div>
       <div className="comments_wrap">
         <div className="comments_order"></div>
+
         <CreateComment
           user={user}
           postId={post._id}
-          setComments={setComments}
           setCount={setCount}
+          setComments={setComments}
         />
+
         {comments &&
           comments
+            .filter((backendComment) => backendComment.parentId === "")
             .sort((a, b) => {
               return new Date(b.commentAt) - new Date(a.commentAt);
             })
             .slice(0, count)
-            .map((comment, i) => <Comment comment={comment} key={i} />)}
-        {count < comments.length && (
+            .map((comment, i) => (
+              <Comment
+                key={i}
+                user={user}
+                first={true}
+                isOpen={isOpen}
+                postId={post._id}
+                comment={comment}
+                setCount={setCount}
+                setIsOpen={setIsOpen}
+                getReplies={getReplies}
+                setComments={setComments}
+                countReplies={countReplies}
+                activeOptions={activeOptions}
+                activeComment={activeComment}
+                setCountReplies={setCountReplies}
+                showMoreReplies={showMoreReplies}
+                setActiveOptions={setActiveOptions}
+                setActiveComment={setActiveComment}
+                setVisibleDelPost={setVisibleDelPost}
+                countRepliesThird={countRepliesThird}
+                repliesSecond={getReplies(comment?._id)}
+                showMoreRepliesThird={showMoreRepliesThird}
+              />
+            ))}
+
+        {count < comments.filter((backendComment) => backendComment.parentId === "").length && (
           <div className="view_comments" onClick={() => showMore()}>
             View more comments
           </div>
@@ -362,17 +328,33 @@ export default function Post({user, post, profile }) {
       {showMenu && (
         <PostMenu
           userId={user.id}
-          postUserId={post.user._id}
-          imagesLength={post?.images?.length}
-          setShowMenu={setShowMenu}
+          postRef={postRef}
           postId={post._id}
           token={user.token}
-          checkSaved={checkSaved}
-          setCheckSaved={setCheckSaved}
           images={post.images}
-          postRef={postRef}
+          checkSaved={checkSaved}
+          setShowMenu={setShowMenu}
+          postUserId={post.user._id}
+          setCheckSaved={setCheckSaved}
+          imagesLength={post?.images?.length}
         />
       )}
+
+      <DeletePostPopUp
+        open={isOpen}
+        setComments={setComments}
+        onClose={() => setIsOpen(false)}
+        props={{
+          postId: post._id,
+          commentId:
+            activeComment?.type === "deleteComment"
+              ? activeComment?.id
+              : undefined,
+          token: user.token,
+        }}
+      >
+        Are you sure you want to delete this comment?
+      </DeletePostPopUp>
     </div>
   );
 }
