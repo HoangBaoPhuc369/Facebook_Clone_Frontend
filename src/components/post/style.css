@@ -739,7 +739,7 @@
 
 /*----Comment-----------*/
 /*------Post menu------*/
-@media (max-width: 435px) {
+@media (max-width: 700px) {
   .post .grid_2 img,
   .post .grid_3 img,
   .post .grid_4 img,
@@ -766,7 +766,7 @@
     height: 250px;
   }
 }
-@media (max-width: 400px) {
+@media (max-width: 500px) {
   .posts {
     width: 100%;
     margin: 0 auto;

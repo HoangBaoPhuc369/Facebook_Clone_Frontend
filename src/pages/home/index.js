@@ -19,14 +19,8 @@ export default function Home({
   setVisibleDelPost,
 }) {
   const { user } = useSelector((state) => ({ ...state }));
-  const middle = useRef(null);
-  const [height, setHeight] = useState(0);
   const [onlineUser, setOnlineUsers] = useState([]);
   const [conversations, setConversations] = useState([]);
-
-  useEffect(() => {
-    setHeight(middle.current.clientHeight);
-  }, [loading]);
 
   //Get conversation
   useEffect(() => {
@@ -50,7 +44,7 @@ export default function Home({
   }, []);
 
   return (
-    <div className="home" style={{ height: `${height + 250}px` }}>
+    <div className="background-secondary">
       <Header
         page="home"
         getAllPosts={getAllPosts}
@@ -59,23 +53,32 @@ export default function Home({
         conversations={conversations}
       />
       <LeftHome user={user} />
-      <div className="home_middle" ref={middle}>
-        <Stories user={user} />
-        {user.verified === false && <SendVerification user={user} />}
-        <CreatePost user={user} setVisible={setVisible} />
-        {loading ? (
-          <div className="skeleton_loader">
-            <HashLoader color="#1876f2" />
-          </div>
-        ) : (
-          <div className="posts">
-            {posts.map((post, i) => (
-              <Post key={post?._id} post={post} user={user} setVisibleDelPost={setVisibleDelPost} />
-            ))}
-          </div>
-        )}
-      </div>
+
       <RightHome onlineUser={onlineUser} conversations={conversations} />
+
+      <div className="home">
+        <div className="home_middle">
+          <Stories user={user} />
+          {user.verified === false && <SendVerification user={user} />}
+          <CreatePost user={user} setVisible={setVisible} />
+          {loading ? (
+            <div className="skeleton_loader">
+              <HashLoader color="#1876f2" />
+            </div>
+          ) : (
+            <div className="posts">
+              {posts.map((post, i) => (
+                <Post
+                  key={post?._id}
+                  post={post}
+                  user={user}
+                  setVisibleDelPost={setVisibleDelPost}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
