@@ -2,7 +2,6 @@ import Cookies from "js-cookie";
 
 export function userReducer(
   state = Cookies.get("user") ? JSON.parse(Cookies.get("user")) : null,
-
   action
 ) {
   switch (action.type) {
@@ -10,7 +9,7 @@ export function userReducer(
       return action.payload;
     case "LOGOUT":
       return null;
-    case "UPDATEPICTURE":
+    case "UPDATE_PICTURE":
       return { ...state, picture: action.payload };
     case "VERIFY":
       return { ...state, verified: action.payload };

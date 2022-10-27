@@ -85,7 +85,7 @@ export default function UpdateProfilePicture({
             })
           );
           dispatch({
-            type: "UPDATEPICTURE",
+            type: "UPDATE_PICTURE",
             payload: res[0].url,
           });
           setShow(false);
