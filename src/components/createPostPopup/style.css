@@ -9,6 +9,7 @@
   min-height: 228px;
   width: 500px;
   border-radius: 5px;
+  overflow: hidden;
 }
 .box_header {
   position: relative;

@@ -38,7 +38,6 @@ export default function Profile({ getAllPosts }) {
   }, [userName]);
   useEffect(() => {
     setOthername(profile?.details?.otherName);
-    console.log(profile)
   }, [profile]);
 
   var visitor = userName === user.username ? false : true;
@@ -73,6 +72,7 @@ export default function Profile({ getAllPosts }) {
               },
             }
           );
+
           setPhotos(images.data);
         } catch (error) {
           console.log(error);
@@ -95,7 +95,7 @@ export default function Profile({ getAllPosts }) {
   const [leftHeight, setLeftHeight] = useState();
   const [scrollHeight, setScrollHeight] = useState();
   useEffect(() => {
-    setHeight(profileTop.current.clientHeight + 300);
+    setHeight(profileTop.current.clientHeight + 269); // + 300 (height of the you may know component)
     setLeftHeight(leftSide.current.clientHeight);
     window.addEventListener("scroll", getScroll, { passive: true });
     return () => {
@@ -231,7 +231,7 @@ export default function Profile({ getAllPosts }) {
       <div className="profile_bottom">
         <div className="profile_container">
           <div className="bottom_container">
-            <PplYouMayKnow />
+            {/* <PplYouMayKnow /> */}
             <div
               className={`profile_grid ${
                 check && scrollHeight >= height && leftHeight > 1000
@@ -241,6 +241,8 @@ export default function Profile({ getAllPosts }) {
                     leftHeight < 1000 &&
                     "scrollFixed showMore"
               }`}
+
+              // className="profile_grid"
             >
               <div className="profile_left" ref={leftSide}>
                 {loading ? (

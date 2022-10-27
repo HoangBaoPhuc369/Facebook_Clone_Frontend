@@ -59,11 +59,12 @@ export default function UpdateProfilePicture({
       let formData = new FormData();
       formData.append("file", blob);
       formData.append("path", path);
-      const res = await uploadImages(formData, path, user.token);
+      const res = await uploadImages(formData, user.token);
       const updated_picture = await updateprofilePicture(
         res[0].url,
         user.token
       );
+      
       if (updated_picture === "ok") {
         const new_post = await createPost(
           "profilePicture",
@@ -73,7 +74,8 @@ export default function UpdateProfilePicture({
           user.id,
           user.token
         );
-        if (new_post === "ok") {
+
+        if (new_post.status === "ok") {
           setLoading(false);
           setImage("");
           pRef.current.style.backgroundImage = `url(${res[0].url})`;
