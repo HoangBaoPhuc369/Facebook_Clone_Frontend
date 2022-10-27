@@ -24,8 +24,32 @@ function App() {
     error: "",
   });
   useEffect(() => {
-    getAllPosts();
-  }, []);
+    const getFistAllPosts  = async () => {
+      try {
+        dispatch({
+          type: "POSTS_REQUEST",
+        });
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/posts/get-all-posts`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        dispatch({
+          type: "POSTS_SUCCESS",
+          payload: data,
+        });
+      } catch (error) {
+        dispatch({
+          type: "POSTS_ERROR",
+          payload: error?.response?.data?.message,
+        });
+      }
+    };
+    getFistAllPosts();
+  }, [user]);
   const getAllPosts = async () => {
     try {
       dispatch({
