@@ -22,6 +22,8 @@ import AllMenu from "./AllMenu";
 import useClickOutside from "../../helpers/clickOutside";
 import UserMenu from "./userMenu";
 import AllMessenger from "./AllMessenger";
+import ChatBox from "../chatBox";
+import { io } from "socket.io-client";
 
 export default function Header({
   page,
@@ -49,6 +51,47 @@ export default function Header({
     setShowUserMenu(false);
   });
 
+  //================================================================
+  const [typingUsers, setTypingUsers] = useState([]);
+  const [scrollBottom, setScrollBottom] = useState(false);
+  const [arrivalMessage, setArrivalMessage] = useState(null);
+  const [closeArrivalMessage, setCloseArrivalMessage] = useState(false);
+
+  const socketRef = useRef();
+
+  // Get message from socketRef io
+  useEffect(() => {
+    socketRef.current = io("ws://localhost:8900");
+    socketRef.current.on("getMessage", (data) => {
+      setArrivalMessage({
+        sender: data.senderId,
+        text: data.text,
+        currentChatId: data?.currentChatId,
+        createdAt: new Date(Date.now()),
+      });
+      // setCloseArrivalMessage(true);
+    });
+
+    socketRef.current.on("start typing message", (typingInfo) => {
+      if (typingInfo.senderId !== socketRef.current.id) {
+        const user = typingInfo.user;
+        setTypingUsers((users) => [...users, user]);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    socketRef.current.emit("addUser", user.id);
+    socketRef.current.on("getUsers", (users) => {
+      setOnlineUsers(
+        user.following.filter((f) => users.some((u) => u.userId === f._id))
+      );
+    });
+  }, [user]);
+
+  const getFiendChat = (current) => {
+    return current.members.find((m) => m._id !== user.id);
+  };
   //================================================================
   return (
     <header>
@@ -145,11 +188,16 @@ export default function Header({
           </div>
           <AllMessenger
             user={user}
-            display={showAllMessenger ? "block" : "none"}
-            setShowAllMessenger={setShowAllMessenger}
             onlineUser={onlineUser}
-            setOnlineUsers={setOnlineUsers}
+            getFiendChat={getFiendChat}
             conversations={conversations}
+            arrivalMessage={arrivalMessage}
+            setOnlineUsers={setOnlineUsers}
+            setScrollBottom={setScrollBottom}
+            closeArrivalMessage={closeArrivalMessage}
+            setShowAllMessenger={setShowAllMessenger}
+            display={showAllMessenger ? "block" : "none"}
+            setCloseArrivalMessage={setCloseArrivalMessage}
           />
         </div>
         <div className="circle_icon hover1">
@@ -172,6 +220,22 @@ export default function Header({
 
           {showUserMenu && <UserMenu user={user} />}
         </div>
+      </div>
+      <div id="wrapper">
+        {conversations?.map((c) => (
+          <ChatBox
+            key={c._id}
+            onlineUser={onlineUser}
+            friendChat={getFiendChat(c)}
+            messagesChat={c.messages}
+            currentChat={c}
+            arrivalMessage={arrivalMessage}
+            socket={socketRef}
+            typingUsers={typingUsers}
+            setTypingUsers={setTypingUsers}
+            scrollBottom={scrollBottom}
+          />
+        ))}
       </div>
     </header>
   );

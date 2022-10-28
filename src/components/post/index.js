@@ -28,8 +28,11 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
   const [activeOptions, setActiveOptions] = useState(null);
 
   useEffect(() => {
-    getPostReacts();
     setComments(post?.comments);
+  }, [post]);
+
+  useEffect(() => {
+    getPostReacts();
   }, [post]);
 
   const getPostReacts = async () => {
@@ -42,7 +45,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
 
   const reactHandler = async (type) => {
     reactPost(post._id, type, user.token);
-    if (check == type) {
+    if (check === type) {
       setCheck();
       let index = reacts.findIndex((x) => x.react == check);
       if (index !== -1) {

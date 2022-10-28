@@ -20,7 +20,12 @@ import CreatePostPopup from "../../components/createPostPopup";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { HashLoader } from "react-spinners";
-export default function Profile({ getAllPosts }) {
+export default function Profile({
+  getAllPosts,
+  conversations,
+  onlineUser,
+  setOnlineUsers,
+}) {
   const [visible, setVisible] = useState(false);
   const { username } = useParams();
   const navigate = useNavigate();
@@ -89,6 +94,7 @@ export default function Profile({ getAllPosts }) {
       });
     }
   };
+
   const profileTop = useRef(null);
   const leftSide = useRef(null);
   const [height, setHeight] = useState();
@@ -120,7 +126,13 @@ export default function Profile({ getAllPosts }) {
           profile
         />
       )}
-      <Header page="profile" getAllPosts={getAllPosts} />
+      <Header
+        page="profile"
+        onlineUser={onlineUser}
+        getAllPosts={getAllPosts}
+        conversations={conversations}
+        setOnlineUsers={setOnlineUsers}
+      />
       <div className="profile_top" ref={profileTop}>
         <div className="profile_container">
           {loading ? (

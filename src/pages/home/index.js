@@ -12,36 +12,17 @@ import Post from "../../components/post";
 import "./style.css";
 
 export default function Home({
-  setVisible,
   posts,
   loading,
+  setVisible,
+  onlineUser,
   getAllPosts,
+  conversations,
+  setOnlineUsers,
   setVisibleDelPost,
 }) {
   const { user } = useSelector((state) => ({ ...state }));
-  const [onlineUser, setOnlineUsers] = useState([]);
-  const [conversations, setConversations] = useState([]);
-
-  //Get conversation
-  useEffect(() => {
-    const getConversations = async () => {
-      try {
-        const res = await axios.put(
-          `${process.env.REACT_APP_BACKEND_URL}/chat/conversations`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
-        setConversations(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getConversations();
-  }, []);
+  
 
   return (
     <div className="background-secondary">

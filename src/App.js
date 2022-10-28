@@ -16,6 +16,8 @@ import DeletePostPopUp from "./components/deletePost";
 
 function App() {
   const [visible, setVisible] = useState(false);
+  const [onlineUser, setOnlineUsers] = useState([]);
+  const [conversations, setConversations] = useState([]);
   const [visibleDelPost, setVisibleDelPost] = useState(false);
   const { user, darkTheme } = useSelector((state) => ({ ...state }));
   const [{ loading, error, posts }, dispatch] = useReducer(postsReducer, {
@@ -24,32 +26,9 @@ function App() {
     error: "",
   });
   useEffect(() => {
-    const getFistAllPosts  = async () => {
-      try {
-        dispatch({
-          type: "POSTS_REQUEST",
-        });
-        const { data } = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/posts/get-all-posts`,
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
-        dispatch({
-          type: "POSTS_SUCCESS",
-          payload: data,
-        });
-      } catch (error) {
-        dispatch({
-          type: "POSTS_ERROR",
-          payload: error?.response?.data?.message,
-        });
-      }
-    };
-    getFistAllPosts();
-  }, [user]);
+    getAllPosts();
+  }, [user?.token]);
+
   const getAllPosts = async () => {
     try {
       dispatch({
@@ -75,6 +54,27 @@ function App() {
     }
   };
 
+  //Get conversation
+  useEffect(() => {
+    const getConversations = async () => {
+      try {
+        const res = await axios.put(
+          `${process.env.REACT_APP_BACKEND_URL}/chat/conversations`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${user?.token}`,
+            },
+          }
+        );
+        setConversations(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getConversations();
+  }, [user?.following, user?.token]);
+
   return (
     <div className={darkTheme ? "dark" : "light"}>
       {visible && (
@@ -93,14 +93,26 @@ function App() {
           <Route
             path="/profile"
             element={
-              <Profile setVisible={setVisible} getAllPosts={getAllPosts} />
+              <Profile
+                setVisible={setVisible}
+                onlineUser={onlineUser}
+                getAllPosts={getAllPosts}
+                conversations={conversations}
+                setOnlineUsers={setOnlineUsers}
+              />
             }
             exact
           />
           <Route
             path="/profile/:username"
             element={
-              <Profile setVisible={setVisible} getAllPosts={getAllPosts} />
+              <Profile
+                setVisible={setVisible}
+                onlineUser={onlineUser}
+                getAllPosts={getAllPosts}
+                conversations={conversations}
+                setOnlineUsers={setOnlineUsers}
+              />
             }
             exact
           />
@@ -110,11 +122,14 @@ function App() {
             path="/"
             element={
               <Home
-                setVisible={setVisible}
-                setVisibleDelPost={setVisibleDelPost}
                 posts={posts}
                 loading={loading}
+                onlineUser={onlineUser}
+                setVisible={setVisible}
                 getAllPosts={getAllPosts}
+                conversations={conversations}
+                setOnlineUsers={setOnlineUsers}
+                setVisibleDelPost={setVisibleDelPost}
               />
             }
             exact

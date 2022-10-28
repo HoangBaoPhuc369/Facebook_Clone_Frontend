@@ -17,7 +17,7 @@ export default function AllMessengerItem({
   const arrivalRef = useRef(null);
 
   useEffect(() => {
-    setCheckOnline(onlineUser.some((f) => f._id === friendChat._id));
+    setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
   }, [onlineUser]);
 
   const getArrivalMessage = (id) => {

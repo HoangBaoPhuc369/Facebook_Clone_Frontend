@@ -41,7 +41,7 @@ export default function ChatBox({
   };
 
   useEffect(() => {
-    socket.current.on("stop typing message", (typingInfo) => {
+    socket.current?.on("stop typing message", (typingInfo) => {
       if (typingInfo.senderId !== socket.current.id) {
         const user = typingInfo.user;
         setTypingUsers((users) => checkUsers(users, user));

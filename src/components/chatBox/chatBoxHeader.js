@@ -10,7 +10,7 @@ export default function ChatBoxHeader({ friendChat, currentChat, onlineUser }) {
   const [checkOnline, setCheckOnline] = useState(false);
 
   useEffect(() => {
-    setCheckOnline(onlineUser.some((f) => f._id === friendChat._id));
+    setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
   }, [onlineUser]);
   return (
     <>

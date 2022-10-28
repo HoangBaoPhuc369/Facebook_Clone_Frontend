@@ -7,52 +7,57 @@ import { io } from "socket.io-client";
 
 export default function AllMessenger({
   user,
-  setShowAllMessenger,
   display,
   onlineUser,
-  setOnlineUsers,
+  getFiendChat,
   conversations,
+  setOnlineUsers,
+  arrivalMessage,
+  setScrollBottom,
+  closeArrivalMessage,
+  setShowAllMessenger,
+  setCloseArrivalMessage,
 }) {
-  const [typingUsers, setTypingUsers] = useState([]);
-  const [scrollBottom, setScrollBottom] = useState(false);
-  const [arrivalMessage, setArrivalMessage] = useState(null);
-  const [closeArrivalMessage, setCloseArrivalMessage] = useState(false);
+  // const [typingUsers, setTypingUsers] = useState([]);
+  // const [scrollBottom, setScrollBottom] = useState(false);
+  // const [arrivalMessage, setArrivalMessage] = useState(null);
+  // const [closeArrivalMessage, setCloseArrivalMessage] = useState(false);
 
-  const socketRef = useRef();
+  // const socketRef = useRef();
 
-  // Get message from socketRef io
-  useEffect(() => {
-    socketRef.current = io("ws://localhost:8900");
-    socketRef.current.on("getMessage", (data) => {
-      setArrivalMessage({
-        sender: data.senderId,
-        text: data.text,
-        currentChatId: data?.currentChatId,
-        createdAt: new Date(Date.now()),
-      });
-      // setCloseArrivalMessage(true);
-    });
+  // // Get message from socketRef io
+  // useEffect(() => {
+  //   socketRef.current = io("ws://localhost:8900");
+  //   socketRef.current.on("getMessage", (data) => {
+  //     setArrivalMessage({
+  //       sender: data.senderId,
+  //       text: data.text,
+  //       currentChatId: data?.currentChatId,
+  //       createdAt: new Date(Date.now()),
+  //     });
+  //     // setCloseArrivalMessage(true);
+  //   });
 
-    socketRef.current.on("start typing message", (typingInfo) => {
-      if (typingInfo.senderId !== socketRef.current.id) {
-        const user = typingInfo.user;
-        setTypingUsers((users) => [...users, user]);
-      }
-    });
-  }, []);
+  //   socketRef.current.on("start typing message", (typingInfo) => {
+  //     if (typingInfo.senderId !== socketRef.current.id) {
+  //       const user = typingInfo.user;
+  //       setTypingUsers((users) => [...users, user]);
+  //     }
+  //   });
+  // }, []);
 
-  useEffect(() => {
-    socketRef.current.emit("addUser", user.id);
-    socketRef.current.on("getUsers", (users) => {
-      setOnlineUsers(
-        user.following.filter((f) => users.some((u) => u.userId === f._id))
-      );
-    });
-  }, [user]);
+  // useEffect(() => {
+  //   socketRef.current.emit("addUser", user.id);
+  //   socketRef.current.on("getUsers", (users) => {
+  //     setOnlineUsers(
+  //       user.following.filter((f) => users.some((u) => u.userId === f._id))
+  //     );
+  //   });
+  // }, [user]);
 
-  const getFiendChat = (current) => {
-    return current.members.find((m) => m._id !== user.id);
-  };
+  // const getFiendChat = (current) => {
+  //   return current.members.find((m) => m._id !== user.id);
+  // };
 
   return (
     <div className="all_messenger" style={{ display: display }}>
@@ -72,7 +77,7 @@ export default function AllMessenger({
                     onClick={() => {
                       registerPopup(c._id);
                       setShowAllMessenger(false);
-                      setScrollBottom(prev => !prev);
+                      setScrollBottom((prev) => !prev);
                     }}
                   >
                     <AllMessengerItem
@@ -86,20 +91,17 @@ export default function AllMessenger({
                       setCloseArrivalMessage={setCloseArrivalMessage}
                     />
                   </div>
-                  {createPortal(
-                    <ChatBox
-                      onlineUser={onlineUser}
-                      friendChat={getFiendChat(c)}
-                      messagesChat={c.messages}
-                      currentChat={c}
-                      arrivalMessage={arrivalMessage}
-                      socket={socketRef}
-                      typingUsers={typingUsers}
-                      setTypingUsers={setTypingUsers}
-                      scrollBottom={scrollBottom}
-                    />,
-                    document.getElementById("wrapper")
-                  )}
+                  {/* <ChatBox
+                    onlineUser={onlineUser}
+                    friendChat={getFiendChat(c)}
+                    messagesChat={c.messages}
+                    currentChat={c}
+                    arrivalMessage={arrivalMessage}
+                    socket={socketRef}
+                    typingUsers={typingUsers}
+                    setTypingUsers={setTypingUsers}
+                    scrollBottom={scrollBottom}
+                  /> */}
                 </div>
               ))}
             </div>
