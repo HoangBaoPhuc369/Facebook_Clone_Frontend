@@ -17,7 +17,7 @@ export default function Stories({user}) {
     query: "(max-width: 885px)",
   });
   const max = query885px
-    ? 5
+    ? 4
     : query960px
     ? 4
     : query1030px

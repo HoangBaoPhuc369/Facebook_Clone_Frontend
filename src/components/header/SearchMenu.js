@@ -120,7 +120,7 @@ export default function SearchMenu({ color, setShowSearchMenu, token }) {
       </div>
       <div className="search_results scrollbar">
         {results &&
-          results.map((user) => (
+          results?.map((user) => (
             <Link
               to={`/profile/${user.username}`}
               className="search_user_item hover1"

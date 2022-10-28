@@ -29,6 +29,8 @@ function App() {
     getAllPosts();
   }, [user?.token]);
 
+ 
+
   const getAllPosts = async () => {
     try {
       dispatch({
@@ -46,6 +48,7 @@ function App() {
         type: "POSTS_SUCCESS",
         payload: data,
       });
+
     } catch (error) {
       dispatch({
         type: "POSTS_ERROR",

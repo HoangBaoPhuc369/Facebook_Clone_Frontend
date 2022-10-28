@@ -18,7 +18,7 @@
   .createPost,
   .post,
   .send_verification {
-    width: 63%;
+    width: 79%;
   }
   .home_middle {
     margin-left: 24%;
@@ -50,6 +50,7 @@
   .home_middle {
     position: relative;
     margin-left: 55px;
+    width: 72%;
   }
   .right_home {
     display: none;
@@ -71,13 +72,15 @@
   .createPost,
   .post,
   .send_verification {
-    width: 93%;
+    width: 100%;
   }
   .stories {
-    width: 86%;
+    width: 98.5%;
+    grid-template-columns: repeat(6, 19%);
   }
   .home_middle {
     margin-left: 10%;
+    width: 74%;
   }
   .right_home {
     left: 78%;
@@ -100,18 +103,20 @@
   .createPost,
   .post,
   .send_verification {
-    width: 100%;
+    width: 106%;
   }
   .stories {
-    width: 102%;
+    width: 106%;
+    grid-template-columns: repeat(6, 18.8%);
   }
   .home_middle {
     margin-left: 9%;
+    width: 77%;
   }
 }
 @media (max-width: 805px) {
   .stories {
-    grid-template-columns: repeat(6, 12.7vw);
+    grid-template-columns: repeat(6, 18.5%);
   }
   .story_profile_name,
   .story_create_text {
@@ -121,7 +126,7 @@
     filter: brightness(96%);
   }
   .stories .white_circle {
-    right: 5px;
+    right: -1%;
   }
   .story_profile_pic {
     width: 7vw;
@@ -168,7 +173,7 @@
     width: 20px;
   }
 }
-@media (max-width: 500px) {
+@media screen and (min-width: 400px) and (max-width: 622px) {
   .createPost,
   .post {
     margin-top: 1rem;
@@ -184,7 +189,7 @@
     margin: 0 auto;
   }
   .stories {
-    grid-template-columns: repeat(6, 13vw);
+    grid-template-columns: repeat(5, 17vw);
     padding-left: 10px;
   }
   .home_middle {
