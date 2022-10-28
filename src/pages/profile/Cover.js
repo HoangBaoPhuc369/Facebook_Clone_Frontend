@@ -9,8 +9,8 @@ import { createPost } from "../../functions/post";
 import PulseLoader from "react-spinners/PulseLoader";
 import OldCovers from "./OldCovers";
 
-export default function Cover({ cover, visitor, photos }) {
-  const [showCoverMneu, setShowCoverMenu] = useState(false);
+export default function Cover({ cover, visitor, photos,  dispatch, profilePost}) {
+  const [showCoverMenu, setShowCoverMenu] = useState(false);
   const [coverPicture, setCoverPicture] = useState("");
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
@@ -81,7 +81,7 @@ export default function Cover({ cover, visitor, photos }) {
       let formData = new FormData();
       formData.append("file", blob);
       formData.append("path", path);
-      const res = await uploadImages(formData, path, user.token);
+      const res = await uploadImages(formData, user.token);
       const updated_picture = await updateCover(res[0].url, user.token);
       if (updated_picture === "ok") {
         const new_post = await createPost(
@@ -92,11 +92,15 @@ export default function Cover({ cover, visitor, photos }) {
           user.id,
           user.token
         );
-        console.log(new_post);
-        if (new_post === "ok") {
+        if (new_post.status === "ok") {
           setLoading(false);
           setCoverPicture("");
           cRef.current.src = res[0].url;
+
+          dispatch({
+            type: "PROFILE_POSTS",
+            payload: [new_post.data, ...profilePost],
+          })
         } else {
           setLoading(false);
 
@@ -104,7 +108,6 @@ export default function Cover({ cover, visitor, photos }) {
         }
       } else {
         setLoading(false);
-
         setError(updated_picture);
       }
     } catch (error) {
@@ -175,7 +178,7 @@ export default function Cover({ cover, visitor, photos }) {
             <i className="camera_filled_icon"></i>
             Add Cover Photo
           </div>
-          {showCoverMneu && (
+          {showCoverMenu && (
             <div className="open_cover_menu" ref={menuRef}>
               <div
                 className="open_cover_menu_item hover1"

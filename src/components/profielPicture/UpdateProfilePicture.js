@@ -13,6 +13,8 @@ export default function UpdateProfilePicture({
   setError,
   setShow,
   pRef,
+  profilePost,
+  profileReducerDispatch,
 }) {
   const dispatch = useDispatch();
   const [description, setDescription] = useState("");
@@ -86,6 +88,10 @@ export default function UpdateProfilePicture({
               picture: res[0].url,
             })
           );
+          profileReducerDispatch({
+            type: "PROFILE_POSTS",
+            payload: [new_post.data, ...profilePost],
+          })
           dispatch({
             type: "UPDATE_PICTURE",
             payload: res[0].url,

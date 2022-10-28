@@ -214,6 +214,8 @@ export default function Profile({ getAllPosts }) {
                 cover={profile.cover}
                 visitor={visitor}
                 photos={photos.resources}
+                profilePost={profile?.posts}
+                dispatch={dispatch}
               />
               <ProfielPictureInfos
                 profile={profile}
@@ -221,6 +223,8 @@ export default function Profile({ getAllPosts }) {
                 photos={photos.resources}
                 othername={othername}
                 loading={loading}
+                profilePost={profile?.posts}
+                dispatch={dispatch}
               />
             </>
           )}

@@ -27,7 +27,6 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
   const [activeComment, setActiveComment] = useState(null);
   const [activeOptions, setActiveOptions] = useState(null);
 
-
   useEffect(() => {
     getPostReacts();
     setComments(post?.comments);
@@ -74,7 +73,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
   const showMoreReplies = () => {
     setCountReplies((prev) => prev + 3);
   };
-  
+
   const showMoreRepliesThird = () => {
     setCountRepliesThird((prev) => prev + 3);
   };
@@ -208,8 +207,11 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
           <div className="reacts_count_num">{total > 0 && total}</div>
         </div>
         <div className="to_right">
-          <div className="comments_count">{comments?.length} comments</div>
-          <div className="share_count">0 share</div>
+          {comments?.length > 0 ? (
+            <div className="comments_count">{comments?.length} comments</div>
+          ) : null}
+
+          {/* <div className="share_count">0 share</div> */}
         </div>
       </div>
       <div className="post_actions">
@@ -271,10 +273,12 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
           <i className="comment_icon"></i>
           <span>Comment</span>
         </div>
-        <div className="post_action hover1">
-          <i className="share_icon"></i>
-          <span>Share</span>
-        </div>
+        {user.following.length > 0 && (
+          <div className="post_action hover1">
+            <i className="share_icon"></i>
+            <span>Share</span>
+          </div>
+        )}
       </div>
       <div className="comments_wrap">
         <div className="comments_order"></div>
@@ -319,7 +323,9 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
               />
             ))}
 
-        {count < comments.filter((backendComment) => backendComment.parentId === "").length && (
+        {count <
+          comments.filter((backendComment) => backendComment.parentId === "")
+            .length && (
           <div className="view_comments" onClick={() => showMore()}>
             View more comments
           </div>
