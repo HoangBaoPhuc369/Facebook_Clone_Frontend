@@ -225,15 +225,15 @@ export default function Header({
         {conversations?.map((c) => (
           <ChatBox
             key={c._id}
-            onlineUser={onlineUser}
-            friendChat={getFiendChat(c)}
-            messagesChat={c.messages}
             currentChat={c}
-            arrivalMessage={arrivalMessage}
             socket={socketRef}
+            onlineUser={onlineUser}
+            messagesChat={c.messages}
             typingUsers={typingUsers}
-            setTypingUsers={setTypingUsers}
             scrollBottom={scrollBottom}
+            friendChat={getFiendChat(c)}
+            arrivalMessage={arrivalMessage}
+            setTypingUsers={setTypingUsers}
           />
         ))}
       </div>
