@@ -5,16 +5,14 @@ import HelpSupport from "./HelpSupport";
 import SettingsPrivacy from "./SettingsPrivacy";
 import Cookies from 'js-cookie';
 import { useDispatch } from "react-redux";
+import { setLogout } from "../../../redux/features/authSlice";
 
 export default function UserMenu({ user }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [visible, setVisible] = useState(0);
   const logout = () => {
-    Cookies.set("user", "");
-    dispatch({
-      type: "LOGOUT",
-    });
+    dispatch(setLogout());
     navigate("/login");
   }
   return (

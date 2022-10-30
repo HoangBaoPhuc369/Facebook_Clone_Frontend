@@ -29,7 +29,7 @@ export default function Profile({
   const [visible, setVisible] = useState(false);
   const { username } = useParams();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => ({ ...state }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   const [photos, setPhotos] = useState({});
   var userName = username === undefined ? user.username : username;
 
@@ -64,6 +64,8 @@ export default function Profile({
           },
         }
       );
+
+      console.log(data);
       if (data.ok === false) {
         navigate("/profile");
       } else {

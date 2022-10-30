@@ -32,7 +32,7 @@ export default function Header({
   setOnlineUsers,
   conversations,
 }) {
-  const { user } = useSelector((user) => ({ ...user }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   const color = "#65676b";
   const [showSearchMenu, setShowSearchMenu] = useState(false);
   const [showAllMenu, setShowAllMenu] = useState(false);

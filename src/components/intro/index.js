@@ -5,7 +5,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import EditDetails from "./EditDetails";
 export default function Intro({ detailss, visitor, setOthername }) {
-  const { user } = useSelector((state) => ({ ...state }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   const [details, setDetails] = useState();
   const [visible, setVisible] = useState(false);
   useEffect(() => {

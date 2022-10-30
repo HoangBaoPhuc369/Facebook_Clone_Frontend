@@ -21,7 +21,7 @@ export default function Home({
   setOnlineUsers,
   setVisibleDelPost,
 }) {
-  const { user } = useSelector((state) => ({ ...state }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   
 
   return (

@@ -19,7 +19,7 @@ function App() {
   const [onlineUser, setOnlineUsers] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [visibleDelPost, setVisibleDelPost] = useState(false);
-  const { user, darkTheme } = useSelector((state) => ({ ...state }));
+  const { user} = useSelector((state) => ({ ...state.auth }));
   const [{ loading, error, posts }, dispatch] = useReducer(postsReducer, {
     loading: false,
     posts: [],
@@ -27,7 +27,7 @@ function App() {
   });
   useEffect(() => {
     getAllPosts();
-  }, [user?.token]);
+  }, [user]);
 
  
 
@@ -79,7 +79,8 @@ function App() {
   }, [user?.following, user?.token]);
 
   return (
-    <div className={darkTheme ? "dark" : "light"}>
+    //className={darkTheme ? "dark" : "light"}
+    <div > 
       {visible && (
         <CreatePostPopup
           user={user}

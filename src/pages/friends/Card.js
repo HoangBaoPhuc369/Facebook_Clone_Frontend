@@ -7,7 +7,7 @@ import {
 } from "../../functions/user";
 
 export default function Card({ userr, type, getData }) {
-  const { user } = useSelector((state) => ({ ...state }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   const cancelRequestHandler = async (userId) => {
     const res = await cancelRequest(userId, user.token);
     if (res == "ok") {

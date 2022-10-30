@@ -7,6 +7,7 @@ import { updateprofilePicture } from "../../functions/user";
 import getCroppedImg from "../../helpers/getCroppedImg";
 import PulseLoader from "react-spinners/PulseLoader";
 import Cookies from "js-cookie";
+import { updatePicture } from "../../redux/features/authSlice";
 export default function UpdateProfilePicture({
   setImage,
   image,
@@ -22,7 +23,7 @@ export default function UpdateProfilePicture({
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const slider = useRef(null);
-  const { user } = useSelector((state) => ({ ...state }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   const [loading, setLoading] = useState(false);
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -81,21 +82,12 @@ export default function UpdateProfilePicture({
           setLoading(false);
           setImage("");
           pRef.current.style.backgroundImage = `url(${res[0].url})`;
-          Cookies.set(
-            "user",
-            JSON.stringify({
-              ...user,
-              picture: res[0].url,
-            })
-          );
+          
           profileReducerDispatch({
             type: "PROFILE_POSTS",
             payload: [new_post.data, ...profilePost],
           })
-          dispatch({
-            type: "UPDATE_PICTURE",
-            payload: res[0].url,
-          });
+          dispatch(updatePicture(res[0].url));
           setShow(false);
         } else {
           setLoading(false);
