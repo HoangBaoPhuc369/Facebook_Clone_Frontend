@@ -88,7 +88,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-
+  
   return (
     <div
       className="post"
@@ -100,7 +100,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
           to={`/profile/${post?.user.username}`}
           className="post_header_left"
         >
-          <img src={post.user.picture} alt="" />
+          <img src={post.user?._id === user.id ? user.picture : post.user.picture} alt="" />
           <div className="header_col">
             <div className="post_profile_name">
               {post.user.first_name} {post.user.last_name}

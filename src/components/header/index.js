@@ -15,7 +15,7 @@ import {
   Search,
   Watch,
 } from "../../svg";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import SearchMenu from "./SearchMenu";
 import { useRef, useState, useEffect } from "react";
 import AllMenu from "./AllMenu";
@@ -24,15 +24,16 @@ import UserMenu from "./userMenu";
 import AllMessenger from "./AllMessenger";
 import ChatBox from "../chatBox";
 import { io } from "socket.io-client";
+import { getAllPosts } from "../../redux/features/postSlice";
 
 export default function Header({
   page,
-  getAllPosts,
   onlineUser,
   setOnlineUsers,
   conversations,
 }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
+  const dispatch = useDispatch();
   const color = "#65676b";
   const [showSearchMenu, setShowSearchMenu] = useState(false);
   const [showAllMenu, setShowAllMenu] = useState(false);
@@ -69,7 +70,6 @@ export default function Header({
         currentChatId: data?.currentChatId,
         createdAt: new Date(Date.now()),
       });
-      // setCloseArrivalMessage(true);
     });
 
     socketRef.current.on("start typing message", (typingInfo) => {
@@ -87,7 +87,8 @@ export default function Header({
         user.following.filter((f) => users.some((u) => u.userId === f._id))
       );
     });
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.id]);
 
   const getFiendChat = (current) => {
     return current.members.find((m) => m._id !== user.id);
@@ -126,7 +127,7 @@ export default function Header({
         <Link
           to="/"
           className={`middle_icon ${page === "home" ? "active" : "hover1"}`}
-          onClick={() => getAllPosts()}
+          onClick={() => dispatch(getAllPosts({userToken: user.token}))}
         >
           {page === "home" ? <HomeActive /> : <Home color={color} />}
         </Link>

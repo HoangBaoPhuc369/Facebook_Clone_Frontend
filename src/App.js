@@ -20,42 +20,7 @@ function App() {
   const [conversations, setConversations] = useState([]);
   const [visibleDelPost, setVisibleDelPost] = useState(false);
   const { user} = useSelector((state) => ({ ...state.auth }));
-  const [{ loading, error, posts }, dispatch] = useReducer(postsReducer, {
-    loading: false,
-    posts: [],
-    error: "",
-  });
-  useEffect(() => {
-    getAllPosts();
-  }, [user]);
-
- 
-
-  const getAllPosts = async () => {
-    try {
-      dispatch({
-        type: "POSTS_REQUEST",
-      });
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/posts/get-all-posts`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
-      dispatch({
-        type: "POSTS_SUCCESS",
-        payload: data,
-      });
-
-    } catch (error) {
-      dispatch({
-        type: "POSTS_ERROR",
-        payload: error?.response?.data?.message,
-      });
-    }
-  };
+  const {darkTheme} = useSelector((state) => ({ ...state.theme }));
 
   //Get conversation
   useEffect(() => {
@@ -79,14 +44,11 @@ function App() {
   }, [user?.following, user?.token]);
 
   return (
-    //className={darkTheme ? "dark" : "light"}
-    <div > 
+    <div className={darkTheme ? "dark" : "light"}> 
       {visible && (
         <CreatePostPopup
           user={user}
           setVisible={setVisible}
-          posts={posts}
-          dispatch={dispatch}
         />
       )}
 
@@ -100,7 +62,6 @@ function App() {
               <Profile
                 setVisible={setVisible}
                 onlineUser={onlineUser}
-                getAllPosts={getAllPosts}
                 conversations={conversations}
                 setOnlineUsers={setOnlineUsers}
               />
@@ -113,7 +74,6 @@ function App() {
               <Profile
                 setVisible={setVisible}
                 onlineUser={onlineUser}
-                getAllPosts={getAllPosts}
                 conversations={conversations}
                 setOnlineUsers={setOnlineUsers}
               />
@@ -126,11 +86,8 @@ function App() {
             path="/"
             element={
               <Home
-                posts={posts}
-                loading={loading}
                 onlineUser={onlineUser}
                 setVisible={setVisible}
-                getAllPosts={getAllPosts}
                 conversations={conversations}
                 setOnlineUsers={setOnlineUsers}
                 setVisibleDelPost={setVisibleDelPost}

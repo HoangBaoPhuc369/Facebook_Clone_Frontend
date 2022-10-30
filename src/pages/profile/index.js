@@ -21,7 +21,6 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { HashLoader } from "react-spinners";
 export default function Profile({
-  getAllPosts,
   conversations,
   onlineUser,
   setOnlineUsers,
@@ -65,7 +64,6 @@ export default function Profile({
         }
       );
 
-      console.log(data);
       if (data.ok === false) {
         navigate("/profile");
       } else {
@@ -96,6 +94,8 @@ export default function Profile({
       });
     }
   };
+
+  // console.log(profile);
 
   const profileTop = useRef(null);
   const leftSide = useRef(null);
@@ -131,7 +131,6 @@ export default function Profile({
       <Header
         page="profile"
         onlineUser={onlineUser}
-        getAllPosts={getAllPosts}
         conversations={conversations}
         setOnlineUsers={setOnlineUsers}
       />

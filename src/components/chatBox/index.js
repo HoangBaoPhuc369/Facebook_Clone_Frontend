@@ -19,7 +19,7 @@ export default function ChatBox({
   onlineUser,
   scrollBottom,
 }) {
-  const { user } = useSelector((user) => ({ ...user }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   const { isTyping, startTyping, stopTyping, cancelTyping } = useTyping();
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState(messagesChat);
@@ -135,7 +135,7 @@ export default function ChatBox({
               <div key={i}>
                 <Message
                   message={message}
-                  ownUser={message?.sender == user.id}
+                  ownUser={message?.sender === user.id}
                   friendChat={friendChat}
                   typingUsers={typingUsers}
                 />

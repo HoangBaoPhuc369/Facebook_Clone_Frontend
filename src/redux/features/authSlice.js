@@ -5,7 +5,6 @@ import * as api from "../api";
 export const login = createAsyncThunk(
   "auth/login",
   async ({ formValue, navigate }, { rejectWithValue }) => {
-    console.log("formValue", formValue);
     try {
       const { data } = await api.userLogin(formValue);
       navigate("/");

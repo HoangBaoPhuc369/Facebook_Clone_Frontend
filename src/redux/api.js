@@ -16,3 +16,27 @@ export const activateAccount = (token, userToken) =>
       },
     }
   );
+
+export const getPosts = (userToken) =>
+  axios.get(`${process.env.REACT_APP_BACKEND_URL}/posts/get-all-posts`, {
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+
+export const createPost = (type, background, text, images, user, token) =>
+  axios.put(
+    `${process.env.REACT_APP_BACKEND_URL}/posts/create-post`,
+    {
+      type,
+      background,
+      text,
+      images,
+      user,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
