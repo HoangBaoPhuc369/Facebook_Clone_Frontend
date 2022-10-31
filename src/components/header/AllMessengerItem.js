@@ -8,8 +8,6 @@ export default function AllMessengerItem({
   onlineUser,
   messagesChat,
   arrivalMessage,
-  closeArrivalMessage,
-  setCloseArrivalMessage,
 }) {
   const [checkOnline, setCheckOnline] = useState(false);
   const [messages, setMessages] = useState(messagesChat);
@@ -25,17 +23,11 @@ export default function AllMessengerItem({
   };
 
   useEffect(() => {
-    // arrivalMessage &&
-    //   currentChat?._id === arrivalMessage.currentChatId &&
-    //   currentChat?.members.some((m) => m._id === arrivalMessage?.sender) &&
-    //   setMessages((prev) => [...prev, arrivalMessage]);
-
     if (
       arrivalMessage &&
       currentChat?._id === arrivalMessage.currentChatId &&
       currentChat?.members.some((m) => m._id === arrivalMessage?.sender)
     ) {
-      console.log(true);
       setMessages((prev) => [...prev, arrivalMessage]);
       getArrivalMessage(currentChat?._id);
     }

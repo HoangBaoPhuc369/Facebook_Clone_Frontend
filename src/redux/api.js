@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// --------------------------AUTH API--------------------------------------
 export const userLogin = (formValue) =>
   axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, formValue);
 
@@ -17,6 +18,7 @@ export const activateAccount = (token, userToken) =>
     }
   );
 
+// --------------------------POST API--------------------------------------
 export const getPosts = (userToken) =>
   axios.get(`${process.env.REACT_APP_BACKEND_URL}/posts/get-all-posts`, {
     headers: {
@@ -37,6 +39,18 @@ export const createPost = (type, background, text, images, user, token) =>
     {
       headers: {
         Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+// --------------------------CHAT API--------------------------------------
+export const getConversations = (userToken) =>
+  axios.put(
+    `${process.env.REACT_APP_BACKEND_URL}/chat/conversations`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
       },
     }
   );

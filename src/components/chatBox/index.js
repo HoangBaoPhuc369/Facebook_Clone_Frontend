@@ -60,11 +60,6 @@ export default function ChatBox({
     e.preventDefault();
     cancelTyping();
 
-    const message = {
-      text: newMessage,
-      user: friendChat?._id,
-    };
-
     socket.current.emit("sendMessage", {
       senderId: user.id,
       receiverId: friendChat._id,
@@ -72,6 +67,11 @@ export default function ChatBox({
       text: newMessage,
     });
 
+    const message = {
+      text: newMessage,
+      user: friendChat?._id,
+      image: "",
+    };
     try {
       const res = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/chat/message`,
@@ -82,6 +82,8 @@ export default function ChatBox({
           },
         }
       );
+
+      console.log(res);
       setMessages([...res.data.messages]);
       setNewMessage("");
     } catch (err) {
@@ -122,15 +124,45 @@ export default function ChatBox({
 
   return (
     <>
-      <div className="ChatBox_wrapper" id={currentChat?._id}>
-        <div className="ChatBox_display">
+      <div className="chatBox_wrapper">
+        <div className="chatBox_display">
           <ChatBoxHeader
             friendChat={friendChat}
             currentChat={currentChat}
             onlineUser={onlineUser}
           />
 
-          <div className="ChatBox_container">
+          <div className="chatBox_container">
+            <div className="chatBox_information-wrapper">
+              <div className="chatBox_information">
+                <div className="chatBox_information-avatar-wrap">
+                  <img
+                    src={friendChat?.picture}
+                    className="chatBox_information-avatar"
+                    alt=""
+                  />
+                </div>
+                <div className="chatBox_information-name">
+                  <span>
+                    {friendChat?.first_name} {friendChat?.last_name}
+                  </span>
+                </div>
+                <div className="chatBox_information-about">
+                  <span>Facebook</span>
+                </div>
+                <div className="chatBox_information-about">
+                  {user.following.some((f) => f._id === friendChat._id) ? (
+                    <span>You're friends on Facebook</span>
+                  ) : (
+                    <span>You're not friends on Facebook</span>
+                  )}
+                </div>
+                <div className="chatBox_information-about">
+                  <span>New Facebook Account</span>
+                </div>
+              </div>
+            </div>
+
             {messages?.map((message, i) => (
               <div key={i}>
                 <Message

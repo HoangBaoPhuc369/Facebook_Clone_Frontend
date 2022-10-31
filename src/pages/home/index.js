@@ -9,6 +9,7 @@ import RightHome from "../../components/home/right";
 import SendVerification from "../../components/home/sendVerification";
 import Stories from "../../components/home/stories";
 import Post from "../../components/post";
+import { getConversations } from "../../redux/features/conversationSlice";
 import { getAllPosts } from "../../redux/features/postSlice";
 import "./style.css";
 
@@ -23,10 +24,13 @@ export default function Home({
   const { posts, loading, error } = useSelector((state) => ({
     ...state.newFeed,
   }));
+
   const userId = user?.id;
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getAllPosts({ userToken: user.token }));
+    dispatch(getConversations({ userToken: user.token }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 

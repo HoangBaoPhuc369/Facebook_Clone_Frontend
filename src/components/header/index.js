@@ -25,14 +25,13 @@ import AllMessenger from "./AllMessenger";
 import ChatBox from "../chatBox";
 import { io } from "socket.io-client";
 import { getAllPosts } from "../../redux/features/postSlice";
+import { createPortal } from "react-dom";
 
-export default function Header({
-  page,
-  onlineUser,
-  setOnlineUsers,
-  conversations,
-}) {
+export default function Header({ page, onlineUser, setOnlineUsers }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
+  const { conversations, chatBox } = useSelector((state) => ({
+    ...state.messenger,
+  }));
   const dispatch = useDispatch();
   const color = "#65676b";
   const [showSearchMenu, setShowSearchMenu] = useState(false);
@@ -51,6 +50,22 @@ export default function Header({
   useClickOutside(usermenu, () => {
     setShowUserMenu(false);
   });
+
+
+  const chatBoxShow = [];
+
+  for (let i = 0; i < chatBox?.length; i++) {
+    let element = chatBox[i];
+    for (let j = 0; j < conversations?.length; j++) {
+      if (element === conversations[j]._id) {
+        chatBoxShow.push(conversations[j]);
+      }
+    }
+  }
+
+  // console.log(chatBoxVisible)
+  // console.log("chatBoxVisible", chatBoxVisible.slice(0, 1))
+  // console.log("chatBoxMini", chatBoxVisible.slice(1, chatBoxVisible.length))
 
   //================================================================
   const [typingUsers, setTypingUsers] = useState([]);
@@ -127,7 +142,7 @@ export default function Header({
         <Link
           to="/"
           className={`middle_icon ${page === "home" ? "active" : "hover1"}`}
-          onClick={() => dispatch(getAllPosts({userToken: user.token}))}
+          onClick={() => dispatch(getAllPosts({ userToken: user.token }))}
         >
           {page === "home" ? <HomeActive /> : <Home color={color} />}
         </Link>
@@ -223,7 +238,7 @@ export default function Header({
         </div>
       </div>
       <div id="wrapper">
-        {conversations?.map((c) => (
+        {chatBoxShow?.map((c) => (
           <ChatBox
             key={c._id}
             currentChat={c}

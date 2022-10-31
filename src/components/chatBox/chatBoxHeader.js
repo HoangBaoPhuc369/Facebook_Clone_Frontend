@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
 import { closePopup } from "../../helpers/displayChatBox";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import ArrowDown2 from "../../svg/arrowDown2";
 import MiniMize from "../../svg/miniMize";
 import PhoneCall from "../../svg/phoneCall";
 import VideoCall from "../../svg/videoCall";
 import XClose from "../../svg/xClose";
+import { removeChatBox } from "../../redux/features/conversationSlice";
 
 export default function ChatBoxHeader({ friendChat, currentChat, onlineUser }) {
   const [checkOnline, setCheckOnline] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
@@ -48,7 +51,8 @@ export default function ChatBoxHeader({ friendChat, currentChat, onlineUser }) {
           <span
             className="ChatBox_header_right_item hover3"
             onClick={() => {
-              closePopup(currentChat?._id);
+              // closePopup(currentChat?._id);
+              dispatch(removeChatBox(currentChat?._id))
             }}
           >
             <XClose color="#0084ff" />

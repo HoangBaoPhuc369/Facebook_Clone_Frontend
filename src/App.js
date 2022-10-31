@@ -8,49 +8,20 @@ import { useSelector } from "react-redux";
 import Activate from "./pages/home/activate";
 import Reset from "./pages/reset";
 import CreatePostPopup from "./components/createPostPopup";
-import { useEffect, useReducer, useState } from "react";
-import axios from "axios";
-import { postsReducer } from "./functions/reducers";
+import { useState } from "react";
 import Friends from "./pages/friends";
 import DeletePostPopUp from "./components/deletePost";
 
 function App() {
   const [visible, setVisible] = useState(false);
   const [onlineUser, setOnlineUsers] = useState([]);
-  const [conversations, setConversations] = useState([]);
   const [visibleDelPost, setVisibleDelPost] = useState(false);
-  const { user} = useSelector((state) => ({ ...state.auth }));
-  const {darkTheme} = useSelector((state) => ({ ...state.theme }));
-
-  //Get conversation
-  useEffect(() => {
-    const getConversations = async () => {
-      try {
-        const res = await axios.put(
-          `${process.env.REACT_APP_BACKEND_URL}/chat/conversations`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        );
-        setConversations(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getConversations();
-  }, [user?.following, user?.token]);
+  const { user } = useSelector((state) => ({ ...state.auth }));
+  const { darkTheme } = useSelector((state) => ({ ...state.theme }));
 
   return (
-    <div className={darkTheme ? "dark" : "light"}> 
-      {visible && (
-        <CreatePostPopup
-          user={user}
-          setVisible={setVisible}
-        />
-      )}
+    <div className={darkTheme ? "dark" : "light"}>
+      {visible && <CreatePostPopup user={user} setVisible={setVisible} />}
 
       {visibleDelPost && <DeletePostPopUp />}
 
@@ -62,7 +33,6 @@ function App() {
               <Profile
                 setVisible={setVisible}
                 onlineUser={onlineUser}
-                conversations={conversations}
                 setOnlineUsers={setOnlineUsers}
               />
             }
@@ -74,7 +44,6 @@ function App() {
               <Profile
                 setVisible={setVisible}
                 onlineUser={onlineUser}
-                conversations={conversations}
                 setOnlineUsers={setOnlineUsers}
               />
             }
@@ -88,7 +57,6 @@ function App() {
               <Home
                 onlineUser={onlineUser}
                 setVisible={setVisible}
-                conversations={conversations}
                 setOnlineUsers={setOnlineUsers}
                 setVisibleDelPost={setVisibleDelPost}
               />

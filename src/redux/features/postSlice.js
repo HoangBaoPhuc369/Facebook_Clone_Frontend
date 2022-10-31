@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
 import * as api from "../api";
 
 export const getAllPosts = createAsyncThunk(
