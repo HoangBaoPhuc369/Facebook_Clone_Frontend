@@ -20,11 +20,11 @@ export default function Home({
   setOnlineUsers,
   setVisibleDelPost,
 }) {
-  const { user } = useSelector((state) => ({ ...state.auth }));
   const { posts, loading, error } = useSelector((state) => ({
     ...state.newFeed,
   }));
-
+  
+  const { user } = useSelector((state) => ({ ...state.auth }));
   const userId = user?.id;
   const dispatch = useDispatch();
 
@@ -41,11 +41,10 @@ export default function Home({
         // getAllPosts={getAllPosts}
         onlineUser={onlineUser}
         setOnlineUsers={setOnlineUsers}
-        conversations={conversations}
       />
       <LeftHome user={user} />
 
-      <RightHome onlineUser={onlineUser} conversations={conversations} />
+      <RightHome onlineUser={onlineUser} />
 
       <div className="home">
         <div className="home_middle">

@@ -84,6 +84,7 @@ export default function RegisterForm({ setVisible }) {
       bDay &&
       gender
     ) {
+     
       dispatch(register({ formValue, navigate }));
     }
   };

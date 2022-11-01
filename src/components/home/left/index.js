@@ -59,7 +59,7 @@ export default function LeftHome({ user }) {
           </div>
         </div>
       )}
-      <div className="splitter"></div>
+      {/* <div className="splitter"></div> */}
       
       <div className={`fb_copyright ${visible && "relative_fb_copyright"}`}>
         <Link to="/">Privacy </Link>

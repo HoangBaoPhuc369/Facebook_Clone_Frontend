@@ -25,7 +25,6 @@ import AllMessenger from "./AllMessenger";
 import ChatBox from "../chatBox";
 import { io } from "socket.io-client";
 import { getAllPosts } from "../../redux/features/postSlice";
-import { createPortal } from "react-dom";
 
 export default function Header({ page, onlineUser, setOnlineUsers }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
@@ -38,6 +37,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
   const [showAllMenu, setShowAllMenu] = useState(false);
   const [showAllMessenger, setShowAllMessenger] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  // const [showChatBox, setShowChatBox] = useState([]);
   const allmenu = useRef(null);
   const usermenu = useRef(null);
   const messenger = useRef(null);
@@ -51,21 +51,16 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
     setShowUserMenu(false);
   });
 
+  const showChatBox = [];
 
-  const chatBoxShow = [];
-
-  for (let i = 0; i < chatBox?.length; i++) {
-    let element = chatBox[i];
+  for (let i = 0; i < chatBox.chatBoxVisible?.length; i++) {
+    let element = chatBox.chatBoxVisible[i];
     for (let j = 0; j < conversations?.length; j++) {
       if (element === conversations[j]._id) {
-        chatBoxShow.push(conversations[j]);
+        showChatBox.push(conversations[j]);
       }
     }
   }
-
-  // console.log(chatBoxVisible)
-  // console.log("chatBoxVisible", chatBoxVisible.slice(0, 1))
-  // console.log("chatBoxMini", chatBoxVisible.slice(1, chatBoxVisible.length))
 
   //================================================================
   const [typingUsers, setTypingUsers] = useState([]);
@@ -164,15 +159,6 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
         </Link>
       </div>
       <div className="header_right">
-        <Link
-          to="/profile"
-          className={`profile_link hover1 ${
-            page === "profile" ? "active_link" : ""
-          }`}
-        >
-          <img src={user?.picture} alt="" />
-          <span>{user?.first_name}</span>
-        </Link>
         <div
           className={`circle_icon hover1 ${showAllMenu && "active_header"}`}
           ref={allmenu}
@@ -230,7 +216,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
             }}
           >
             <div style={{ transform: "translateY(2px)" }}>
-              <ArrowDown />
+              <img  className="avatar-user" src={user?.picture} alt="" />
             </div>
           </div>
 
@@ -238,7 +224,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
         </div>
       </div>
       <div id="wrapper">
-        {chatBoxShow?.map((c) => (
+        {showChatBox?.map((c) => (
           <ChatBox
             key={c._id}
             currentChat={c}

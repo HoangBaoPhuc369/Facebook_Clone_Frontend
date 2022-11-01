@@ -298,17 +298,11 @@
   width: 28px;
 }
 
-.chat-typing .details .css-1xdhyk6 {
+.chat-typing .details .loader {
+  height: 32px;
   background: #e4e6eb;
-  color: #333;
   border-radius: 18px 18px 18px 0;
-  padding: 5px 7px;
   box-shadow: 0 0 32px rgb(0 0 0 / 8%), 0rem 16px 16px -16px rgb(0 0 0 / 10%);
-}
-
-.chat-typing .details .css-1xdhyk6 span {
-  width: 5px;
-  height: 5px;
 }
 
 .message-user-createAt {
@@ -344,3 +338,42 @@
 :is(.chatBox_container)::-webkit-scrollbar {
   width: 0px;
 }
+
+/* -----------------Dot Loader -------------------- */
+.loader {
+  width: 48px;
+  height: 28px;
+  margin: auto;
+  border-radius: 15px;
+  padding: 0 12px 12px;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+}
+.loader .dot {
+  display: inline-block;
+  background-color: #90949c;
+  border-radius: 50%;
+  width: 5px;
+  height: 5px;
+  animation: jump 1.5s linear infinite;
+}
+.loader .dot:nth-of-type(2) {
+  animation-delay: 0.1s;
+}
+.loader .dot:nth-of-type(3) {
+  animation-delay: 0.2s;
+}
+
+@keyframes jump {
+  0% {
+    transform: translateY(0);
+  }
+  18% {
+    transform: translateY(-7px);
+  }
+  36%, 100% {
+    transform: translateY(0px);
+  }
+}
+			

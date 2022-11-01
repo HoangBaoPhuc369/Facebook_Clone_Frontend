@@ -3,10 +3,10 @@ import Message from "./Message";
 import { useSelector } from "react-redux";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { BeatLoader } from "react-spinners";
 import useTyping from "../../hooks/useTyping";
 import ChatBoxHeader from "./chatBoxHeader";
 import ChatBoxBottom from "./chatBoxBottom";
+import DotLoader from "./DotLoader";
 
 export default function ChatBox({
   socket,
@@ -83,7 +83,6 @@ export default function ChatBox({
         }
       );
 
-      console.log(res);
       setMessages([...res.data.messages]);
       setNewMessage("");
     } catch (err) {
@@ -186,7 +185,7 @@ export default function ChatBox({
                   alt=""
                 />
                 <div className="details">
-                  <BeatLoader />
+                  <DotLoader />
                 </div>
               </div>
             ))}

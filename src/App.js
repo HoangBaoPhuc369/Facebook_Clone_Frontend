@@ -4,13 +4,16 @@ import Profile from "./pages/profile";
 import Home from "./pages/home";
 import LoggedInRoutes from "./routes/LoggedInRoutes";
 import NotLoggedInRoutes from "./routes/NotLoggedInRoutes";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Activate from "./pages/home/activate";
 import Reset from "./pages/reset";
 import CreatePostPopup from "./components/createPostPopup";
 import { useState } from "react";
 import Friends from "./pages/friends";
 import DeletePostPopUp from "./components/deletePost";
+import { useEffect } from "react";
+import { getAllPosts } from "./redux/features/postSlice";
+import { getConversations } from "./redux/features/conversationSlice";
 
 function App() {
   const [visible, setVisible] = useState(false);
@@ -18,6 +21,16 @@ function App() {
   const [visibleDelPost, setVisibleDelPost] = useState(false);
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { darkTheme } = useSelector((state) => ({ ...state.theme }));
+  const userId = user?.id;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user?.token) {
+      dispatch(getAllPosts({ userToken: user?.token }));
+      dispatch(getConversations({ userToken: user?.token }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   return (
     <div className={darkTheme ? "dark" : "light"}>

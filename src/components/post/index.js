@@ -37,7 +37,6 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
 
   const getPostReacts = async () => {
     const res = await getReacts(post._id, user.token);
-    // console.log(res);
     setReacts(res.reacts);
     setCheck(res.check);
     setTotal(res.total);
