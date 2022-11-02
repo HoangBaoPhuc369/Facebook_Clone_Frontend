@@ -25,6 +25,7 @@ import AllMessenger from "./AllMessenger";
 import ChatBox from "../chatBox";
 import { io } from "socket.io-client";
 import { getAllPosts } from "../../redux/features/postSlice";
+import { getNewFriendMessage } from "../../redux/features/conversationSlice";
 
 export default function Header({ page, onlineUser, setOnlineUsers }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
@@ -74,12 +75,23 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
   useEffect(() => {
     socketRef.current = io("ws://localhost:8900");
     socketRef.current.on("getMessage", (data) => {
-      setArrivalMessage({
+      const message = {
         sender: data.senderId,
         text: data.text,
-        currentChatId: data?.currentChatId,
-        createdAt: new Date(Date.now()),
-      });
+        image: data.image,
+        status: data.status,
+        currentChatId: data.currentChatId,
+      };
+      setArrivalMessage(message);
+      dispatch(
+        getNewFriendMessage({
+          currentChatId: data?.currentChatId,
+          data: message,
+        })
+      );
+
+      console.log(showChatBox)
+      // socketRef.current.emit("messageDelivered", message);
     });
 
     socketRef.current.on("start typing message", (typingInfo) => {
@@ -88,6 +100,9 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
         setTypingUsers((users) => [...users, user]);
       }
     });
+
+  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -216,7 +231,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
             }}
           >
             <div style={{ transform: "translateY(2px)" }}>
-              <img  className="avatar-user" src={user?.picture} alt="" />
+              <img className="avatar-user" src={user?.picture} alt="" />
             </div>
           </div>
 

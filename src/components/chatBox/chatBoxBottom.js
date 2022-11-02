@@ -14,6 +14,12 @@ export default function ChatBoxBottom({
   inputRef,
   handleSendMessage,
 }) {
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
+    }
+  }
   return (
     <>
       <div className="ChatBox_message_bottom">
@@ -39,7 +45,14 @@ export default function ChatBoxBottom({
               onChange={(e) => setNewMessage(e.target.value)}
               value={newMessage}
               onKeyPress={startTyping}
-              onKeyUp={stopTyping}
+              onKeyUp={(e) => {
+                stopTyping();
+                // handleKeyDown(e);
+                if (e.key === "Enter") {
+                  handleSendMessage(e);
+                }
+              }}
+              // onKeyUp={handleSendMessage}
             />
 
             <div className="face_icon circle_hover_cover hover1">

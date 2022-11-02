@@ -12,7 +12,7 @@ export default function AllMessengerItem({
   const [checkOnline, setCheckOnline] = useState(false);
   const [messages, setMessages] = useState(messagesChat);
 
-  const arrivalRef = useRef(null);
+  // const arrivalRef = useRef(null);
 
   useEffect(() => {
     setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
@@ -33,14 +33,10 @@ export default function AllMessengerItem({
     }
   }, [arrivalMessage, currentChat]);
 
-  const handleCloseArrivalMessage = (id) => {
-    document.getElementById(`arrival-message` + id)?.classList.remove("all_messenger-arrival-message");
-  };
-
   return (
     <div
       className="all_messenger_item hover1"
-      onClick={() => handleCloseArrivalMessage(currentChat?._id)}
+      // onClick={() => handleCloseArrivalMessage(currentChat?._id)}
     >
       <div className="all_messenger_item_chat">
         <img
@@ -62,13 +58,11 @@ export default function AllMessengerItem({
 
           {messages &&
           messages.length > 0 &&
-          messages[messages.length - 1].sender == user.id ? (
+          messages[messages.length - 1].sender === user.id ? (
             <span>You: {messages[messages.length - 1].text}</span>
           ) : (
             <span
-              ref={arrivalRef}
-              id={`arrival-message` + currentChat?._id}
-              className=""
+              className="arrival-message"
             >
               {messages[messages.length - 1]?.text}
             </span>

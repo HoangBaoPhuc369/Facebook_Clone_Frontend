@@ -7,6 +7,8 @@ import useTyping from "../../hooks/useTyping";
 import ChatBoxHeader from "./chatBoxHeader";
 import ChatBoxBottom from "./chatBoxBottom";
 import DotLoader from "./DotLoader";
+import { useDispatch } from "react-redux";
+import { sendMessageChat } from "../../redux/features/conversationSlice";
 
 export default function ChatBox({
   socket,
@@ -25,16 +27,43 @@ export default function ChatBox({
   const [messages, setMessages] = useState(messagesChat);
   const [showTyping, setShowTyping] = useState([]);
 
+  const dispatch = useDispatch();
   const inputRef = useRef(null);
   const scrollRef = useRef();
   const scrollTypingRef = useRef();
 
+  // console.log("messagesChat", messagesChat);
+
   useEffect(() => {
-    arrivalMessage &&
-      currentChat?._id === arrivalMessage.currentChatId &&
-      currentChat?.members.some((m) => m._id === arrivalMessage?.sender) &&
-      setMessages((prev) => [...prev, arrivalMessage]);
+    const checkFiendChat = currentChat?.members.some(
+      (m) => m._id === arrivalMessage?.sender
+    );
+    if (arrivalMessage) {
+      if (currentChat?._id === arrivalMessage.currentChatId && checkFiendChat) {
+        setMessages((prev) => [...prev, arrivalMessage]);
+      }
+    }
   }, [arrivalMessage, currentChat]);
+
+  useEffect(() => {
+    // console.log(arrivalMessage);
+    socket.current.emit("messageDelivered", arrivalMessage);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrivalMessage]);
+
+  useEffect(() => {
+    socket.current.on("getMessageDelivered", (message) => {
+      if (message.currentChatId === currentChat?._id) {
+        const id = messagesChat[messagesChat.length]?._id;
+        console.log("response", message);
+        console.log("messagesChat", messagesChat)
+        console.log("messageId", messagesChat[messagesChat.length -1])
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const checkUsers = (users, user) => {
     return users.filter((u) => u?.id !== user.id);
@@ -65,6 +94,8 @@ export default function ChatBox({
       receiverId: friendChat._id,
       currentChatId: currentChat?._id,
       text: newMessage,
+      image: "",
+      status: "delivered",
     });
 
     const message = {
@@ -72,27 +103,20 @@ export default function ChatBox({
       user: friendChat?._id,
       image: "",
     };
-    try {
-      const res = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/chat/message`,
-        message,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
 
-      setMessages([...res.data.messages]);
-      setNewMessage("");
-    } catch (err) {
-      console.log(err);
-    }
+    dispatch(
+      sendMessageChat({
+        message,
+        userToken: user.token,
+        currentChatId: currentChat?._id,
+      })
+    );
+    setNewMessage("");
   };
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, scrollBottom]);
+  }, [messagesChat, scrollBottom]);
 
   const startTypingMessage = () => {
     if (!socket.current) return;
@@ -162,7 +186,7 @@ export default function ChatBox({
               </div>
             </div>
 
-            {messages?.map((message, i) => (
+            {messagesChat?.map((message, i) => (
               <div key={i}>
                 <Message
                   message={message}
@@ -175,7 +199,7 @@ export default function ChatBox({
 
             {showTyping.map((userId, index) => (
               <div
-                key={messages.length + index}
+                key={messagesChat.length + index}
                 ref={scrollTypingRef}
                 className="chat-typing"
               >

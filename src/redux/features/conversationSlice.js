@@ -18,6 +18,17 @@ export const getConversations = createAsyncThunk(
   }
 );
 
+export const sendMessageChat = createAsyncThunk(
+  "conversations/sendMessageChat",
+  async ({ userToken, message, currentChatId }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.sendMessageChat(userToken, message);
+      if (data) return { data, currentChatId };
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
 
 const initialState = {
   conversations: null,
@@ -45,7 +56,7 @@ export const conversationSlice = createSlice({
             JSON.stringify({
               ...state.chatBox,
               currentChatBox: action.payload,
-              chatBoxVisible: action.payload,
+              chatBoxVisible: [action.payload],
             })
           );
         } else {
@@ -112,15 +123,8 @@ export const conversationSlice = createSlice({
               "chatBox",
               JSON.stringify({
                 ...state.chatBox,
-                // chatBoxVisible: state.chatBox.chatBoxVisible,
-                // chatBoxMinimized: state.chatBox.chatBoxMinimized,
               })
             );
-            // state.chatBox.currentChatBox = getChatBoxMinimized;
-            // state.chatBox.chatBoxVisible = [
-            //   getChatBoxMinimized,
-            //   ...state.chatBox.chatBoxVisible,
-            // ];
           }
         } else {
           Cookies.set(
@@ -153,6 +157,22 @@ export const conversationSlice = createSlice({
         );
       }
     },
+    getNewFriendMessage: (state, action) => {
+      const checkConversation = state.conversations.find(
+        (c) => c._id === action.payload.currentChatId
+      );
+
+      const indexConversation = state.conversations.findIndex(
+        (c) => c._id === action.payload.currentChatId
+      );
+      if (checkConversation && indexConversation > -1) {
+        checkConversation.messages = [
+          ...checkConversation.messages,
+          action.payload.data,
+        ];
+        state.conversations.splice(indexConversation, 1, checkConversation);
+      }
+    },
   },
   extraReducers: {
     [getConversations.pending]: (state, action) => {
@@ -167,10 +187,28 @@ export const conversationSlice = createSlice({
       state.loading = false;
       state.error = action.payload?.message;
     },
+
+    [sendMessageChat.fulfilled]: (state, action) => {
+      const checkConversation = state.conversations.find(
+        (c) => c._id === action.payload.currentChatId
+      );
+      const indexConversation = state.conversations.findIndex(
+        (c) => c._id === action.payload.currentChatId
+      );
+
+      if (checkConversation && indexConversation > -1) {
+        checkConversation.messages = action.payload.data.messages;
+        state.conversations.splice(indexConversation, 1, checkConversation);
+      }
+    },
+    [sendMessageChat.rejected]: (state, action) => {
+      console.log(action.payload?.message);
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setChatBox, removeChatBox } = conversationSlice.actions;
+export const { setChatBox, removeChatBox, getNewFriendMessage } =
+  conversationSlice.actions;
 
 export default conversationSlice.reducer;

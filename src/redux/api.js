@@ -54,3 +54,10 @@ export const getConversations = (userToken) =>
       },
     }
   );
+
+export const sendMessageChat = (userToken, message) =>
+  axios.put(`${process.env.REACT_APP_BACKEND_URL}/chat/message`, message, {
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
