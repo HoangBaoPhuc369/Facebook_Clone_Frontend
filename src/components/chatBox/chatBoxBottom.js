@@ -14,12 +14,6 @@ export default function ChatBoxBottom({
   inputRef,
   handleSendMessage,
 }) {
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSendMessage();
-    }
-  }
   return (
     <>
       <div className="ChatBox_message_bottom">
@@ -48,7 +42,7 @@ export default function ChatBoxBottom({
               onKeyUp={(e) => {
                 stopTyping();
                 // handleKeyDown(e);
-                if (e.key === "Enter") {
+                if (e.key === "Enter" && e.target.value !== "") {
                   handleSendMessage(e);
                 }
               }}

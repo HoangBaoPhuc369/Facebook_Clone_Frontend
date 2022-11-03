@@ -8,7 +8,13 @@ import ChatBoxHeader from "./chatBoxHeader";
 import ChatBoxBottom from "./chatBoxBottom";
 import DotLoader from "./DotLoader";
 import { useDispatch } from "react-redux";
-import { sendMessageChat } from "../../redux/features/conversationSlice";
+import {
+  clearMessageSuccess,
+  deliveredMessageChat,
+  seenMessageChat,
+  sendMessageChat,
+  setCurrentChatBox,
+} from "../../redux/features/conversationSlice";
 
 export default function ChatBox({
   socket,
@@ -22,9 +28,11 @@ export default function ChatBox({
   scrollBottom,
 }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
+  const { messageSendSuccess, chatBox } = useSelector((state) => ({
+    ...state.messenger,
+  }));
   const { isTyping, startTyping, stopTyping, cancelTyping } = useTyping();
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState(messagesChat);
   const [showTyping, setShowTyping] = useState([]);
 
   const dispatch = useDispatch();
@@ -32,36 +40,56 @@ export default function ChatBox({
   const scrollRef = useRef();
   const scrollTypingRef = useRef();
 
-  // console.log("messagesChat", messagesChat);
-
+  //Send message to socket when call api success
   useEffect(() => {
-    const checkFiendChat = currentChat?.members.some(
-      (m) => m._id === arrivalMessage?.sender
-    );
-    if (arrivalMessage) {
-      if (currentChat?._id === arrivalMessage.currentChatId && checkFiendChat) {
-        setMessages((prev) => [...prev, arrivalMessage]);
-      }
+    if (messageSendSuccess) {
+      const messages = messagesChat[messagesChat.length - 1];
+      const currentChatID = currentChat?._id;
+      socket.current.emit("sendMessage", { messages, currentChatID });
+      dispatch(clearMessageSuccess());
     }
-  }, [arrivalMessage, currentChat]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messageSendSuccess]);
 
   useEffect(() => {
-    // console.log(arrivalMessage);
-    socket.current.emit("messageDelivered", arrivalMessage);
+    socket.current.emit("messageDelivered", {
+      message: arrivalMessage?.messages,
+      currentChatId: arrivalMessage?.currentChatID,
+    });
 
+    if (arrivalMessage?.currentChatID === chatBox.currentChatBox) {
+      socket.current.emit("messageSeen", {
+        message: arrivalMessage?.messages,
+        currentChatId: arrivalMessage?.currentChatID,
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arrivalMessage]);
 
   useEffect(() => {
-    socket.current.on("getMessageDelivered", (message) => {
-      if (message.currentChatId === currentChat?._id) {
-        const id = messagesChat[messagesChat.length]?._id;
-        console.log("response", message);
-        console.log("messagesChat", messagesChat)
-        console.log("messageId", messagesChat[messagesChat.length -1])
+    socket.current.on("getMessageDelivered", (data) => {
+      if (data.currentChatId === currentChat?._id) {
+        dispatch(
+          deliveredMessageChat({
+            userToken: user?.token,
+            messageId: data.message?._id,
+            currentChatId: data?.currentChatId,
+          })
+        );
       }
     });
 
+    socket.current.on("getMessageSeen", (data) => {
+      if (data.currentChatId === currentChat?._id) {
+        dispatch(
+          seenMessageChat({
+            userToken: user?.token,
+            messageId: data.message?._id,
+            currentChatId: data?.currentChatId,
+          })
+        );
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -83,20 +111,12 @@ export default function ChatBox({
     typingUsers &&
       currentChat?.members.some((m) => m._id === typingUsers[0]) &&
       setShowTyping(() => [typingUsers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typingUsers]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     cancelTyping();
-
-    socket.current.emit("sendMessage", {
-      senderId: user.id,
-      receiverId: friendChat._id,
-      currentChatId: currentChat?._id,
-      text: newMessage,
-      image: "",
-      status: "delivered",
-    });
 
     const message = {
       text: newMessage,
@@ -139,6 +159,7 @@ export default function ChatBox({
   useEffect(() => {
     if (isTyping) startTypingMessage();
     else stopTypingMessage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTyping]);
 
   useEffect(() => {
@@ -147,7 +168,10 @@ export default function ChatBox({
 
   return (
     <>
-      <div className="chatBox_wrapper">
+      <div
+        className="chatBox_wrapper"
+        onClick={() => dispatch(setCurrentChatBox(currentChat?._id))}
+      >
         <div className="chatBox_display">
           <ChatBoxHeader
             friendChat={friendChat}

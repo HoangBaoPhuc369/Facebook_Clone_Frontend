@@ -29,9 +29,11 @@ import { getNewFriendMessage } from "../../redux/features/conversationSlice";
 
 export default function Header({ page, onlineUser, setOnlineUsers }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
-  const { conversations, chatBox } = useSelector((state) => ({
-    ...state.messenger,
-  }));
+  const { conversations, chatBox, messageSendSuccess } = useSelector(
+    (state) => ({
+      ...state.messenger,
+    })
+  );
   const dispatch = useDispatch();
   const color = "#65676b";
   const [showSearchMenu, setShowSearchMenu] = useState(false);
@@ -74,35 +76,26 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
   // Get message from socketRef io
   useEffect(() => {
     socketRef.current = io("ws://localhost:8900");
-    socketRef.current.on("getMessage", (data) => {
-      const message = {
-        sender: data.senderId,
-        text: data.text,
-        image: data.image,
-        status: data.status,
-        currentChatId: data.currentChatId,
-      };
+    socketRef.current.on("getMessage", ({ messages, currentChatID }) => {
+      const message = { messages, currentChatID };
       setArrivalMessage(message);
       dispatch(
         getNewFriendMessage({
-          currentChatId: data?.currentChatId,
-          data: message,
+          currentChatId: currentChatID,
+          data: messages,
         })
       );
-
-      console.log(showChatBox)
-      // socketRef.current.emit("messageDelivered", message);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  useEffect(() => {
     socketRef.current.on("start typing message", (typingInfo) => {
       if (typingInfo.senderId !== socketRef.current.id) {
         const user = typingInfo.user;
         setTypingUsers((users) => [...users, user]);
       }
     });
-
-  
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

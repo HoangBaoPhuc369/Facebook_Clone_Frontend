@@ -30,6 +30,42 @@ export const sendMessageChat = createAsyncThunk(
   }
 );
 
+export const deliveredMessageChat = createAsyncThunk(
+  "conversations/deliveredMessageChat",
+  async ({ userToken, messageId, currentChatId }, { rejectWithValue }) => {
+    try {
+      const res = await api.deliveredMessageChat(
+        userToken,
+        messageId,
+        currentChatId
+      );
+
+      const data = {messageId, currentChatId}
+      if (res) return data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const seenMessageChat = createAsyncThunk(
+  "conversations/seenMessageChat",
+  async ({ userToken, messageId, currentChatId }, { rejectWithValue }) => {
+    try {
+      const res = await api.seenMessageChat(
+        userToken,
+        messageId,
+        currentChatId
+      );
+
+      const data = {messageId, currentChatId}
+      if (res) return data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 const initialState = {
   conversations: null,
   chatBox: Cookies.get("chatBox")
@@ -37,6 +73,7 @@ const initialState = {
     : { currentChatBox: null, chatBoxVisible: [], chatBoxMinimized: [] },
   error: "",
   loading: false,
+  messageSendSuccess: false,
 };
 
 export const conversationSlice = createSlice({
@@ -158,13 +195,12 @@ export const conversationSlice = createSlice({
       }
     },
     getNewFriendMessage: (state, action) => {
-      const checkConversation = state.conversations.find(
-        (c) => c._id === action.payload.currentChatId
-      );
 
-      const indexConversation = state.conversations.findIndex(
-        (c) => c._id === action.payload.currentChatId
-      );
+      const { checkConversation, indexConversation } = handleCheck({
+        conversations: state.conversations,
+        currentChatId: action.payload.currentChatId,
+        type: "conversation",
+      });
       if (checkConversation && indexConversation > -1) {
         checkConversation.messages = [
           ...checkConversation.messages,
@@ -172,6 +208,21 @@ export const conversationSlice = createSlice({
         ];
         state.conversations.splice(indexConversation, 1, checkConversation);
       }
+    },
+
+    clearMessageSuccess: (state, action) => {
+      state.messageSendSuccess = false;
+    },
+
+    setCurrentChatBox: (state, action) => {
+      state.chatBox.currentChatBox = action.payload;
+      Cookies.set(
+        "chatBox",
+        JSON.stringify({
+          ...state.chatBox,
+          currentChatBox: action.payload,
+        })
+      );
     },
   },
   extraReducers: {
@@ -189,26 +240,109 @@ export const conversationSlice = createSlice({
     },
 
     [sendMessageChat.fulfilled]: (state, action) => {
-      const checkConversation = state.conversations.find(
-        (c) => c._id === action.payload.currentChatId
-      );
-      const indexConversation = state.conversations.findIndex(
-        (c) => c._id === action.payload.currentChatId
-      );
+
+      const { checkConversation, indexConversation } = handleCheck({
+        conversations: state.conversations,
+        currentChatId: action.payload.currentChatId,
+        type: "conversation",
+      });
 
       if (checkConversation && indexConversation > -1) {
         checkConversation.messages = action.payload.data.messages;
         state.conversations.splice(indexConversation, 1, checkConversation);
+        state.messageSendSuccess = true;
       }
     },
     [sendMessageChat.rejected]: (state, action) => {
       console.log(action.payload?.message);
     },
+
+    //messageId, currentChatId
+    [deliveredMessageChat.fulfilled]: (state, action) => {
+      const { checkConversation, indexConversation } = handleCheck({
+        conversations: state.conversations,
+        currentChatId: action.payload.currentChatId,
+        type: "conversation",
+      });
+
+      const { checkMessage, indexMessage } = handleCheck({
+        conversation: checkConversation,
+        messageId: action.payload.messageId,
+        type: "message",
+      });
+
+      if (checkConversation && indexConversation > -1) {
+        if (checkMessage && indexMessage > -1) {
+          checkMessage.status = "delivered";
+          checkConversation.messages.splice(indexMessage, 1, checkMessage);
+          state.conversations.splice(indexConversation, 1, checkConversation);
+        }
+      }
+    },
+    [deliveredMessageChat.rejected]: (state, action) => {
+      console.log(action.payload?.message);
+    },
+
+    [seenMessageChat.fulfilled]: (state, action) => {
+      const { checkConversation, indexConversation } = handleCheck({
+        conversations: state.conversations,
+        currentChatId: action.payload.currentChatId,
+        type: "conversation",
+      });
+
+      const { checkMessage, indexMessage } = handleCheck({
+        conversation: checkConversation,
+        messageId: action.payload.messageId,
+        type: "message",
+      });
+
+      if (checkConversation && indexConversation > -1) {
+        if (checkMessage && indexMessage > -1) {
+          checkMessage.status = "seen";
+          checkConversation.messages.splice(indexMessage, 1, checkMessage);
+          state.conversations.splice(indexConversation, 1, checkConversation);
+        }
+      }
+    },
+    [seenMessageChat.rejected]: (state, action) => {
+      console.log(action.payload?.message);
+    },
   },
 });
 
+//conversations, currentChatId, messageId, type
+const handleCheck = (data) => {
+  switch (data.type) {
+    case "conversation":
+      const checkConversation = data.conversations.find(
+        (c) => c._id === data.currentChatId
+      );
+      const indexConversation = data.conversations.findIndex(
+        (c) => c._id === data.currentChatId
+      );
+
+      return { checkConversation, indexConversation };
+    case "message":
+      const checkMessage = data.conversation.messages.find(
+        (c) => c._id === data.messageId
+      );
+      const indexMessage = data.conversation.messages.findIndex(
+        (c) => c._id === data.messageId
+      );
+      return { checkMessage, indexMessage };
+
+    default:
+      return;
+  }
+};
+
 // Action creators are generated for each case reducer function
-export const { setChatBox, removeChatBox, getNewFriendMessage } =
-  conversationSlice.actions;
+export const {
+  setChatBox,
+  removeChatBox,
+  setCurrentChatBox,
+  getNewFriendMessage,
+  clearMessageSuccess,
+} = conversationSlice.actions;
 
 export default conversationSlice.reducer;

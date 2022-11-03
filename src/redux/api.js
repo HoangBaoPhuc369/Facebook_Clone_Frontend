@@ -61,3 +61,31 @@ export const sendMessageChat = (userToken, message) =>
       Authorization: `Bearer ${userToken}`,
     },
   });
+
+export const deliveredMessageChat = (userToken, messageId, currentChatId) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/chat/delivered-message`,
+    {
+      conversationId: currentChatId,
+      messageId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    }
+  );
+
+export const seenMessageChat = (userToken, messageId, currentChatId) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/chat/seen-message`,
+    {
+      conversationId: currentChatId,
+      messageId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    }
+  );
