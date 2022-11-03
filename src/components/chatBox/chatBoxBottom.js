@@ -7,29 +7,30 @@ import SentIcon from "../../svg/sentIcon";
 import StickerIcon from "../../svg/sticker";
 
 export default function ChatBoxBottom({
-  newMessage,
-  setNewMessage,
-  startTyping,
-  stopTyping,
+  color,
   inputRef,
+  newMessage,
+  stopTyping,
+  startTyping,
+  setNewMessage,
   handleSendMessage,
 }) {
   return (
     <>
       <div className="ChatBox_message_bottom">
         <div className="ChatBox_message_bottom_plus_icon circle_hover_cover hover1">
-          <PlusIcon color="#0084ff" />
+          <PlusIcon color={color} />
         </div>
         <div className="ChatBox_message_bottom_wrapper">
           <div className="ChatBox_message_bottom_icons_wrap">
             <div className="ChatBox_message_bottom_icon hover1">
-              <AttachFiles color="#0084ff" />
+              <AttachFiles color={color} />
             </div>
             <div className="ChatBox_message_bottom_icon hover1">
-              <StickerIcon color="#0084ff" />
+              <StickerIcon color={color} />
             </div>
             <div className="ChatBox_message_bottom_icon hover1">
-              <GifIcon color="#0084ff" />
+              <GifIcon color={color} />
             </div>
           </div>
           <div className="ChatBox_message_bottom_input">
@@ -50,7 +51,7 @@ export default function ChatBoxBottom({
             />
 
             <div className="face_icon circle_hover_cover hover1">
-              <FaceEmojis color="#0084ff" />
+              <FaceEmojis color={color} />
             </div>
           </div>
         </div>
@@ -58,11 +59,11 @@ export default function ChatBoxBottom({
           <span className="hover1 like_button" ref={inputRef}>
             {!newMessage ? (
               <span>
-                <LikeIcon color="#0084ff" />
+                <LikeIcon color={color} />
               </span>
             ) : (
               <span onClick={handleSendMessage}>
-                <SentIcon color="#0084ff" />
+                <SentIcon color={color} />
               </span>
             )}
           </span>

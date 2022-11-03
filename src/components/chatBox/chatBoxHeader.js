@@ -8,7 +8,7 @@ import VideoCall from "../../svg/videoCall";
 import XClose from "../../svg/xClose";
 import { removeChatBox } from "../../redux/features/conversationSlice";
 
-export default function ChatBoxHeader({ friendChat, currentChat, onlineUser }) {
+export default function ChatBoxHeader({ friendChat, currentChat, onlineUser, color }) {
   const [checkOnline, setCheckOnline] = useState(false);
   const dispatch = useDispatch();
 
@@ -34,19 +34,19 @@ export default function ChatBoxHeader({ friendChat, currentChat, onlineUser }) {
               </span>
             </div>
             <div className="ChatBox_header_left_arrow_down">
-              <ArrowDown2 color="#0084ff" />
+              <ArrowDown2 color={color} />
             </div>
           </div>
         </div>
         <div className="ChatBox_header_right">
           <span className="ChatBox_header_right_item hover3">
-            <PhoneCall color="#0084ff" />
+            <PhoneCall color={color} />
           </span>
           <span className="ChatBox_header_right_item hover3">
-            <VideoCall color="#0084ff" />
+            <VideoCall color={color} />
           </span>
           <span className="ChatBox_header_right_item hover3">
-            <MiniMize color="#0084ff" />
+            <MiniMize color={color} />
           </span>
           <span
             className="ChatBox_header_right_item hover3"
@@ -55,7 +55,7 @@ export default function ChatBoxHeader({ friendChat, currentChat, onlineUser }) {
               dispatch(removeChatBox(currentChat?._id))
             }}
           >
-            <XClose color="#0084ff" />
+            <XClose color={color} />
           </span>
         </div>
       </div>

@@ -14,6 +14,8 @@ import {
   seenMessageChat,
   sendMessageChat,
   setCurrentChatBox,
+  setDeliveredMessage,
+  setSeenMessage,
 } from "../../redux/features/conversationSlice";
 
 export default function ChatBox({
@@ -52,16 +54,31 @@ export default function ChatBox({
   }, [messageSendSuccess]);
 
   useEffect(() => {
-    socket.current.emit("messageDelivered", {
-      message: arrivalMessage?.messages,
-      currentChatId: arrivalMessage?.currentChatID,
-    });
+    if (arrivalMessage?.currentChatID === currentChat?._id) {
+      socket.current.emit("messageDelivered", {
+        message: arrivalMessage?.messages,
+        currentChatId: arrivalMessage?.currentChatID,
+      });
+      dispatch(
+        setDeliveredMessage({
+          currentChatId: arrivalMessage?.currentChatID,
+          messageId: arrivalMessage?.messages._id,
+        })
+      );
+    }
 
     if (arrivalMessage?.currentChatID === chatBox.currentChatBox) {
       socket.current.emit("messageSeen", {
         message: arrivalMessage?.messages,
         currentChatId: arrivalMessage?.currentChatID,
       });
+
+      dispatch(
+        setSeenMessage({
+          currentChatId: arrivalMessage?.currentChatID,
+          messageId: arrivalMessage?.messages._id,
+        })
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arrivalMessage]);
@@ -166,6 +183,20 @@ export default function ChatBox({
     scrollTypingRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [showTyping]);
 
+  const color =
+    chatBox.currentChatBox === currentChat?._id ? "#0084ff" : "var(--bg-fifth)";
+  // const checkSeenMessage = messagesChat.filter(m => m.status === "seen");
+  // const getLastId = checkSeenMessage[checkSeenMessage.length - 1]?._id;
+  // console.log(getLastId);
+
+  const [getLastId, setGetLastId] = useState(null);
+
+  useEffect(() => {
+    const checkSeenMessage = messagesChat.filter((m) => m.status === "seen");
+    setGetLastId(checkSeenMessage[checkSeenMessage.length - 1]?._id);
+  }, [messagesChat]);
+
+  // console.log(getLastId);
   return (
     <>
       <div
@@ -174,9 +205,10 @@ export default function ChatBox({
       >
         <div className="chatBox_display">
           <ChatBoxHeader
+            color={color}
             friendChat={friendChat}
-            currentChat={currentChat}
             onlineUser={onlineUser}
+            currentChat={currentChat}
           />
 
           <div className="chatBox_container">
@@ -214,9 +246,10 @@ export default function ChatBox({
               <div key={i}>
                 <Message
                   message={message}
-                  ownUser={message?.sender === user.id}
                   friendChat={friendChat}
                   typingUsers={typingUsers}
+                  messagesChat={messagesChat}
+                  ownUser={message?.sender === user.id}
                 />
               </div>
             ))}
@@ -241,11 +274,12 @@ export default function ChatBox({
           </div>
 
           <ChatBoxBottom
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            startTyping={startTyping}
-            stopTyping={stopTyping}
+            color={color}
             inputRef={inputRef}
+            newMessage={newMessage}
+            stopTyping={stopTyping}
+            startTyping={startTyping}
+            setNewMessage={setNewMessage}
             handleSendMessage={handleSendMessage}
           />
         </div>

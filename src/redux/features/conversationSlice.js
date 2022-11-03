@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import * as api from "../api";
+import { handleCheck, handleSetStatusMessage } from "../helpers/handleConversation";
 
 export const getConversations = createAsyncThunk(
   "conversations/getConversations",
@@ -224,6 +225,24 @@ export const conversationSlice = createSlice({
         })
       );
     },
+
+    setDeliveredMessage: (state, action) => {
+      handleSetStatusMessage({
+        conversations: state.conversations,
+        currentChatId: action.payload.currentChatId,
+        messageId: action.payload.messageId,
+        status: "delivered",
+      })
+    },
+
+    setSeenMessage: (state, action) => {
+      handleSetStatusMessage({
+        conversations: state.conversations,
+        currentChatId: action.payload.currentChatId,
+        messageId: action.payload.messageId,
+        status: "seen",
+      })
+    },
   },
   extraReducers: {
     [getConversations.pending]: (state, action) => {
@@ -257,52 +276,25 @@ export const conversationSlice = createSlice({
       console.log(action.payload?.message);
     },
 
-    //messageId, currentChatId
     [deliveredMessageChat.fulfilled]: (state, action) => {
-      const { checkConversation, indexConversation } = handleCheck({
+      handleSetStatusMessage({
         conversations: state.conversations,
         currentChatId: action.payload.currentChatId,
-        type: "conversation",
-      });
-
-      const { checkMessage, indexMessage } = handleCheck({
-        conversation: checkConversation,
         messageId: action.payload.messageId,
-        type: "message",
-      });
-
-      if (checkConversation && indexConversation > -1) {
-        if (checkMessage && indexMessage > -1) {
-          checkMessage.status = "delivered";
-          checkConversation.messages.splice(indexMessage, 1, checkMessage);
-          state.conversations.splice(indexConversation, 1, checkConversation);
-        }
-      }
+        status: "delivered",
+      })
     },
     [deliveredMessageChat.rejected]: (state, action) => {
       console.log(action.payload?.message);
     },
 
     [seenMessageChat.fulfilled]: (state, action) => {
-      const { checkConversation, indexConversation } = handleCheck({
+      handleSetStatusMessage({
         conversations: state.conversations,
         currentChatId: action.payload.currentChatId,
-        type: "conversation",
-      });
-
-      const { checkMessage, indexMessage } = handleCheck({
-        conversation: checkConversation,
         messageId: action.payload.messageId,
-        type: "message",
-      });
-
-      if (checkConversation && indexConversation > -1) {
-        if (checkMessage && indexMessage > -1) {
-          checkMessage.status = "seen";
-          checkConversation.messages.splice(indexMessage, 1, checkMessage);
-          state.conversations.splice(indexConversation, 1, checkConversation);
-        }
-      }
+        status: "seen",
+      })
     },
     [seenMessageChat.rejected]: (state, action) => {
       console.log(action.payload?.message);
@@ -310,39 +302,15 @@ export const conversationSlice = createSlice({
   },
 });
 
-//conversations, currentChatId, messageId, type
-const handleCheck = (data) => {
-  switch (data.type) {
-    case "conversation":
-      const checkConversation = data.conversations.find(
-        (c) => c._id === data.currentChatId
-      );
-      const indexConversation = data.conversations.findIndex(
-        (c) => c._id === data.currentChatId
-      );
-
-      return { checkConversation, indexConversation };
-    case "message":
-      const checkMessage = data.conversation.messages.find(
-        (c) => c._id === data.messageId
-      );
-      const indexMessage = data.conversation.messages.findIndex(
-        (c) => c._id === data.messageId
-      );
-      return { checkMessage, indexMessage };
-
-    default:
-      return;
-  }
-};
-
 // Action creators are generated for each case reducer function
 export const {
   setChatBox,
   removeChatBox,
+  setSeenMessage,
   setCurrentChatBox,
   getNewFriendMessage,
   clearMessageSuccess,
+  setDeliveredMessage,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;
