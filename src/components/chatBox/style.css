@@ -33,6 +33,8 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #e5e5e5;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 }
 
 .ChatBox_header_left {
@@ -110,7 +112,7 @@
   min-height: 335px;
   max-height: 335px;
   overflow-y: auto;
-  padding: 20px 22px 0px 8px;
+  padding: 20px 5px 0px 8px;
   background: var(--bg-primary);
 }
 

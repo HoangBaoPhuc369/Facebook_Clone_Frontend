@@ -8,16 +8,36 @@ import VideoCall from "../../svg/videoCall";
 import XClose from "../../svg/xClose";
 import { removeChatBox } from "../../redux/features/conversationSlice";
 
-export default function ChatBoxHeader({ friendChat, currentChat, onlineUser, color }) {
+export default function ChatBoxHeader({
+  friendChat,
+  currentChat,
+  onlineUser,
+  color,
+  arrivalMessage,
+  chatBox,
+}) {
   const [checkOnline, setCheckOnline] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
     setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
   }, [onlineUser]);
+
+  const setColorNewMessage =
+    arrivalMessage?.currentChatID !== chatBox.currentChatBox &&
+    arrivalMessage?.status !== "seen"
+      ? "blue-background"
+      : "";
+  const setColorIcon =
+    arrivalMessage?.currentChatID !== chatBox.currentChatBox &&
+    arrivalMessage?.status !== "seen" && arrivalMessage?.currentChatBox === currentChat?._id
+      ? "#fff"
+      : chatBox.currentChatBox === currentChat?._id
+      ? "#0084ff"
+      : "var(--bg-fifth)";
   return (
     <>
-      <div className="ChatBox_header">
+      <div className={`ChatBox_header ${setColorNewMessage}`}>
         <div className="ChatBox_header_left">
           <div className="ChatBox_header_left_pad">
             <img src={friendChat?.picture} alt="" />
@@ -34,28 +54,28 @@ export default function ChatBoxHeader({ friendChat, currentChat, onlineUser, col
               </span>
             </div>
             <div className="ChatBox_header_left_arrow_down">
-              <ArrowDown2 color={color} />
+              <ArrowDown2 color={setColorIcon} />
             </div>
           </div>
         </div>
         <div className="ChatBox_header_right">
           <span className="ChatBox_header_right_item hover3">
-            <PhoneCall color={color} />
+            <PhoneCall color={setColorIcon} />
           </span>
           <span className="ChatBox_header_right_item hover3">
-            <VideoCall color={color} />
+            <VideoCall color={setColorIcon} />
           </span>
           <span className="ChatBox_header_right_item hover3">
-            <MiniMize color={color} />
+            <MiniMize color={setColorIcon} />
           </span>
           <span
             className="ChatBox_header_right_item hover3"
             onClick={() => {
               // closePopup(currentChat?._id);
-              dispatch(removeChatBox(currentChat?._id))
+              dispatch(removeChatBox(currentChat?._id));
             }}
           >
-            <XClose color={color} />
+            <XClose color={setColorIcon} />
           </span>
         </div>
       </div>

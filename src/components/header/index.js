@@ -111,6 +111,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
   const getFiendChat = (current) => {
     return current.members.find((m) => m._id !== user.id);
   };
+
   //================================================================
   return (
     <header>

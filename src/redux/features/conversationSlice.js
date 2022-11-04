@@ -75,6 +75,7 @@ const initialState = {
   error: "",
   loading: false,
   messageSendSuccess: false,
+  lastMessageSeen: null,
 };
 
 export const conversationSlice = createSlice({
@@ -243,6 +244,9 @@ export const conversationSlice = createSlice({
         status: "seen",
       })
     },
+    // setLastSeenMessage: (state, action) => {
+    //   state.lastMessageSeen = state.conversations;
+    // },
   },
   extraReducers: {
     [getConversations.pending]: (state, action) => {

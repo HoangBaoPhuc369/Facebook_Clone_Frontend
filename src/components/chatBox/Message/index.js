@@ -1,16 +1,22 @@
 import { faCheckCircle } from "@fortawesome/free-regular-svg-icons";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
 import "../style.css";
 // import { format } from "timeago.js";
 
 export default function Message({
+  index,
   message,
   ownUser,
   friendChat,
   messagesChat,
+  getLastSeenMessage,
 }) {
-  
+  // console.log(messagesChat[index + 1] === undefined)
+  //&&
+  // messagesChat[index + 1] &&
+  // messagesChat[index + 1]?._id === undefined ?
   return (
     <>
       {ownUser ? (
@@ -18,13 +24,13 @@ export default function Message({
           <div className="message-sent">
             <div className="message-sent-text">{message?.text}</div>
             <div className="message-sent-status">
-              {message?.status === "delivered" ? (
-                <FontAwesomeIcon icon={faCircleCheck} className="delivered" />
-              ) : message?.status === "seen" ? (
+              {message?._id === getLastSeenMessage ? (
                 <img src={friendChat?.picture} alt="" />
-              ) : (
+              ) : message?.status === "delivered" ? (
+                <FontAwesomeIcon icon={faCircleCheck} className="delivered" />
+              ) : message?.status === "unseen" ? (
                 <FontAwesomeIcon icon={faCheckCircle} />
-              )}
+              ) : null}
             </div>
           </div>
         </div>
@@ -41,7 +47,10 @@ export default function Message({
             </div>
           </div>
           <div className="message-sent-status">
-            <img src={friendChat?.picture} alt="" />
+            {message?._id === getLastSeenMessage ||
+            message?.status === "delivered" ? (
+              <img src={friendChat?.picture} alt="" />
+            ) : null}
           </div>
         </div>
       )}

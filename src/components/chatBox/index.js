@@ -55,7 +55,7 @@ export default function ChatBox({
 
   useEffect(() => {
     if (arrivalMessage?.currentChatID === currentChat?._id) {
-      socket.current.emit("messageDelivered", {
+      socket.current?.emit("messageDelivered", {
         message: arrivalMessage?.messages,
         currentChatId: arrivalMessage?.currentChatID,
       });
@@ -68,7 +68,7 @@ export default function ChatBox({
     }
 
     if (arrivalMessage?.currentChatID === chatBox.currentChatBox) {
-      socket.current.emit("messageSeen", {
+      socket.current?.emit("messageSeen", {
         message: arrivalMessage?.messages,
         currentChatId: arrivalMessage?.currentChatID,
       });
@@ -84,7 +84,7 @@ export default function ChatBox({
   }, [arrivalMessage]);
 
   useEffect(() => {
-    socket.current.on("getMessageDelivered", (data) => {
+    socket.current?.on("getMessageDelivered", (data) => {
       if (data.currentChatId === currentChat?._id) {
         dispatch(
           deliveredMessageChat({
@@ -96,7 +96,11 @@ export default function ChatBox({
       }
     });
 
-    socket.current.on("getMessageSeen", (data) => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socket.current?.on("getMessageSeen", (data) => {
       if (data.currentChatId === currentChat?._id) {
         dispatch(
           seenMessageChat({
@@ -189,14 +193,11 @@ export default function ChatBox({
   // const getLastId = checkSeenMessage[checkSeenMessage.length - 1]?._id;
   // console.log(getLastId);
 
-  const [getLastId, setGetLastId] = useState(null);
-
+  const [getLastSeenMessage, SetGetLastSeenMessage] = useState(null);
   useEffect(() => {
-    const checkSeenMessage = messagesChat.filter((m) => m.status === "seen");
-    setGetLastId(checkSeenMessage[checkSeenMessage.length - 1]?._id);
+    const lastSeenMessage = messagesChat.filter((m) => m.status === "seen");
+    SetGetLastSeenMessage(lastSeenMessage[lastSeenMessage.length - 1]?._id);
   }, [messagesChat]);
-
-  // console.log(getLastId);
   return (
     <>
       <div
@@ -206,9 +207,11 @@ export default function ChatBox({
         <div className="chatBox_display">
           <ChatBoxHeader
             color={color}
+            chatBox={chatBox}
             friendChat={friendChat}
             onlineUser={onlineUser}
             currentChat={currentChat}
+            arrivalMessage={arrivalMessage}
           />
 
           <div className="chatBox_container">
@@ -245,11 +248,13 @@ export default function ChatBox({
             {messagesChat?.map((message, i) => (
               <div key={i}>
                 <Message
+                  index={i}
                   message={message}
                   friendChat={friendChat}
                   typingUsers={typingUsers}
                   messagesChat={messagesChat}
                   ownUser={message?.sender === user.id}
+                  getLastSeenMessage={getLastSeenMessage}
                 />
               </div>
             ))}
