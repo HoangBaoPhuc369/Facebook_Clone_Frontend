@@ -25,7 +25,7 @@ import AllMessenger from "./AllMessenger";
 import ChatBox from "../chatBox";
 import { io } from "socket.io-client";
 import { getAllPosts } from "../../redux/features/postSlice";
-import { getNewFriendMessage } from "../../redux/features/conversationSlice";
+import { getNewFriendMessage, removeChatBoxWaiting, seenAllMessageChat } from "../../redux/features/conversationSlice";
 
 export default function Header({ page, onlineUser, setOnlineUsers }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
@@ -110,6 +110,22 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
 
   const getFiendChat = (current) => {
     return current.members.find((m) => m._id !== user.id);
+  };
+
+  const handleRemoveWaitingMessage = (currentChatId, friendChatId, userToken) => {
+    if (chatBox.chatBoxWaiting?.includes(currentChatId)) {
+      dispatch(removeChatBoxWaiting(currentChatId));
+      dispatch(
+        seenAllMessageChat({
+          userToken: userToken,
+          currentChatId: currentChatId,
+        })
+      );
+      socketRef.current?.emit("messageSeenAll", {
+        receiverId: friendChatId,
+        currentChatId: currentChatId,
+      });
+    }
   };
 
   //================================================================
@@ -209,6 +225,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
             setShowAllMessenger={setShowAllMessenger}
             display={showAllMessenger ? "block" : "none"}
             setCloseArrivalMessage={setCloseArrivalMessage}
+            handleRemoveWaitingMessage={handleRemoveWaitingMessage}
           />
         </div>
         <div className="circle_icon hover1">
@@ -245,6 +262,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
             friendChat={getFiendChat(c)}
             arrivalMessage={arrivalMessage}
             setTypingUsers={setTypingUsers}
+            handleRemoveWaitingMessage={handleRemoveWaitingMessage}
           />
         ))}
       </div>

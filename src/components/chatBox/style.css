@@ -166,10 +166,12 @@
 
 .message-sent_last-child > .message-sent-text {
   border-bottom-right-radius: 20px;
+  margin-bottom: 9px;
 }
 
 .message-sent_normal > .message-sent-text {
   border-radius: 20px;
+  margin-bottom: 5px;
 }
 
 
@@ -236,6 +238,7 @@
 
 .message-received_last-child > .message-received-text {
   border-bottom-left-radius: 20px;
+  margin-bottom: 9px;
 }
 
 .message-received_normal > .message-received-text {

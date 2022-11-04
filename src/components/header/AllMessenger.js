@@ -1,5 +1,4 @@
 import AllMessengerItem from "./AllMessengerItem";
-import { registerPopup } from "../../helpers/displayChatBox";
 import { setChatBox } from "../../redux/features/conversationSlice";
 import { useDispatch } from "react-redux";
 
@@ -14,6 +13,7 @@ export default function AllMessenger({
   closeArrivalMessage,
   setShowAllMessenger,
   setCloseArrivalMessage,
+  handleRemoveWaitingMessage,
 }) {
   
   const dispatch = useDispatch();
@@ -47,6 +47,7 @@ export default function AllMessenger({
                       arrivalMessage={arrivalMessage}
                       closeArrivalMessage={closeArrivalMessage}
                       setCloseArrivalMessage={setCloseArrivalMessage}
+                      handleRemoveWaitingMessage={handleRemoveWaitingMessage}
                     />
                   </div>
                 </div>

@@ -68,7 +68,8 @@ export default function ChatBoxHeader({
           </span>
           <span
             className="ChatBox_header_right_item hover3"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               dispatch(removeChatBox(currentChat?._id));
             }}
           >

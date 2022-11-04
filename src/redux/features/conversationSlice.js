@@ -74,12 +74,9 @@ export const seenAllMessageChat = createAsyncThunk(
   "conversations/seenAllMessageChat",
   async ({ userToken, currentChatId }, { rejectWithValue }) => {
     try {
-      const {data} = await api.seenAllMessageChat(
-        userToken,
-        currentChatId
-      );
-      
-      return {data, currentChatId};
+      const { data } = await api.seenAllMessageChat(userToken, currentChatId);
+
+      return { data, currentChatId };
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -123,22 +120,27 @@ export const conversationSlice = createSlice({
           );
         } else {
           if (state.chatBox.chatBoxVisible.length < 3) {
-            Cookies.set(
-              "chatBox",
-              JSON.stringify({
-                ...state.chatBox,
-                currentChatBox: action.payload,
-                chatBoxVisible: [
-                  action.payload,
-                  ...state.chatBox.chatBoxVisible,
-                ],
-              })
-            );
-            state.chatBox.currentChatBox = action.payload;
-            state.chatBox.chatBoxVisible = [
-              action.payload,
-              ...state.chatBox.chatBoxVisible,
-            ];
+            if (!state.chatBox.chatBoxVisible.includes(action.payload)) {
+              Cookies.set(
+                "chatBox",
+                JSON.stringify({
+                  ...state.chatBox,
+                  currentChatBox: action.payload,
+                  chatBoxVisible: [
+                    action.payload,
+                    ...state.chatBox.chatBoxVisible,
+                  ],
+                })
+              );
+              state.chatBox.currentChatBox = action.payload;
+              state.chatBox.chatBoxVisible = [
+                action.payload,
+                ...state.chatBox.chatBoxVisible,
+              ];
+            }
+            // else {
+            //   state.chatBox = { ...state.chatBox };
+            // }
           } else {
             const getChatBoxMinimized = state.chatBox.chatBoxVisible.pop();
 
@@ -168,9 +170,10 @@ export const conversationSlice = createSlice({
             ];
           }
         }
-      } else {
-        state.chatBox = { ...state.chatBox };
       }
+      // else {
+      //   state.chatBox = { ...state.chatBox };
+      // }
     },
     removeChatBox: (state, action) => {
       if (state.chatBox.chatBoxVisible.length > 1) {
@@ -188,6 +191,22 @@ export const conversationSlice = createSlice({
               })
             );
           }
+        } else if (state.chatBox.currentChatBox === action.payload) {
+          state.chatBox.currentChatBox = null;
+          state.chatBox.chatBoxVisible = state.chatBox.chatBoxVisible.filter(
+            (item) => item !== action.payload
+          );
+
+          Cookies.set(
+            "chatBox",
+            JSON.stringify({
+              ...state.chatBox,
+              currentChatBox: null,
+              chatBoxVisible: state.chatBox.chatBoxVisible.filter(
+                (item) => item !== action.payload
+              ),
+            })
+          );
         } else {
           Cookies.set(
             "chatBox",
@@ -288,7 +307,7 @@ export const conversationSlice = createSlice({
         status: "seen",
       });
     },
-    
+
     removeChatBoxWaiting: (state, action) => {
       const index = state.chatBox.chatBoxWaiting.findIndex(
         (c) => c === action.payload

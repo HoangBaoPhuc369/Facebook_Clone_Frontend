@@ -30,6 +30,7 @@ export default function ChatBox({
   setTypingUsers,
   onlineUser,
   scrollBottom,
+  handleRemoveWaitingMessage,
 }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { messageSendSuccess, chatBox } = useSelector((state) => ({
@@ -209,28 +210,13 @@ export default function ChatBox({
     SetGetLastSeenMessage(lastSeenMessage[lastSeenMessage.length - 1]?._id);
   }, [messagesChat]);
 
-  const handleRemoveWaitingMessage = () => {
-    if (chatBox.chatBoxWaiting?.includes(currentChat?._id)) {
-      dispatch(removeChatBoxWaiting(currentChat?._id));
-      dispatch(
-        seenAllMessageChat({
-          userToken: user?.token,
-          currentChatId: currentChat?._id,
-        })
-      );
-      socket.current?.emit("messageSeenAll", {
-        receiverId: friendChat._id,
-        currentChatId: currentChat?._id,
-      });
-    }
-  };
   return (
     <>
       <div
         className="chatBox_wrapper"
         onClick={() => {
           dispatch(setCurrentChatBox(currentChat?._id));
-          handleRemoveWaitingMessage();
+          handleRemoveWaitingMessage(currentChat?._id, friendChat._id, user?.token);
         }}
       >
         <div className="chatBox_display">

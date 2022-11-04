@@ -8,35 +8,36 @@ export default function AllMessengerItem({
   onlineUser,
   messagesChat,
   arrivalMessage,
+  handleRemoveWaitingMessage,
 }) {
   const [checkOnline, setCheckOnline] = useState(false);
   const [messages, setMessages] = useState(messagesChat);
-
-  // const arrivalRef = useRef(null);
 
   useEffect(() => {
     setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
   }, [onlineUser]);
 
-  const getArrivalMessage = (id) => {
-    document.getElementById(`arrival-message` + id)?.classList.add("all_messenger-arrival-message");
-  };
+  const getNewMessage = messagesChat[messagesChat.length - 1];
 
-  useEffect(() => {
-    if (
-      arrivalMessage &&
-      currentChat?._id === arrivalMessage.currentChatId &&
-      currentChat?.members.some((m) => m._id === arrivalMessage?.sender)
-    ) {
-      setMessages((prev) => [...prev, arrivalMessage]);
-      getArrivalMessage(currentChat?._id);
+  const checkNewMessage = () => {
+    if(getNewMessage?.sender !== user.id &&
+    getNewMessage?.status !== "seen" &&
+    getNewMessage !== undefined) {
+      handleRemoveWaitingMessage(
+        currentChat?._id,
+        friendChat._id,
+        user?.token
+      )
     }
-  }, [arrivalMessage, currentChat]);
+      
+  };
 
   return (
     <div
       className="all_messenger_item hover1"
-      // onClick={() => handleCloseArrivalMessage(currentChat?._id)}
+      onClick={() => {
+        checkNewMessage();
+      }}
     >
       <div className="all_messenger_item_chat">
         <img
@@ -55,19 +56,18 @@ export default function AllMessengerItem({
           <span>
             {friendChat?.first_name} {friendChat?.last_name}
           </span>
-
-          {messages &&
-          messages.length > 0 &&
-          messages[messages.length - 1].sender === user.id ? (
-            <span>You: {messages[messages.length - 1].text}</span>
-          ) : (
-            <span
-              className="arrival-message"
-            >
-              {messages[messages.length - 1]?.text}
+          {getNewMessage?.sender === user.id ? (
+            <span>You: {getNewMessage?.text}</span>
+          ) : getNewMessage?.status !== "seen" &&
+            getNewMessage !== undefined ? (
+            <span className="all_messenger-arrival-message">
+              {getNewMessage?.text}
             </span>
+          ) : (
+            <span>{getNewMessage?.text}</span>
           )}
         </div>
+        {/* all_messenger-arrival-message */}
       </div>
     </div>
   );
