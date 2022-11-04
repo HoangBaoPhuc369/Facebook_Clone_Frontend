@@ -37,14 +37,27 @@
   border-top-right-radius: 8px;
 }
 
+.blue-background {
+  background: var(--blue-color-secondary);
+}
+
+.primary-color {
+  color: var(--bg-primary) !important;
+}
+
 .ChatBox_header_left {
   margin: 4px;
   border-radius: 8px;
 }
 
-.ChatBox_header_left:hover {
+.hover-grey:hover {
   cursor: pointer;
   background: var(--bg-third);
+}
+
+.hover-blue:hover {
+  cursor: pointer;
+  background: #3578e5;
 }
 
 .ChatBox_header_left img {
@@ -72,8 +85,8 @@
 
 .ChatBox_header_left_circle {
   position: absolute;
-  bottom: 3px;
-  left: 27px;
+  bottom: 5px;
+  left: 30px;
   width: 14px;
   background: #31a24c;
   height: 14px;
@@ -120,14 +133,14 @@
 
 .message-group-sent {
   width: 100%;
-  margin-bottom: 9px;
+  /* margin-bottom: 9px; */
   text-align: right;
 }
 
 .message-sent {
   max-width: 75%;
   display: flex;
-  margin: 2px 0 2px auto;
+  margin: 1px 0 1px auto;
 }
 
 .message-sent-text {
@@ -139,13 +152,26 @@
   margin-left: auto;
 }
 
-.message-sent:first-child > .message-sent-text {
+/* .message-sent:first-child > .message-sent-text {
   border-top-right-radius: 20px;
 }
 
 .message-sent:last-child > .message-sent-text {
   border-bottom-right-radius: 20px;
+} */
+
+.message-sent_first-child > .message-sent-text {
+  border-top-right-radius: 20px;
 }
+
+.message-sent_last-child > .message-sent-text {
+  border-bottom-right-radius: 20px;
+}
+
+.message-sent_normal > .message-sent-text {
+  border-radius: 20px;
+}
+
 
 .message-sent-status {
   width: 15px;
@@ -175,7 +201,7 @@
 .message-group-received {
   display: flex;
   width: 95%;
-  margin-bottom: 9px;
+  /* margin-bottom: 9px; */
 }
 
 .message-group-received > div:first-child {
@@ -194,18 +220,26 @@
   object-fit: cover;
 }
 
+.message-group-received > div > .message-group-received_no-image {
+  width: 28px;
+}
+
 .message-received {
   max-width: 75%;
-  margin: 2px 0;
+  margin: 1px 0;
   display: flex;
 }
 
-.message-received:first-child > .message-received-text {
+.message-received_first-child > .message-received-text {
   border-top-left-radius: 20px;
 }
 
-.message-received:last-child > .message-received-text {
+.message-received_last-child > .message-received-text {
   border-bottom-left-radius: 20px;
+}
+
+.message-received_normal > .message-received-text {
+  border-radius: 20px;
 }
 
 .message-received-text {

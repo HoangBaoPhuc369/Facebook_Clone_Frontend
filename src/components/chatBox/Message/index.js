@@ -17,14 +17,40 @@ export default function Message({
   //&&
   // messagesChat[index + 1] &&
   // messagesChat[index + 1]?._id === undefined ?
+  const checkSeenMessage = message?._id === getLastSeenMessage;
+  const checkMessageBottomExits =
+    messagesChat[index + 1]?.sender !== message?.sender;
+  const checkChildrenLeft = 
+    messagesChat[index - 1]?.sender !== message?.sender &&
+    messagesChat[index + 1]?.sender === message?.sender
+      ? "message-received_first-child"
+      : messagesChat[index - 1]?.sender === message?.sender &&
+        messagesChat[index + 1]?.sender === message?.sender
+      ? "message-received_mid-child"
+      : messagesChat[index - 1]?.sender === message?.sender &&
+        messagesChat[index + 1]?.sender !== message?.sender
+      ? "message-received_last-child"
+      : "message-received_normal";
+
+      const checkChildrenRight = 
+    messagesChat[index - 1]?.sender !== message?.sender &&
+    messagesChat[index + 1]?.sender === message?.sender
+      ? "message-sent_first-child"
+      : messagesChat[index - 1]?.sender === message?.sender &&
+        messagesChat[index + 1]?.sender === message?.sender
+      ? "message-sent_mid-child"
+      : messagesChat[index - 1]?.sender === message?.sender &&
+        messagesChat[index + 1]?.sender !== message?.sender
+      ? "message-sent_last-child"
+      : "message-sent_normal";
   return (
     <>
       {ownUser ? (
         <div className="message-group-sent">
-          <div className="message-sent">
+          <div className={`message-sent ${checkChildrenRight}`}>
             <div className="message-sent-text">{message?.text}</div>
             <div className="message-sent-status">
-              {message?._id === getLastSeenMessage ? (
+              {checkSeenMessage ? (
                 <img src={friendChat?.picture} alt="" />
               ) : message?.status === "delivered" ? (
                 <FontAwesomeIcon icon={faCircleCheck} className="delivered" />
@@ -38,17 +64,22 @@ export default function Message({
         <div style={{ display: "flex" }}>
           <div className="message-group-received">
             <div>
-              <img src={friendChat?.picture} alt="" />
+              {checkMessageBottomExits ? (
+                <img src={friendChat?.picture} alt="" />
+              ) : (
+                <div className="message-group-received_no-image"></div>
+              )}
+              {/* <img src={friendChat?.picture} alt="" /> */}
             </div>
             <div>
-              <div className="message-received">
+              <div className={`message-received ${checkChildrenLeft}`}>
                 <div className="message-received-text">{message?.text}</div>
               </div>
             </div>
           </div>
           <div className="message-sent-status">
-            {message?._id === getLastSeenMessage ||
-            message?.status === "delivered" ? (
+            {checkMessageBottomExits &&
+            (checkSeenMessage || message?.status === "delivered") ? (
               <img src={friendChat?.picture} alt="" />
             ) : null}
           </div>

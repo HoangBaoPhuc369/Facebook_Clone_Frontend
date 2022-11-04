@@ -23,33 +23,31 @@ export default function ChatBoxHeader({
     setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
   }, [onlineUser]);
 
-  const setColorNewMessage =
-    arrivalMessage?.currentChatID !== chatBox.currentChatBox &&
-    arrivalMessage?.status !== "seen"
-      ? "blue-background"
-      : "";
-  const setColorIcon =
-    arrivalMessage?.currentChatID !== chatBox.currentChatBox &&
-    arrivalMessage?.status !== "seen" && arrivalMessage?.currentChatBox === currentChat?._id
-      ? "#fff"
-      : chatBox.currentChatBox === currentChat?._id
-      ? "#0084ff"
-      : "var(--bg-fifth)";
+  const checkWaitingChatBox = chatBox.chatBoxWaiting?.includes(currentChat?._id);
+  const setColorNewMessage = checkWaitingChatBox
+    ? "blue-background"
+    : "";
+  const setColorIcon = checkWaitingChatBox
+    ? "#fff"
+    : chatBox.currentChatBox === currentChat?._id
+    ? "#0084ff"
+    : "var(--bg-fifth)";
+
   return (
     <>
       <div className={`ChatBox_header ${setColorNewMessage}`}>
-        <div className="ChatBox_header_left">
+        <div className={`ChatBox_header_left ${checkWaitingChatBox ? "hover-blue" : "hover-grey"}`}>
           <div className="ChatBox_header_left_pad">
             <img src={friendChat?.picture} alt="" />
             <span
               className={checkOnline ? "ChatBox_header_left_circle" : ""}
             ></span>
             <div className="ChatBox_header_left_wrapper">
-              <span className="ChatBox_header_left_username">
+              <span className={`ChatBox_header_left_username ${checkWaitingChatBox ? "primary-color" : ""}`}>
                 {friendChat?.first_name} {friendChat?.last_name}
               </span>
               <br />
-              <span className="ChatBox_header_left_status">
+              <span className={`ChatBox_header_left_status ${checkWaitingChatBox ? "primary-color" : ""}`}>
                 {checkOnline ? "Active now" : ""}
               </span>
             </div>
@@ -71,7 +69,6 @@ export default function ChatBoxHeader({
           <span
             className="ChatBox_header_right_item hover3"
             onClick={() => {
-              // closePopup(currentChat?._id);
               dispatch(removeChatBox(currentChat?._id));
             }}
           >

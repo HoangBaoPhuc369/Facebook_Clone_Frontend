@@ -1,7 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import * as api from "../api";
-import { handleCheck, handleSetStatusMessage } from "../helpers/handleConversation";
+import {
+  handleCheck,
+  handleSetStatusMessage,
+} from "../helpers/handleConversation";
 
 export const getConversations = createAsyncThunk(
   "conversations/getConversations",
@@ -41,7 +44,7 @@ export const deliveredMessageChat = createAsyncThunk(
         currentChatId
       );
 
-      const data = {messageId, currentChatId}
+      const data = { messageId, currentChatId };
       if (res) return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -59,8 +62,24 @@ export const seenMessageChat = createAsyncThunk(
         currentChatId
       );
 
-      const data = {messageId, currentChatId}
+      const data = { messageId, currentChatId };
       if (res) return data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const seenAllMessageChat = createAsyncThunk(
+  "conversations/seenAllMessageChat",
+  async ({ userToken, currentChatId }, { rejectWithValue }) => {
+    try {
+      const {data} = await api.seenAllMessageChat(
+        userToken,
+        currentChatId
+      );
+      
+      return {data, currentChatId};
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -71,11 +90,15 @@ const initialState = {
   conversations: null,
   chatBox: Cookies.get("chatBox")
     ? JSON.parse(Cookies.get("chatBox"))
-    : { currentChatBox: null, chatBoxVisible: [], chatBoxMinimized: [] },
+    : {
+        currentChatBox: null,
+        chatBoxVisible: [],
+        chatBoxMinimized: [],
+        chatBoxWaiting: [],
+      },
   error: "",
   loading: false,
   messageSendSuccess: false,
-  lastMessageSeen: null,
 };
 
 export const conversationSlice = createSlice({
@@ -197,7 +220,6 @@ export const conversationSlice = createSlice({
       }
     },
     getNewFriendMessage: (state, action) => {
-
       const { checkConversation, indexConversation } = handleCheck({
         conversations: state.conversations,
         currentChatId: action.payload.currentChatId,
@@ -209,6 +231,28 @@ export const conversationSlice = createSlice({
           action.payload.data,
         ];
         state.conversations.splice(indexConversation, 1, checkConversation);
+
+        if (state.chatBox.currentChatBox !== action.payload.currentChatId) {
+          const index = state.chatBox.chatBoxWaiting.findIndex(
+            (i) => i === action.payload.currentChatId
+          );
+          if (index === -1) {
+            state.chatBox.chatBoxWaiting = [
+              action.payload.currentChatId,
+              ...state.chatBox.chatBoxWaiting,
+            ];
+            Cookies.set(
+              "chatBox",
+              JSON.stringify({
+                ...state.chatBox,
+                chatBoxWaiting: [
+                  ...state.chatBox.chatBoxWaiting,
+                  action.payload,
+                ],
+              })
+            );
+          }
+        }
       }
     },
 
@@ -233,7 +277,7 @@ export const conversationSlice = createSlice({
         currentChatId: action.payload.currentChatId,
         messageId: action.payload.messageId,
         status: "delivered",
-      })
+      });
     },
 
     setSeenMessage: (state, action) => {
@@ -242,11 +286,24 @@ export const conversationSlice = createSlice({
         currentChatId: action.payload.currentChatId,
         messageId: action.payload.messageId,
         status: "seen",
-      })
+      });
     },
-    // setLastSeenMessage: (state, action) => {
-    //   state.lastMessageSeen = state.conversations;
-    // },
+    
+    removeChatBoxWaiting: (state, action) => {
+      const index = state.chatBox.chatBoxWaiting.findIndex(
+        (c) => c === action.payload
+      );
+      if (index > -1) {
+        state.chatBox.chatBoxWaiting.splice(index, 1);
+      }
+      Cookies.set(
+        "chatBox",
+        JSON.stringify({
+          ...state.chatBox,
+          chatBoxWaiting: [...state.chatBox.chatBoxWaiting],
+        })
+      );
+    },
   },
   extraReducers: {
     [getConversations.pending]: (state, action) => {
@@ -263,7 +320,6 @@ export const conversationSlice = createSlice({
     },
 
     [sendMessageChat.fulfilled]: (state, action) => {
-
       const { checkConversation, indexConversation } = handleCheck({
         conversations: state.conversations,
         currentChatId: action.payload.currentChatId,
@@ -286,7 +342,7 @@ export const conversationSlice = createSlice({
         currentChatId: action.payload.currentChatId,
         messageId: action.payload.messageId,
         status: "delivered",
-      })
+      });
     },
     [deliveredMessageChat.rejected]: (state, action) => {
       console.log(action.payload?.message);
@@ -298,9 +354,25 @@ export const conversationSlice = createSlice({
         currentChatId: action.payload.currentChatId,
         messageId: action.payload.messageId,
         status: "seen",
-      })
+      });
     },
     [seenMessageChat.rejected]: (state, action) => {
+      console.log(action.payload?.message);
+    },
+
+    [seenAllMessageChat.fulfilled]: (state, action) => {
+      const { checkConversation, indexConversation } = handleCheck({
+        conversations: state.conversations,
+        currentChatId: action.payload.currentChatId,
+        type: "conversation",
+      });
+
+      if (checkConversation && indexConversation > -1) {
+        checkConversation.messages = action.payload.data;
+        state.conversations.splice(indexConversation, 1, checkConversation);
+      }
+    },
+    [seenAllMessageChat.rejected]: (state, action) => {
       console.log(action.payload?.message);
     },
   },
@@ -315,6 +387,7 @@ export const {
   getNewFriendMessage,
   clearMessageSuccess,
   setDeliveredMessage,
+  removeChatBoxWaiting,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

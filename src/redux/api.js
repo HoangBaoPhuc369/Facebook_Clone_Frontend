@@ -89,3 +89,16 @@ export const seenMessageChat = (userToken, messageId, currentChatId) =>
       },
     }
   );
+
+export const seenAllMessageChat = (userToken, currentChatId) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/chat/seen-all-message`,
+    {
+      conversationId: currentChatId,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    }
+  );

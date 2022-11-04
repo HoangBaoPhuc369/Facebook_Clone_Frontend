@@ -11,6 +11,8 @@ import { useDispatch } from "react-redux";
 import {
   clearMessageSuccess,
   deliveredMessageChat,
+  removeChatBoxWaiting,
+  seenAllMessageChat,
   seenMessageChat,
   sendMessageChat,
   setCurrentChatBox,
@@ -111,6 +113,17 @@ export default function ChatBox({
         );
       }
     });
+
+    socket.current?.on("getMessageSeenAll", (data) => {
+      if (data.currentChatId === currentChat?._id) {
+        dispatch(
+          seenAllMessageChat({
+            userToken: user?.token,
+            currentChatId: data?.currentChatId,
+          })
+        );
+      }
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -189,20 +202,36 @@ export default function ChatBox({
 
   const color =
     chatBox.currentChatBox === currentChat?._id ? "#0084ff" : "var(--bg-fifth)";
-  // const checkSeenMessage = messagesChat.filter(m => m.status === "seen");
-  // const getLastId = checkSeenMessage[checkSeenMessage.length - 1]?._id;
-  // console.log(getLastId);
 
   const [getLastSeenMessage, SetGetLastSeenMessage] = useState(null);
   useEffect(() => {
     const lastSeenMessage = messagesChat.filter((m) => m.status === "seen");
     SetGetLastSeenMessage(lastSeenMessage[lastSeenMessage.length - 1]?._id);
   }, [messagesChat]);
+
+  const handleRemoveWaitingMessage = () => {
+    if (chatBox.chatBoxWaiting?.includes(currentChat?._id)) {
+      dispatch(removeChatBoxWaiting(currentChat?._id));
+      dispatch(
+        seenAllMessageChat({
+          userToken: user?.token,
+          currentChatId: currentChat?._id,
+        })
+      );
+      socket.current?.emit("messageSeenAll", {
+        receiverId: friendChat._id,
+        currentChatId: currentChat?._id,
+      });
+    }
+  };
   return (
     <>
       <div
         className="chatBox_wrapper"
-        onClick={() => dispatch(setCurrentChatBox(currentChat?._id))}
+        onClick={() => {
+          dispatch(setCurrentChatBox(currentChat?._id));
+          handleRemoveWaitingMessage();
+        }}
       >
         <div className="chatBox_display">
           <ChatBoxHeader
