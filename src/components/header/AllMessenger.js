@@ -34,7 +34,7 @@ export default function AllMessenger({
                   <div
                     onClick={() => {
                       dispatch(setChatBox(c._id));
-                      setShowAllMessenger(false);
+                      setShowAllMessenger((prev) => !prev);
                       setScrollBottom((prev) => !prev);
                     }}
                   >

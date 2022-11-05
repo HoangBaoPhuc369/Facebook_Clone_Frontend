@@ -13,10 +13,6 @@ export default function Message({
   messagesChat,
   getLastSeenMessage,
 }) {
-  // console.log(messagesChat[index + 1] === undefined)
-  //&&
-  // messagesChat[index + 1] &&
-  // messagesChat[index + 1]?._id === undefined ?
   const checkSeenMessage = message?._id === getLastSeenMessage;
   const checkMessageBottomExits =
     messagesChat[index + 1]?.sender !== message?.sender;

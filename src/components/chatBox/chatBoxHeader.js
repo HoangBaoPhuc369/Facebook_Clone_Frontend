@@ -12,8 +12,6 @@ export default function ChatBoxHeader({
   friendChat,
   currentChat,
   onlineUser,
-  color,
-  arrivalMessage,
   chatBox,
 }) {
   const [checkOnline, setCheckOnline] = useState(false);
@@ -21,12 +19,13 @@ export default function ChatBoxHeader({
 
   useEffect(() => {
     setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onlineUser]);
 
-  const checkWaitingChatBox = chatBox.chatBoxWaiting?.includes(currentChat?._id);
-  const setColorNewMessage = checkWaitingChatBox
-    ? "blue-background"
-    : "";
+  const checkWaitingChatBox = chatBox.chatBoxWaiting?.includes(
+    currentChat?._id
+  );
+  const setColorNewMessage = checkWaitingChatBox ? "blue-background" : "";
   const setColorIcon = checkWaitingChatBox
     ? "#fff"
     : chatBox.currentChatBox === currentChat?._id
@@ -36,18 +35,30 @@ export default function ChatBoxHeader({
   return (
     <>
       <div className={`ChatBox_header ${setColorNewMessage}`}>
-        <div className={`ChatBox_header_left ${checkWaitingChatBox ? "hover-blue" : "hover-grey"}`}>
+        <div
+          className={`ChatBox_header_left ${
+            checkWaitingChatBox ? "hover-blue" : "hover-grey"
+          }`}
+        >
           <div className="ChatBox_header_left_pad">
             <img src={friendChat?.picture} alt="" />
             <span
               className={checkOnline ? "ChatBox_header_left_circle" : ""}
             ></span>
             <div className="ChatBox_header_left_wrapper">
-              <span className={`ChatBox_header_left_username ${checkWaitingChatBox ? "primary-color" : ""}`}>
+              <span
+                className={`ChatBox_header_left_username ${
+                  checkWaitingChatBox ? "primary-color" : ""
+                }`}
+              >
                 {friendChat?.first_name} {friendChat?.last_name}
               </span>
               <br />
-              <span className={`ChatBox_header_left_status ${checkWaitingChatBox ? "primary-color" : ""}`}>
+              <span
+                className={`ChatBox_header_left_status ${
+                  checkWaitingChatBox ? "primary-color" : ""
+                }`}
+              >
                 {checkOnline ? "Active now" : ""}
               </span>
             </div>

@@ -10,10 +10,11 @@ import Reset from "./pages/reset";
 import CreatePostPopup from "./components/createPostPopup";
 import { useState } from "react";
 import Friends from "./pages/friends";
-import DeletePostPopUp from "./components/deletePost";
 import { useEffect } from "react";
 import { getAllPosts } from "./redux/features/postSlice";
 import { getConversations } from "./redux/features/conversationSlice";
+import NotificationPopUp from "./components/notificationPopUp";
+import DeletePostPopUp from "./components/deletePost";
 
 function App() {
   const [visible, setVisible] = useState(false);
@@ -83,6 +84,8 @@ function App() {
         </Route>
         <Route path="/reset" element={<Reset />} />
       </Routes>
+
+      <NotificationPopUp>{user?.picture}</NotificationPopUp>
     </div>
   );
 }

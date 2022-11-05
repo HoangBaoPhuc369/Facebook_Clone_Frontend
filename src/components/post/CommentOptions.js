@@ -1,6 +1,4 @@
 import BubbleOptions from "../../svg/BubbleOptions";
-import { useState } from "react";
-import DeletePostPopUp from "../deletePost";
 
 export default function CommentOptions({
   user,

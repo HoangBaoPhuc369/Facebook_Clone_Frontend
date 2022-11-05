@@ -216,17 +216,19 @@ export default function ChatBox({
         className="chatBox_wrapper"
         onClick={() => {
           dispatch(setCurrentChatBox(currentChat?._id));
-          handleRemoveWaitingMessage(currentChat?._id, friendChat._id, user?.token);
+          handleRemoveWaitingMessage(
+            currentChat?._id,
+            friendChat._id,
+            user?.token
+          );
         }}
       >
         <div className="chatBox_display">
           <ChatBoxHeader
-            color={color}
             chatBox={chatBox}
             friendChat={friendChat}
             onlineUser={onlineUser}
             currentChat={currentChat}
-            arrivalMessage={arrivalMessage}
           />
 
           <div className="chatBox_container">

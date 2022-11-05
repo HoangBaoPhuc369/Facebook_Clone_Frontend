@@ -15,6 +15,10 @@
   cursor: pointer;
   box-shadow: 0 1px 2px var(--sahdow-1);
 }
+
+/* .create_story_card > img:hover {
+  transform: scale(1.1);
+} */
 .create_story_img {
   position: absolute;
   height: 75%;

@@ -1,7 +1,6 @@
 import "./style.css";
 import { Link } from "react-router-dom";
 import {
-  ArrowDown,
   Friends,
   FriendsActive,
   Gaming,
@@ -25,7 +24,13 @@ import AllMessenger from "./AllMessenger";
 import ChatBox from "../chatBox";
 import { io } from "socket.io-client";
 import { getAllPosts } from "../../redux/features/postSlice";
-import { getNewFriendMessage, removeChatBoxWaiting, seenAllMessageChat } from "../../redux/features/conversationSlice";
+import {
+  getNewFriendMessage,
+  removeChatBoxWaiting,
+  seenAllMessageChat,
+} from "../../redux/features/conversationSlice";
+import Moment from "react-moment";
+import AllNotifications from "./AllNotifications";
 
 export default function Header({ page, onlineUser, setOnlineUsers }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
@@ -34,13 +39,14 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
       ...state.messenger,
     })
   );
-  const dispatch = useDispatch();
   const color = "#65676b";
-  const [showSearchMenu, setShowSearchMenu] = useState(false);
+  const dispatch = useDispatch();
   const [showAllMenu, setShowAllMenu] = useState(false);
-  const [showAllMessenger, setShowAllMessenger] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  // const [showChatBox, setShowChatBox] = useState([]);
+  const [showSearchMenu, setShowSearchMenu] = useState(false);
+  const [showAllMessenger, setShowAllMessenger] = useState(false);
+  const [showAllNotification, setShowAllNotification] = useState(false);
+
   const allmenu = useRef(null);
   const usermenu = useRef(null);
   const messenger = useRef(null);
@@ -112,7 +118,11 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
     return current.members.find((m) => m._id !== user.id);
   };
 
-  const handleRemoveWaitingMessage = (currentChatId, friendChatId, userToken) => {
+  const handleRemoveWaitingMessage = (
+    currentChatId,
+    friendChatId,
+    userToken
+  ) => {
     if (chatBox.chatBoxWaiting?.includes(currentChatId)) {
       dispatch(removeChatBoxWaiting(currentChatId));
       dispatch(
@@ -127,6 +137,8 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
       });
     }
   };
+
+  // console.log(Moment("20010704T120854").format("ddd"));
 
   //================================================================
   return (
@@ -198,7 +210,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
             </div>
           </div>
 
-          {showAllMenu && <AllMenu />}
+          <AllMenu display={showAllMenu ? "block" : "none"} />
         </div>
         <div
           className={`circle_icon hover1 ${
@@ -207,6 +219,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
           ref={messenger}
         >
           <div
+            className="icon_wrapper"
             onClick={() => {
               setShowAllMessenger((prev) => !prev);
             }}
@@ -229,8 +242,18 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
           />
         </div>
         <div className="circle_icon hover1">
-          <Notifications />
-          <div className="right_notification">5</div>
+          <div
+            className="icon_wrapper"
+            onClick={() => {
+              setShowAllNotification((prev) => !prev);
+            }}
+          >
+            <Notifications />
+          </div>
+          {/* <div className="right_notification">5</div> */}
+
+          {/* {showAllNotification && <AllNotifications />} */}
+          <AllNotifications />
         </div>
         <div
           className={`circle_icon hover1 ${showUserMenu && "active_header"}`}

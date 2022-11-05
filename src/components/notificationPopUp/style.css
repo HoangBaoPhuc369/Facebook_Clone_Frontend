@@ -1,0 +1,134 @@
+.notification-box_form {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    background: var(--bg-primary);
+    box-shadow: 0 12px 28px 0 var(--shadow-1), 0 2px 4px 0 var(--shadow-2), inset 0 0 0 1px var(--shadow-inset);
+    min-height: 100px;
+    width: 17.5%;
+    border-radius: 8px;
+  }
+  
+  .notification-box_form .small_circle {
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    margin: 0;
+    width: 24px;
+    height: 24px;
+  }
+
+  .notification-box_form .small_circle i {
+    background-position: -131px -76px;
+    width: 10px;
+    height: 10px;
+  }
+
+  .notification-box_header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-primary);
+    padding: 14px 14px 4px 14px;
+}
+  
+  .notification-box_container {
+    padding: 7px 7px 18px 14px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .notification-box_footer {
+    /* border-top: 1px solid var(--bg-third); */
+  }
+  
+  .notification-box_action {
+    float: right;
+    width: 125px;
+    margin: 10px;
+    padding: 10px;
+    outline: none;
+    border: none;
+    background: var(--blue-color);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .notification-box_action:hover {
+    background: #0760d5;
+  }
+  
+  .notification-box_cancel {
+    float: right;
+    width: 45px;
+    margin: 10px 0;
+    padding: 10px;
+    outline: none;
+    border: none;
+    background: #fff;
+    color: var(--blue-color);
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .notification-box_cancel:hover {
+    background: var(--bg-forth);
+  }
+
+  .notification-picture > img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .notification-picture > i {
+    position: absolute;
+    right: -5px;
+    bottom: -3px;
+  }
+  
+  .notification-status {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .notification-status_circle {
+    background: var(--blue-color);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .notification-picture{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+  }
+
+  .notification-information {
+    max-width: 196px;
+  }
+
+  .notification-information > .notification-text {
+    font-size: 15px;
+    color: var(--color-primary);
+  }
+
+  .notification-time {
+    font-size: 13px;
+    color: var(--blue-color);
+    font-weight: 600;
+  }

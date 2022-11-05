@@ -150,15 +150,9 @@
   min-height: 20px;
   padding: 10px;
   margin-left: auto;
+  text-align: left;
 }
 
-/* .message-sent:first-child > .message-sent-text {
-  border-top-right-radius: 20px;
-}
-
-.message-sent:last-child > .message-sent-text {
-  border-bottom-right-radius: 20px;
-} */
 
 .message-sent_first-child > .message-sent-text {
   border-top-right-radius: 20px;
@@ -171,7 +165,7 @@
 
 .message-sent_normal > .message-sent-text {
   border-radius: 20px;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 
@@ -238,7 +232,7 @@
 
 .message-received_last-child > .message-received-text {
   border-bottom-left-radius: 20px;
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 }
 
 .message-received_normal > .message-received-text {
@@ -251,6 +245,7 @@
   color: var(--color-primary);
   background: var(--bg-third);
   border-radius: 4px 20px 20px 4px;
+  text-align: left;
 }
 
 /* =================Information Chat =================*/
