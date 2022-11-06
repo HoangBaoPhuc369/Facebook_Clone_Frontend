@@ -18,6 +18,7 @@ a {
   --bg-secondary: #f0f2f5;
   --bg-third: #e4e6eb;
   --bg-forth: #f0f2f5;
+  --bg-fifth: #BCC0C4;
   --color-primary: #050505;
   --color-secondary: #65676b;
   --divider: #ced0d4;
@@ -27,6 +28,7 @@ a {
   --dark-color-primary: #242526;
   --dark-color-secondary: #b0b3b8;
   --blue-color: #1876f2;
+  --blue-color-secondary: rgb(0, 132, 255);
   --green-color: #42b72a;
   --light-blue-color: #e7f3ff;
   --border-color: #ccced2;

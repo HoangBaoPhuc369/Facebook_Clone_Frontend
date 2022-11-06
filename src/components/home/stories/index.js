@@ -29,7 +29,7 @@ export default function Stories({user}) {
     <div className="stories">
       <div className="create_story_card">
         <img
-          src={user.picture}
+          src={user?.picture}
           alt=""
           className="create_story_img"
         />

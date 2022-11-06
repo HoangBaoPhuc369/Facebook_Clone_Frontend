@@ -1,10 +1,8 @@
-import { useRef } from "react";
 import { menu, create } from "../../data/allMenu";
-import useClickOutside from "../../helpers/clickOutside";
 import AllMenuItem from "./AllMenuItem";
-export default function AllMenu() {
+export default function AllMenu({ display }) {
   return (
-    <div className="all_menu">
+    <div className="all_menu" style={{ display: display }}>
       <div className="all_menu_header">Menu</div>
       <div className="all_menu_wrap scrollbar">
         <div className="all_left">

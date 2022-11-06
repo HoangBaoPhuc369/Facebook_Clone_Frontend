@@ -2,7 +2,7 @@ import { Dots, NewRoom, Search } from "../../../svg";
 import Contact from "./Contact";
 import "./style.css";
 
-export default function RightHome({ onlineUser, conversations }) {
+export default function RightHome({ onlineUser}) {
   const color = "#65676b";
 
   return (
@@ -30,7 +30,6 @@ export default function RightHome({ onlineUser, conversations }) {
               <Contact
                 user={user}
                 key={user._id}
-                conversations={conversations}
                 userId={user._id}
               />
             ))

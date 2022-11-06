@@ -47,24 +47,24 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
     reactPost(post._id, type, user.token);
     if (check === type) {
       setCheck();
-      let index = reacts?.findIndex((x) => x.react == check);
+      let index = reacts?.findIndex((x) => x.react === check);
       if (index !== -1) {
         setReacts([...reacts, (reacts[index].count = --reacts[index].count)]);
         setTotal((prev) => --prev);
       }
     } else {
       setCheck(type);
-      let index = reacts?.findIndex((x) => x.react == type);
-      let index1 = reacts?.findIndex((x) => x.react == check);
+      let index = reacts?.findIndex((x) => x.react === type);
+      let index1 = reacts?.findIndex((x) => x.react === check);
       if (index !== -1) {
         setReacts([...reacts, (reacts[index].count = ++reacts[index].count)]);
         setTotal((prev) => ++prev);
-        console.log(reacts);
+        // console.log(reacts);
       }
       if (index1 !== -1) {
         setReacts([...reacts, (reacts[index1].count = --reacts[index1].count)]);
         setTotal((prev) => --prev);
-        console.log(reacts);
+        // console.log(reacts);
       }
     }
   };
@@ -88,7 +88,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-
+  
   return (
     <div
       className="post"
@@ -100,7 +100,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
           to={`/profile/${post?.user.username}`}
           className="post_header_left"
         >
-          <img src={post.user.picture} alt="" />
+          <img src={post.user?._id === user.id ? user.picture : post.user.picture} alt="" />
           <div className="header_col">
             <div className="post_profile_name">
               {post.user.first_name} {post.user.last_name}

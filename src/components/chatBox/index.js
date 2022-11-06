@@ -3,10 +3,22 @@ import Message from "./Message";
 import { useSelector } from "react-redux";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { BeatLoader } from "react-spinners";
 import useTyping from "../../hooks/useTyping";
 import ChatBoxHeader from "./chatBoxHeader";
 import ChatBoxBottom from "./chatBoxBottom";
+import DotLoader from "./DotLoader";
+import { useDispatch } from "react-redux";
+import {
+  clearMessageSuccess,
+  deliveredMessageChat,
+  removeChatBoxWaiting,
+  seenAllMessageChat,
+  seenMessageChat,
+  sendMessageChat,
+  setCurrentChatBox,
+  setDeliveredMessage,
+  setSeenMessage,
+} from "../../redux/features/conversationSlice";
 
 export default function ChatBox({
   socket,
@@ -18,23 +30,103 @@ export default function ChatBox({
   setTypingUsers,
   onlineUser,
   scrollBottom,
+  handleRemoveWaitingMessage,
 }) {
-  const { user } = useSelector((user) => ({ ...user }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
+  const { messageSendSuccess, chatBox } = useSelector((state) => ({
+    ...state.messenger,
+  }));
   const { isTyping, startTyping, stopTyping, cancelTyping } = useTyping();
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState(messagesChat);
   const [showTyping, setShowTyping] = useState([]);
 
+  const dispatch = useDispatch();
   const inputRef = useRef(null);
   const scrollRef = useRef();
   const scrollTypingRef = useRef();
 
+  //Send message to socket when call api success
   useEffect(() => {
-    arrivalMessage &&
-      currentChat?._id === arrivalMessage.currentChatId &&
-      currentChat?.members.some((m) => m._id === arrivalMessage?.sender) &&
-      setMessages((prev) => [...prev, arrivalMessage]);
-  }, [arrivalMessage, currentChat]);
+    if (messageSendSuccess) {
+      const messages = messagesChat[messagesChat.length - 1];
+      const currentChatID = currentChat?._id;
+      socket.current.emit("sendMessage", { messages, currentChatID });
+      dispatch(clearMessageSuccess());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messageSendSuccess]);
+
+  useEffect(() => {
+    if (arrivalMessage?.currentChatID === currentChat?._id) {
+      socket.current?.emit("messageDelivered", {
+        message: arrivalMessage?.messages,
+        currentChatId: arrivalMessage?.currentChatID,
+      });
+      dispatch(
+        setDeliveredMessage({
+          currentChatId: arrivalMessage?.currentChatID,
+          messageId: arrivalMessage?.messages._id,
+        })
+      );
+    }
+
+    if (arrivalMessage?.currentChatID === chatBox.currentChatBox) {
+      socket.current?.emit("messageSeen", {
+        message: arrivalMessage?.messages,
+        currentChatId: arrivalMessage?.currentChatID,
+      });
+
+      dispatch(
+        setSeenMessage({
+          currentChatId: arrivalMessage?.currentChatID,
+          messageId: arrivalMessage?.messages._id,
+        })
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrivalMessage]);
+
+  useEffect(() => {
+    socket.current?.on("getMessageDelivered", (data) => {
+      if (data.currentChatId === currentChat?._id) {
+        dispatch(
+          deliveredMessageChat({
+            userToken: user?.token,
+            messageId: data.message?._id,
+            currentChatId: data?.currentChatId,
+          })
+        );
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socket.current?.on("getMessageSeen", (data) => {
+      if (data.currentChatId === currentChat?._id) {
+        dispatch(
+          seenMessageChat({
+            userToken: user?.token,
+            messageId: data.message?._id,
+            currentChatId: data?.currentChatId,
+          })
+        );
+      }
+    });
+
+    socket.current?.on("getMessageSeenAll", (data) => {
+      if (data.currentChatId === currentChat?._id) {
+        dispatch(
+          seenAllMessageChat({
+            userToken: user?.token,
+            currentChatId: data?.currentChatId,
+          })
+        );
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const checkUsers = (users, user) => {
     return users.filter((u) => u?.id !== user.id);
@@ -54,6 +146,7 @@ export default function ChatBox({
     typingUsers &&
       currentChat?.members.some((m) => m._id === typingUsers[0]) &&
       setShowTyping(() => [typingUsers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typingUsers]);
 
   const handleSendMessage = async (e) => {
@@ -63,35 +156,22 @@ export default function ChatBox({
     const message = {
       text: newMessage,
       user: friendChat?._id,
+      image: "",
     };
 
-    socket.current.emit("sendMessage", {
-      senderId: user.id,
-      receiverId: friendChat._id,
-      currentChatId: currentChat?._id,
-      text: newMessage,
-    });
-
-    try {
-      const res = await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/chat/message`,
+    dispatch(
+      sendMessageChat({
         message,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
-      setMessages([...res.data.messages]);
-      setNewMessage("");
-    } catch (err) {
-      console.log(err);
-    }
+        userToken: user.token,
+        currentChatId: currentChat?._id,
+      })
+    );
+    setNewMessage("");
   };
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, scrollBottom]);
+  }, [messagesChat, scrollBottom]);
 
   const startTypingMessage = () => {
     if (!socket.current) return;
@@ -114,37 +194,91 @@ export default function ChatBox({
   useEffect(() => {
     if (isTyping) startTypingMessage();
     else stopTypingMessage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTyping]);
 
   useEffect(() => {
     scrollTypingRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [showTyping]);
 
+  const color =
+    chatBox.currentChatBox === currentChat?._id ? "#0084ff" : "var(--bg-fifth)";
+
+  const [getLastSeenMessage, SetGetLastSeenMessage] = useState(null);
+  useEffect(() => {
+    const lastSeenMessage = messagesChat.filter((m) => m.status === "seen");
+    SetGetLastSeenMessage(lastSeenMessage[lastSeenMessage.length - 1]?._id);
+  }, [messagesChat]);
+
   return (
     <>
-      <div className="ChatBox_wrapper" id={currentChat?._id}>
-        <div className="ChatBox_display">
+      <div
+        className="chatBox_wrapper"
+        onClick={() => {
+          dispatch(setCurrentChatBox(currentChat?._id));
+          handleRemoveWaitingMessage(
+            currentChat?._id,
+            friendChat._id,
+            user?.token
+          );
+        }}
+      >
+        <div className="chatBox_display">
           <ChatBoxHeader
+            chatBox={chatBox}
             friendChat={friendChat}
-            currentChat={currentChat}
             onlineUser={onlineUser}
+            currentChat={currentChat}
           />
 
-          <div className="ChatBox_container">
-            {messages?.map((message, i) => (
+          <div className="chatBox_container">
+            <div className="chatBox_information-wrapper">
+              <div className="chatBox_information">
+                <div className="chatBox_information-avatar-wrap">
+                  <img
+                    src={friendChat?.picture}
+                    className="chatBox_information-avatar"
+                    alt=""
+                  />
+                </div>
+                <div className="chatBox_information-name">
+                  <span>
+                    {friendChat?.first_name} {friendChat?.last_name}
+                  </span>
+                </div>
+                <div className="chatBox_information-about">
+                  <span>Facebook</span>
+                </div>
+                <div className="chatBox_information-about">
+                  {user.following.some((f) => f._id === friendChat._id) ? (
+                    <span>You're friends on Facebook</span>
+                  ) : (
+                    <span>You're not friends on Facebook</span>
+                  )}
+                </div>
+                <div className="chatBox_information-about">
+                  <span>New Facebook Account</span>
+                </div>
+              </div>
+            </div>
+
+            {messagesChat?.map((message, i) => (
               <div key={i}>
                 <Message
+                  index={i}
                   message={message}
-                  ownUser={message?.sender == user.id}
                   friendChat={friendChat}
                   typingUsers={typingUsers}
+                  messagesChat={messagesChat}
+                  ownUser={message?.sender === user.id}
+                  getLastSeenMessage={getLastSeenMessage}
                 />
               </div>
             ))}
 
             {showTyping.map((userId, index) => (
               <div
-                key={messages.length + index}
+                key={messagesChat.length + index}
                 ref={scrollTypingRef}
                 className="chat-typing"
               >
@@ -154,7 +288,7 @@ export default function ChatBox({
                   alt=""
                 />
                 <div className="details">
-                  <BeatLoader />
+                  <DotLoader />
                 </div>
               </div>
             ))}
@@ -162,11 +296,12 @@ export default function ChatBox({
           </div>
 
           <ChatBoxBottom
-            newMessage={newMessage}
-            setNewMessage={setNewMessage}
-            startTyping={startTyping}
-            stopTyping={stopTyping}
+            color={color}
             inputRef={inputRef}
+            newMessage={newMessage}
+            stopTyping={stopTyping}
+            startTyping={startTyping}
+            setNewMessage={setNewMessage}
             handleSendMessage={handleSendMessage}
           />
         </div>

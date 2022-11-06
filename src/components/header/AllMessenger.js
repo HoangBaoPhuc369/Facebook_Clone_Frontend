@@ -1,5 +1,6 @@
 import AllMessengerItem from "./AllMessengerItem";
-import { registerPopup } from "../../helpers/displayChatBox";
+import { setChatBox } from "../../redux/features/conversationSlice";
+import { useDispatch } from "react-redux";
 
 export default function AllMessenger({
   user,
@@ -12,8 +13,10 @@ export default function AllMessenger({
   closeArrivalMessage,
   setShowAllMessenger,
   setCloseArrivalMessage,
+  handleRemoveWaitingMessage,
 }) {
-
+  
+  const dispatch = useDispatch();
   return (
     <div className="all_messenger" style={{ display: display }}>
       <div className="scrollbar all_messenger_container">
@@ -30,8 +33,8 @@ export default function AllMessenger({
                 <div key={c._id}>
                   <div
                     onClick={() => {
-                      registerPopup(c._id);
-                      setShowAllMessenger(false);
+                      dispatch(setChatBox(c._id));
+                      setShowAllMessenger((prev) => !prev);
                       setScrollBottom((prev) => !prev);
                     }}
                   >
@@ -44,6 +47,7 @@ export default function AllMessenger({
                       arrivalMessage={arrivalMessage}
                       closeArrivalMessage={closeArrivalMessage}
                       setCloseArrivalMessage={setCloseArrivalMessage}
+                      handleRemoveWaitingMessage={handleRemoveWaitingMessage}
                     />
                   </div>
                 </div>

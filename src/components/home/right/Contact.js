@@ -1,11 +1,17 @@
-import { registerPopup } from "../../../helpers/displayChatBox";
+import { useDispatch, useSelector } from "react-redux";
+import { setChatBox } from "../../../redux/features/conversationSlice";
 
-export default function Contact({ user, conversations, userId }) {
-
+export default function Contact({ user, userId }) {
+  const { conversations } = useSelector((state) => ({
+    ...state.messenger,
+  }));
+  const dispatch = useDispatch();
   const handleOpenChatBox = () => {
-    const getCurrentConversation = conversations.find((c) => c.members.some((u) => u._id === userId));
-    registerPopup(getCurrentConversation._id);
-  }
+    const getCurrentConversation = conversations.find((c) =>
+      c.members.some((u) => u._id === userId)
+    );
+    dispatch(setChatBox(getCurrentConversation._id));
+  };
 
   return (
     <div className="contact hover3" onClick={handleOpenChatBox}>

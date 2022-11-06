@@ -1,57 +1,90 @@
-import { useState, useEffect } from "react";
 import { closePopup } from "../../helpers/displayChatBox";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import ArrowDown2 from "../../svg/arrowDown2";
 import MiniMize from "../../svg/miniMize";
 import PhoneCall from "../../svg/phoneCall";
 import VideoCall from "../../svg/videoCall";
 import XClose from "../../svg/xClose";
+import { removeChatBox } from "../../redux/features/conversationSlice";
 
-export default function ChatBoxHeader({ friendChat, currentChat, onlineUser }) {
+export default function ChatBoxHeader({
+  friendChat,
+  currentChat,
+  onlineUser,
+  chatBox,
+}) {
   const [checkOnline, setCheckOnline] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onlineUser]);
+
+  const checkWaitingChatBox = chatBox.chatBoxWaiting?.includes(
+    currentChat?._id
+  );
+  const setColorNewMessage = checkWaitingChatBox ? "blue-background" : "";
+  const setColorIcon = checkWaitingChatBox
+    ? "#fff"
+    : chatBox.currentChatBox === currentChat?._id
+    ? "#0084ff"
+    : "var(--bg-fifth)";
+
   return (
     <>
-      <div className="ChatBox_header">
-        <div className="ChatBox_header_left">
+      <div className={`ChatBox_header ${setColorNewMessage}`}>
+        <div
+          className={`ChatBox_header_left ${
+            checkWaitingChatBox ? "hover-blue" : "hover-grey"
+          }`}
+        >
           <div className="ChatBox_header_left_pad">
             <img src={friendChat?.picture} alt="" />
             <span
               className={checkOnline ? "ChatBox_header_left_circle" : ""}
             ></span>
             <div className="ChatBox_header_left_wrapper">
-              <span className="ChatBox_header_left_username">
+              <span
+                className={`ChatBox_header_left_username ${
+                  checkWaitingChatBox ? "primary-color" : ""
+                }`}
+              >
                 {friendChat?.first_name} {friendChat?.last_name}
               </span>
               <br />
-              <span className="ChatBox_header_left_status">
+              <span
+                className={`ChatBox_header_left_status ${
+                  checkWaitingChatBox ? "primary-color" : ""
+                }`}
+              >
                 {checkOnline ? "Active now" : ""}
               </span>
             </div>
             <div className="ChatBox_header_left_arrow_down">
-              <ArrowDown2 color="#0084ff" />
+              <ArrowDown2 color={setColorIcon} />
             </div>
           </div>
         </div>
         <div className="ChatBox_header_right">
           <span className="ChatBox_header_right_item hover3">
-            <PhoneCall color="#0084ff" />
+            <PhoneCall color={setColorIcon} />
           </span>
           <span className="ChatBox_header_right_item hover3">
-            <VideoCall color="#0084ff" />
+            <VideoCall color={setColorIcon} />
           </span>
           <span className="ChatBox_header_right_item hover3">
-            <MiniMize color="#0084ff" />
+            <MiniMize color={setColorIcon} />
           </span>
           <span
             className="ChatBox_header_right_item hover3"
-            onClick={() => {
-              closePopup(currentChat?._id);
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(removeChatBox(currentChat?._id));
             }}
           >
-            <XClose color="#0084ff" />
+            <XClose color={setColorIcon} />
           </span>
         </div>
       </div>

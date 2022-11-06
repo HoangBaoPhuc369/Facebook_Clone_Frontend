@@ -1,13 +1,11 @@
 import { Formik, Form } from "formik";
-import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import LoginInput from "../../components/inputs/loginInput";
 import { useState } from "react";
 import DotLoader from "react-spinners/DotLoader";
-import axios from "axios";
-import { useDispatch } from "react-redux";
-import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from './../../redux/features/authSlice';
 const loginInfos = {
   email: "",
   password: "",
@@ -15,11 +13,11 @@ const loginInfos = {
 export default function LoginForm({ setVisible }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [login, setLogin] = useState(loginInfos);
-  const { email, password } = login;
+  const [formValue, setFormValue] = useState(loginInfos);
+  const { email, password } = formValue;
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
-    setLogin({ ...login, [name]: value });
+    setFormValue({ ...formValue, [name]: value });
   };
   const loginValidation = Yup.object({
     email: Yup.string()
@@ -28,24 +26,10 @@ export default function LoginForm({ setVisible }) {
       .max(100),
     password: Yup.string().required("Password is required"),
   });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const loginSubmit = async () => {
-    try {
-      setLoading(true);
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/auth/login`,
-        {
-          email,
-          password,
-        }
-      );
-      dispatch({ type: "LOGIN", payload: data });
-      Cookies.set("user", JSON.stringify(data));
-      navigate("/");
-    } catch (error) {
-      setLoading(false);
-      setError(error.response.data.message);
+  const { loading, error } = useSelector((state) => ({ ...state.auth }));
+  const loginSubmit = () => {
+    if (email && password) {
+      dispatch(login({ formValue, navigate }));
     }
   };
   return (
@@ -65,20 +49,20 @@ export default function LoginForm({ setVisible }) {
               password,
             }}
             validationSchema={loginValidation}
-            onSubmit={() => {
-              loginSubmit();
-            }}
+            onSubmit={loginSubmit}
           >
             {(formik) => (
               <Form>
                 <LoginInput
                   type="text"
+                  value={email}
                   name="email"
                   placeholder="Email address or phone number"
                   onChange={handleLoginChange}
                 />
                 <LoginInput
                   type="password"
+                  value={password}
                   name="password"
                   placeholder="Password"
                   onChange={handleLoginChange}

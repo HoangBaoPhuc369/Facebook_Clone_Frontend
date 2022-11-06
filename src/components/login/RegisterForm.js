@@ -5,13 +5,16 @@ import * as Yup from "yup";
 import DateOfBirthSelect from "./DateOfBirthSelect";
 import GenderSelect from "./GenderSelect";
 import DotLoader from "react-spinners/DotLoader";
-import axios from "axios";
-import { useDispatch } from "react-redux";
-import Cookies from "js-cookie";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { register } from "./../../redux/features/authSlice";
+
 export default function RegisterForm({ setVisible }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { errorRegister, message, loadingRegister } = useSelector((state) => ({
+    ...state.auth,
+  }));
   const userInfos = {
     first_name: "",
     last_name: "",
@@ -22,7 +25,7 @@ export default function RegisterForm({ setVisible }) {
     bDay: new Date().getDate(),
     gender: "",
   };
-  const [user, setUser] = useState(userInfos);
+  const [formValue, setformValue] = useState(userInfos);
   const {
     first_name,
     last_name,
@@ -32,11 +35,11 @@ export default function RegisterForm({ setVisible }) {
     bMonth,
     bDay,
     gender,
-  } = user;
+  } = formValue;
   const yearTemp = new Date().getFullYear();
   const handleRegisterChange = (e) => {
     const { name, value } = e.target;
-    setUser({ ...user, [name]: value });
+    setformValue({ ...formValue, [name]: value });
   };
   const years = Array.from(new Array(108), (val, index) => yearTemp - index);
   const months = Array.from(new Array(12), (val, index) => 1 + index);
@@ -70,37 +73,19 @@ export default function RegisterForm({ setVisible }) {
   const [dateError, setDateError] = useState("");
   const [genderError, setGenderError] = useState("");
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const registerSubmit = async () => {
-    try {
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/auth/signup`,
-        {
-          first_name,
-          last_name,
-          email,
-          password,
-          bYear,
-          bMonth,
-          bDay,
-          gender,
-        }
-      );
-      setError("");
-      setSuccess(data.message);
-      const { message, ...rest } = data;
-      setTimeout(() => {
-        dispatch({ type: "LOGIN", payload: rest });
-        Cookies.set("user", JSON.stringify(rest));
-        navigate("/");
-      }, 2000);
-    } catch (error) {
-      setLoading(false);
-      setSuccess("");
-      setError(error.response.data.message);
+  const registerSubmit = () => {
+    if (
+      first_name &&
+      last_name &&
+      email &&
+      password &&
+      bYear &&
+      bMonth &&
+      bDay &&
+      gender
+    ) {
+     
+      dispatch(register({ formValue, navigate }));
     }
   };
   return (
@@ -131,11 +116,11 @@ export default function RegisterForm({ setVisible }) {
             let noMoreThan70 = new Date(1970 + 70, 0, 1);
             if (current_date - picked_date < atleast14) {
               setDateError(
-                "it looks like you(ve enetered the wrong info.Please make sure that you use your real date of birth."
+                "it looks like you not old enough (14y), you can't register"
               );
             } else if (current_date - picked_date > noMoreThan70) {
               setDateError(
-                "it looks like you(ve enetered the wrong info.Please make sure that you use your real date of birth."
+                "it looks like you too old (70y), you can't register"
               );
             } else if (gender === "") {
               setDateError("");
@@ -215,9 +200,9 @@ export default function RegisterForm({ setVisible }) {
               <div className="reg_btn_wrapper">
                 <button className="blue_btn open_signup">Sign Up</button>
               </div>
-              <DotLoader color="#1876f2" loading={loading} size={30} />
-              {error && <div className="error_text">{error}</div>}
-              {success && <div className="success_text">{success}</div>}
+              <DotLoader color="#1876f2" loading={loadingRegister} size={30} />
+              {errorRegister && <div className="errorRegister_text">{errorRegister}</div>}
+              {message && <div className="success_text">{message}</div>}
             </Form>
           )}
         </Formik>

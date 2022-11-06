@@ -21,15 +21,13 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { HashLoader } from "react-spinners";
 export default function Profile({
-  getAllPosts,
-  conversations,
   onlineUser,
   setOnlineUsers,
 }) {
   const [visible, setVisible] = useState(false);
   const { username } = useParams();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => ({ ...state }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   const [photos, setPhotos] = useState({});
   var userName = username === undefined ? user.username : username;
 
@@ -95,6 +93,8 @@ export default function Profile({
     }
   };
 
+  // console.log(profile);
+
   const profileTop = useRef(null);
   const leftSide = useRef(null);
   const [height, setHeight] = useState();
@@ -129,8 +129,6 @@ export default function Profile({
       <Header
         page="profile"
         onlineUser={onlineUser}
-        getAllPosts={getAllPosts}
-        conversations={conversations}
         setOnlineUsers={setOnlineUsers}
       />
       <div className="profile_top" ref={profileTop}>

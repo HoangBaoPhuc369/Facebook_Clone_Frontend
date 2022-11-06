@@ -12,7 +12,7 @@ export default function LeftHome({ user }) {
       <Link to="/profile" className="left_link hover2">
         <img src={user?.picture} alt="" />
         <span>
-          {user?.first_name} {user.last_name}
+          {user?.first_name} {user?.last_name}
         </span>
       </Link>
       {left.slice(0, 8).map((link, i) => (
@@ -59,7 +59,7 @@ export default function LeftHome({ user }) {
           </div>
         </div>
       )}
-      <div className="splitter"></div>
+      {/* <div className="splitter"></div> */}
       
       <div className={`fb_copyright ${visible && "relative_fb_copyright"}`}>
         <Link to="/">Privacy </Link>

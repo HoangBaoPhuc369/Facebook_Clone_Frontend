@@ -14,7 +14,7 @@ export default function Cover({ cover, visitor, photos,  dispatch, profilePost})
   const [coverPicture, setCoverPicture] = useState("");
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
-  const { user } = useSelector((state) => ({ ...state }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   const menuRef = useRef(null);
   const refInput = useRef(null);
   const cRef = useRef(null);
@@ -112,7 +112,7 @@ export default function Cover({ cover, visitor, photos,  dispatch, profilePost})
       }
     } catch (error) {
       setLoading(false);
-      setError(error.response.data.message);
+      setError(error.response?.data?.message);
     }
   };
   return (

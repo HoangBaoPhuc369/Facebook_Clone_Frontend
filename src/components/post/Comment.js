@@ -84,7 +84,15 @@ export default function Comment({
             : ""
         }
       >
-        <img src={comment.commentBy.picture} alt="" className="comment_img" />
+        <img
+          src={
+            comment.commentBy?._id === user.id
+              ? user.picture
+              : comment.commentBy.picture
+          }
+          alt=""
+          className="comment_img"
+        />
         <div className="comment_col">
           <div className="comment_wrap">
             <input

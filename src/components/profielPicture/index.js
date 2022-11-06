@@ -12,7 +12,7 @@ export default function ProfilePicture({
   profilePost,
 }) {
   const popup = useRef(null);
-  const { user } = useSelector((state) => ({ ...state }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   //useOnClickOutside(popup, () => setShow(false));
   const refInput = useRef(null);
   const [image, setImage] = useState("");

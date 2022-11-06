@@ -784,3 +784,13 @@
   background-repeat: no-repeat;
   display: inline-block;
 }
+
+.notification_comment_icon {
+  height: 28px;
+  width: 28px;
+  background-image: url(../../../public/icons/notificationIcon.png);
+  background-position: 0px -812px;
+  background-size: auto;
+  background-repeat: no-repeat;
+  display: inline-block;
+}

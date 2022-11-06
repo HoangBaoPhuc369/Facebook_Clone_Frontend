@@ -4,90 +4,38 @@ import Profile from "./pages/profile";
 import Home from "./pages/home";
 import LoggedInRoutes from "./routes/LoggedInRoutes";
 import NotLoggedInRoutes from "./routes/NotLoggedInRoutes";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Activate from "./pages/home/activate";
 import Reset from "./pages/reset";
 import CreatePostPopup from "./components/createPostPopup";
-import { useEffect, useReducer, useState } from "react";
-import axios from "axios";
-import { postsReducer } from "./functions/reducers";
+import { useState } from "react";
 import Friends from "./pages/friends";
+import { useEffect } from "react";
+import { getAllPosts } from "./redux/features/postSlice";
+import { getConversations } from "./redux/features/conversationSlice";
+import NotificationPopUp from "./components/notificationPopUp";
 import DeletePostPopUp from "./components/deletePost";
 
 function App() {
   const [visible, setVisible] = useState(false);
   const [onlineUser, setOnlineUsers] = useState([]);
-  const [conversations, setConversations] = useState([]);
   const [visibleDelPost, setVisibleDelPost] = useState(false);
-  const { user, darkTheme } = useSelector((state) => ({ ...state }));
-  const [{ loading, error, posts }, dispatch] = useReducer(postsReducer, {
-    loading: false,
-    posts: [],
-    error: "",
-  });
+  const { user } = useSelector((state) => ({ ...state.auth }));
+  const { darkTheme } = useSelector((state) => ({ ...state.theme }));
+  const userId = user?.id;
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    getAllPosts();
-  }, [user?.token]);
-
- 
-
-  const getAllPosts = async () => {
-    try {
-      dispatch({
-        type: "POSTS_REQUEST",
-      });
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/posts/get-all-posts`,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
-      dispatch({
-        type: "POSTS_SUCCESS",
-        payload: data,
-      });
-
-    } catch (error) {
-      dispatch({
-        type: "POSTS_ERROR",
-        payload: error?.response?.data?.message,
-      });
+    if (user?.token) {
+      dispatch(getAllPosts({ userToken: user?.token }));
+      dispatch(getConversations({ userToken: user?.token }));
     }
-  };
-
-  //Get conversation
-  useEffect(() => {
-    const getConversations = async () => {
-      try {
-        const res = await axios.put(
-          `${process.env.REACT_APP_BACKEND_URL}/chat/conversations`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${user?.token}`,
-            },
-          }
-        );
-        setConversations(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getConversations();
-  }, [user?.following, user?.token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   return (
     <div className={darkTheme ? "dark" : "light"}>
-      {visible && (
-        <CreatePostPopup
-          user={user}
-          setVisible={setVisible}
-          posts={posts}
-          dispatch={dispatch}
-        />
-      )}
+      {visible && <CreatePostPopup user={user} setVisible={setVisible} />}
 
       {visibleDelPost && <DeletePostPopUp />}
 
@@ -99,8 +47,6 @@ function App() {
               <Profile
                 setVisible={setVisible}
                 onlineUser={onlineUser}
-                getAllPosts={getAllPosts}
-                conversations={conversations}
                 setOnlineUsers={setOnlineUsers}
               />
             }
@@ -112,8 +58,6 @@ function App() {
               <Profile
                 setVisible={setVisible}
                 onlineUser={onlineUser}
-                getAllPosts={getAllPosts}
-                conversations={conversations}
                 setOnlineUsers={setOnlineUsers}
               />
             }
@@ -125,12 +69,8 @@ function App() {
             path="/"
             element={
               <Home
-                posts={posts}
-                loading={loading}
                 onlineUser={onlineUser}
                 setVisible={setVisible}
-                getAllPosts={getAllPosts}
-                conversations={conversations}
                 setOnlineUsers={setOnlineUsers}
                 setVisibleDelPost={setVisibleDelPost}
               />
@@ -144,6 +84,8 @@ function App() {
         </Route>
         <Route path="/reset" element={<Reset />} />
       </Routes>
+
+      <NotificationPopUp>{user?.picture}</NotificationPopUp>
     </div>
   );
 }

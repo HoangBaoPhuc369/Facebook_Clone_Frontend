@@ -11,7 +11,7 @@ import ChangePassword from './ChangePassword';
 import Footer from '../../components/login/Footer';
 
 export default function Reset() {
-  const { user } = useSelector((state) => ({ ...state }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [visible, setVisible] = useState(0);

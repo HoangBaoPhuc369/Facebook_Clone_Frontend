@@ -1,26 +1,24 @@
-import {useRef, useState } from "react";
+import { useRef, useState } from "react";
 import "./style.css";
 import EmojiPickerBackgrounds from "./EmojiPickerBackgrounds";
 import AddToYourPost from "./AddToYourPost";
 import ImagePreview from "./ImagePreview";
 import useClickOutside from "../../helpers/clickOutside";
-import { createPost } from "../../functions/post";
 import PulseLoader from "react-spinners/PulseLoader";
 import PostError from "./PostError";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
 import { uploadImages } from "../../functions/uploadImages";
-export default function CreatePostPopup({
-  user,
-  setVisible,
-  posts,
-  dispatch,
-  profile,
-}) {
+import { useSelector, useDispatch } from "react-redux";
+import { createPost } from "../../redux/features/postSlice";
+export default function CreatePostPopup({ setVisible }) {
+  const { user } = useSelector((state) => ({ ...state.auth }));
+  const { errorCreatePost, loadingCreatePost } = useSelector((state) => ({
+    ...state.newFeed,
+  }));
+  const dispatch = useDispatch();
   const popup = useRef(null);
   const [text, setText] = useState("");
   const [showPrev, setShowPrev] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [images, setImages] = useState([]);
   const [background, setBackground] = useState("");
   useClickOutside(popup, () => {
@@ -28,29 +26,22 @@ export default function CreatePostPopup({
   });
   const postSubmit = async () => {
     if (background) {
-      setLoading(true);
-      const response = await createPost(
-        null,
-        background,
-        text,
-        null,
-        user.id,
-        user.token
+      dispatch(
+        createPost({
+          type: null,
+          background,
+          text: text,
+          images: null,
+          user: user.id,
+          token: user.token,
+        })
       );
-      setLoading(false);
-      if (response.status === "ok") {
-        dispatch({
-          type: profile ? "PROFILE_POSTS" : "POSTS_SUCCESS",
-          payload: [response.data, ...posts],
-        });
+      if (errorCreatePost === "") {
         setBackground("");
         setText("");
         setVisible(false);
-      } else {
-        setError(response);
       }
     } else if (images && images.length) {
-      setLoading(true);
       const postImages = images.map((img) => {
         return dataURItoBlob(img);
       });
@@ -61,56 +52,66 @@ export default function CreatePostPopup({
         formData.append("file", image);
       });
       const response = await uploadImages(formData, user.token);
-      const res = await createPost(
-        null,
-        null,
-        text,
-        response,
-        user.id,
-        user.token
+      // const res = await createPost(
+      //   null,
+      //   null,
+      //   text,
+      //   response,
+      //   user.id,
+      //   user.token
+      // );
+      // setLoading(false);
+      // if (res.status === "ok") {
+      //   dispatch({
+      //     type: profile ? "PROFILE_POSTS" : "POSTS_SUCCESS",
+      //     payload: [res.data, ...posts],
+      //   });
+      //   setText("");
+      //   setImages("");
+      //   setVisible(false);
+      // } else {
+      //   setError(res);
+      // }
+
+      dispatch(
+        createPost({
+          type: null,
+          background: null,
+          text: text,
+          images: response,
+          user: user.id,
+          token: user.token,
+        })
       );
-      setLoading(false);
-      if (res.status === "ok") {
-        dispatch({
-          type: profile ? "PROFILE_POSTS" : "POSTS_SUCCESS",
-          payload: [res.data, ...posts],
-        });
+      if (errorCreatePost === "") {
         setText("");
         setImages("");
         setVisible(false);
-      } else {
-        setError(res);
       }
     } else if (text) {
-      setLoading(true);
-      const response = await createPost(
-        null,
-        null,
-        text,
-        null,
-        user.id,
-        user.token
+      dispatch(
+        createPost({
+          type: null,
+          background: null,
+          text: text,
+          images: null,
+          user: user.id,
+          token: user.token,
+        })
       );
-      setLoading(false);
-      if (response.status === "ok") {
-        dispatch({
-          type: profile ? "PROFILE_POSTS" : "POSTS_SUCCESS",
-          payload: [response.data, ...posts],
-        });
+      if (errorCreatePost === "") {
         setBackground("");
         setText("");
         setVisible(false);
-      } else {
-        setError(response);
       }
     } else {
-      console.log("nothing");
+      console.log("something went wrong");
     }
   };
   return (
     <div className="blur">
       <div className="postBox" ref={popup}>
-        {error && <PostError error={error} setError={setError} />}
+        {errorCreatePost && <PostError error={errorCreatePost} />}
         <div className="box_header">
           <div
             className="small_circle"
@@ -156,7 +157,6 @@ export default function CreatePostPopup({
             images={images}
             setImages={setImages}
             setShowPrev={setShowPrev}
-            setError={setError}
           />
         )}
         <AddToYourPost setShowPrev={setShowPrev} />
@@ -165,9 +165,9 @@ export default function CreatePostPopup({
           onClick={() => {
             postSubmit();
           }}
-          disabled={loading}
+          disabled={loadingCreatePost}
         >
-          {loading ? <PulseLoader color="#fff" size={5} /> : "Post"}
+          {loadingCreatePost ? <PulseLoader color="#fff" size={5} /> : "Post"}
         </button>
       </div>
     </div>
