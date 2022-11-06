@@ -50,6 +50,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
   const allmenu = useRef(null);
   const usermenu = useRef(null);
   const messenger = useRef(null);
+  const notificationRef = useRef(null);
   useClickOutside(allmenu, () => {
     setShowAllMenu(false);
   });
@@ -58,6 +59,9 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
   });
   useClickOutside(usermenu, () => {
     setShowUserMenu(false);
+  });
+  useClickOutside(notificationRef, () => {
+    setShowAllNotification(false);
   });
 
   const showChatBox = [];
@@ -241,7 +245,7 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
             handleRemoveWaitingMessage={handleRemoveWaitingMessage}
           />
         </div>
-        <div className="circle_icon hover1">
+        <div className="circle_icon hover1" ref={notificationRef}>
           <div
             className="icon_wrapper"
             onClick={() => {
@@ -252,8 +256,13 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
           </div>
           {/* <div className="right_notification">5</div> */}
 
-          {/* {showAllNotification && <AllNotifications />} */}
-          <AllNotifications />
+          {showAllNotification && (
+            <AllNotifications
+              user={user}
+              setShowAllNotification={setShowAllNotification}
+            />
+          )}
+          {/* <AllNotifications /> */}
         </div>
         <div
           className={`circle_icon hover1 ${showUserMenu && "active_header"}`}

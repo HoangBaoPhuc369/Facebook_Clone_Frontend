@@ -85,7 +85,7 @@ function App() {
         <Route path="/reset" element={<Reset />} />
       </Routes>
 
-      <NotificationPopUp>{user?.picture}</NotificationPopUp>
+      {/* <NotificationPopUp>{user?.picture}</NotificationPopUp> */}
     </div>
   );
 }

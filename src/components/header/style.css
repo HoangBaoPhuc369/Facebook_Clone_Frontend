@@ -705,7 +705,7 @@ header {
 /*-----------All Notification------------*/
 .all_notification {
   position: absolute;
-  right: -3.5rem;
+  right: -3rem;
   top: 45px;
   background: var(--bg-primary);
   border-radius: 10px;
@@ -770,18 +770,16 @@ header {
 .all_notification_item {
   position: relative;
   display: flex;
-  align-items: center;
-  width: 95%;
-  margin-bottom: 5px;
+  /* align-items: center; */
   padding: 5px;
   cursor: pointer;
   border-radius: 10px;
-  margin-left: 8px;
+  margin: 0px 0px 5px 8px;
 }
 
 .all_notification_item img {
-  width: 57px;
-  height: 57px;
+  width: 56px;
+  height: 56px;
   margin-right: 10px;
   border-radius: 50%;
 }
@@ -818,12 +816,21 @@ header {
 
 .all_notification_col {
   display: flex;
+  height: 100%;
+  width: 200px;
   flex-direction: column;
 }
 
 .all_notification_col span:first-of-type {
   font-size: 15px;
+  color: var(--color-primary);
   font-weight: normal;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow: hidden;
 }
 .all_notification_col span:last-of-type {
   font-size: 13px;
@@ -863,8 +870,8 @@ header {
   width: 17px;
   background: #31a24c;
   height: 17px;
-  top: 48px;
-  left: 43px;
+  top: 40px;
+  left: 40px;
   border-radius: 50%;
   border: 2px solid var(--bg-primary);
 }
@@ -874,6 +881,7 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
+  margin-bottom: 4px;
 }
 
 .all_notification_group_early {
@@ -891,9 +899,46 @@ header {
   text-decoration: underline;
 }
 
+.all_notification_item_img_wrap {
+  position: relative;
+}
+
+.all_notification_item_img_wrap > i {
+  position: absolute;
+  right: 4px;
+  bottom: 0px;
+}
+
+.all_notification_item_img_wrap > .all_notification_react {
+  position: absolute;
+  right: -4px;
+  bottom: 0px;
+  width: 28px;
+  height: 28px;
+}
+
+.all_notification_delivered {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.all_notification_delivered > div {
+  width: 12px;
+  height: 12px;
+  background: var(--blue-color);
+  border-radius: 50%;
+  margin-right: 10px;
+}
 /* ----------All Notification----------- */
 
 /*---responsive----------*/
+@media (max-width: 1540px) {
+  .notification-box_form {
+    width: 20.5% !important;
+  }
+}
 @media (max-width: 1295px) {
   .middle_icon {
     width: 90px;

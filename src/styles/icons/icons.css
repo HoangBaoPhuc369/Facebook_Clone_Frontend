@@ -786,11 +786,31 @@
 }
 
 .notification_comment_icon {
-  height: 28px;
-  width: 28px;
+  height: 30px;
+  width: 30px;
   background-image: url(../../../public/icons/notificationIcon.png);
-  background-position: 0px -812px;
+  background-position: 0px -811px;
   background-size: auto;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.notification_friend_icon {
+  height: 30px;
+  width: 30px;
+  background-image: url(../../../public/icons/notificationIcon.png);
+  background-position: 0px -930px;
+  background-size: 30px 1980px;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+
+.notification_post_icon {
+  height: 30px;
+  width: 30px;
+  background-image: url(../../../public/icons/notificationIcon.png);
+  background-position: 0px -1530px;
+  background-size: 30px 1980px;
   background-repeat: no-repeat;
   display: inline-block;
 }
