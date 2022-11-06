@@ -88,7 +88,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-  
+
   return (
     <div
       className="post"
@@ -100,7 +100,10 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
           to={`/profile/${post?.user.username}`}
           className="post_header_left"
         >
-          <img src={post.user?._id === user.id ? user.picture : post.user.picture} alt="" />
+          <img
+            src={post.user?._id === user.id ? user.picture : post.user.picture}
+            alt=""
+          />
           <div className="header_col">
             <div className="post_profile_name">
               {post.user.first_name} {post.user.last_name}
@@ -218,13 +221,8 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
         </div>
       </div>
       <div className="post_actions">
-        <ReactsPopup
-          visible={visible}
-          setVisible={setVisible}
-          reactHandler={reactHandler}
-        />
         <div
-          className="post_action hover1"
+          className="post_action hover1 box"
           onMouseOver={() => {
             setTimeout(() => {
               setVisible(true);
@@ -237,6 +235,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
           }}
           onClick={() => reactHandler(check ? check : "like")}
         >
+          <ReactsPopup reactHandler={reactHandler} />
           {check ? (
             <img
               src={`../../../reacts/${check}.svg`}
@@ -248,6 +247,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
             <i className="like_icon"></i>
           )}
           <span
+          className="post_action_text_react"
             style={{
               color: `
           
@@ -271,6 +271,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
           >
             {check ? check : "Like"}
           </span>
+
         </div>
         <div className="post_action hover1">
           <i className="comment_icon"></i>
