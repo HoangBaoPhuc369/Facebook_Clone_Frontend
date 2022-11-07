@@ -770,11 +770,10 @@ header {
 .all_notification_item {
   position: relative;
   display: flex;
-  /* align-items: center; */
   padding: 5px;
   cursor: pointer;
   border-radius: 10px;
-  margin: 0px 0px 5px 8px;
+  margin: 0px 8px 5px 8px;
 }
 
 .all_notification_item img {
@@ -842,6 +841,15 @@ header {
   white-space: normal;
   overflow: hidden;
   max-width: 200px;
+}
+
+.all_notification-time-await {
+  color: var(--blue-color) !important;
+  font-weight: 600;
+}
+
+.all_notification_col > span > strong {
+  font-weight: 600;
 }
 
 .all_notification_group {

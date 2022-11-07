@@ -1,3 +1,6 @@
+import { useDispatch } from "react-redux";
+import { createNotifications } from "../../redux/features/notificationSlice";
+
 const reactsArray = [
   {
     name: "like",
@@ -25,52 +28,47 @@ const reactsArray = [
   },
 ];
 
-export default function ReactsPopup({ visible, setVisible, reactHandler }) {
+export default function ReactsPopup({
+  reactHandler,
+  postId,
+  user,
+  postUserId,
+  socketRef,
+}) {
+  const dispatch = useDispatch();
+  // console.log(socketRef);
+  const handleSendNotifications = (icon) => {
+    if (user?.id !== postUserId) {
+      const notification = {
+        senderId: user?.id,
+        receiverId: postUserId,
+        icon: icon,
+        text: `reacted to your post: ${icon}`,
+      };
+      dispatch(createNotifications({props: notification, token: user?.token}));
+      socketRef.current.emit("sendNotification", notification);
+    }
+  };
+
   return (
     <>
-      {/* {visible && (
-        // <div
-        //   classNameName="reacts_popup"
-        //   onMouseOver={() => {
-        //     setTimeout(() => {
-        //       setVisible(true);
-        //     }, 500);
-        //   }}
-        //   onMouseLeave={() => {
-        //     setTimeout(() => {
-        //       setVisible(false);
-        //     }, 500);
-        //   }}
-        // >
-        //   {reactsArray.map((react, i) => (
-        //     <div
-        //       classNameName="react"
-        //       key={i}
-        //       onClick={() => reactHandler(react.name)}
-        //     >
-        //       <img src={react.image} alt="" />
-        //     </div>
-        //   ))}
-        // </div>
-      )} */}
-        <input type="checkbox" id="like" className="field-reactions" />
-        <h3 className="text-desc">
-          Press space and after tab key to navigation
-        </h3>
-        <label htmlFor="like" className="label-reactions">
-          Like
-        </label>
-        <div className="toolbox"></div>
-        <label className="overlay" htmlFor="like"></label>
-
-        {reactsArray.map((react, i) => (
-          <div className={`reaction-${react.name}`} key={i}>
-            <img src={react.image} alt="" />
-            <span className="legend-reaction">
-              {react.name.charAt(0).toUpperCase() + react.name.slice(1)}
-            </span>
-          </div>
-        ))}
+      <div className="toolbox"></div>
+      {reactsArray.map((react, i) => (
+        <div
+          className={`reaction-${react.name}`}
+          key={i}
+          onClick={(e) => {
+            e.stopPropagation();
+            reactHandler(react.name);
+            handleSendNotifications(react.name);
+          }}
+        >
+          <img src={react.image} alt="" />
+          <span className="legend-reaction">
+            {react.name.charAt(0).toUpperCase() + react.name.slice(1)}
+          </span>
+        </div>
+      ))}
     </>
   );
 }

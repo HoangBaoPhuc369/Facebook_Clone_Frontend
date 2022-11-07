@@ -23,9 +23,10 @@ export default function Home({
   const { posts, loading, error } = useSelector((state) => ({
     ...state.newFeed,
   }));
-  
+
   const { user } = useSelector((state) => ({ ...state.auth }));
   const userId = user?.id;
+  const socketRef = useRef();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function Home({
     <div className="background-secondary">
       <Header
         page="home"
-        // getAllPosts={getAllPosts}
+        socketRef={socketRef}
         onlineUser={onlineUser}
         setOnlineUsers={setOnlineUsers}
       />
@@ -59,9 +60,10 @@ export default function Home({
             <div className="posts">
               {posts.map((post, i) => (
                 <Post
-                  key={post?._id}
                   post={post}
                   user={user}
+                  key={post?._id}
+                  socketRef={socketRef}
                   setVisibleDelPost={setVisibleDelPost}
                 />
               ))}

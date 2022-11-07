@@ -320,12 +320,39 @@
   padding: 7px 0;
   border-radius: 5px;
 }
+
 .post_action .post_action_text_react {
   color: var(--color-secondary);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   transform: translateY(-1px);
   text-transform: capitalize;
+  margin: 0 4px;
+  width: 42px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.post_action_reaction_wrap > .small_react {
+  margin: 0 4px;
+}
+
+.post_action_reaction_wrap > i {
+  margin: 0 4px;
+}
+
+.post_action_reaction_wrap > .post_action_reaction_like_react {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  margin: 0px 4px;
+}
+
+.post_action_reaction_wrap > .post_action_reaction_like_react > img {
+  width: 25px;
+  position: absolute;
+  top: -4px;
+  left: -4px;
 }
 
 /* -------------React PopUp --------------- */
@@ -411,7 +438,11 @@
   width: 100%;
 }
 
-.box {
+.post_action_reaction_wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .overlay {

@@ -8,13 +8,14 @@ import { useDispatch, useSelector } from "react-redux";
 import Activate from "./pages/home/activate";
 import Reset from "./pages/reset";
 import CreatePostPopup from "./components/createPostPopup";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Friends from "./pages/friends";
 import { useEffect } from "react";
 import { getAllPosts } from "./redux/features/postSlice";
 import { getConversations } from "./redux/features/conversationSlice";
 import NotificationPopUp from "./components/notificationPopUp";
 import DeletePostPopUp from "./components/deletePost";
+import { getNotification } from "./redux/features/notificationSlice";
 
 function App() {
   const [visible, setVisible] = useState(false);
@@ -28,6 +29,7 @@ function App() {
   useEffect(() => {
     if (user?.token) {
       dispatch(getAllPosts({ userToken: user?.token }));
+      dispatch(getNotification({ userToken: user?.token }));
       dispatch(getConversations({ userToken: user?.token }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

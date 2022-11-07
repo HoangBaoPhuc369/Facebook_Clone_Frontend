@@ -397,6 +397,15 @@
   display: inline-block;
   filter: invert(40%);
 }
+.like_icon_fill {
+  background-image: url("../../../public/icons/icons5.png");
+  background-position: 0px -232px;
+  background-size: auto;
+  width: 18px;
+  height: 18px;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
 .comment_icon {
   background-image: url("../../../public/icons/icons5.png");
   background-position: 0 -205px;

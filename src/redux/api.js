@@ -102,3 +102,42 @@ export const seenAllMessageChat = (userToken, currentChatId) =>
       },
     }
   );
+
+// --------------------------NOTIFICATION API--------------------------------------
+export const createNotifications = (props, token) =>
+  axios.post(
+    `${process.env.REACT_APP_BACKEND_URL}/notifications`,
+    {
+      from: props.senderId,
+      user: props.receiverId,
+      icon: props.icon,
+      text: props.text,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const getNotification = (userToken) =>
+  axios.get(
+    `${process.env.REACT_APP_BACKEND_URL}/notifications`,
+    {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    }
+  );
+
+  export const seenNotification = (userToken, nofId) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/notifications/${nofId}/seen`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    }
+  );
+

@@ -1,15 +1,23 @@
 import Moment from "react-moment";
+import { useDispatch } from "react-redux";
+import { seenNotification } from "../../redux/features/notificationSlice";
 
 export default function AllNotificationItem({
+  user,
   notification,
   checkReact,
   setShowAllNotification,
 }) {
+  const dispatch = useDispatch();
+
   return (
     <div
       className="all_notification_item hover1"
       onClick={() => {
-        setShowAllNotification(prev => !prev);
+        dispatch(
+          seenNotification({ userToken: user?.token, nofId: notification?._id })
+        );
+        // setShowAllNotification((prev) => !prev);
       }}
     >
       <div className="all_notification_item_chat">
@@ -31,8 +39,19 @@ export default function AllNotificationItem({
           )}
         </div>
         <div className="all_notification_col">
-          <span>{notification.text}</span>
-          <span className="all_notification-time">
+          <span>
+            <strong>
+              {notification.from.first_name} {notification.from.last_name}
+            </strong>{" "}
+            {notification.text}
+          </span>
+          <span
+            className={
+              notification.status !== "seen"
+                ? "all_notification-time-await"
+                : "all_notification-time"
+            }
+          >
             <Moment fromNow interval={30}>
               {notification.createdAt}
             </Moment>
@@ -40,7 +59,7 @@ export default function AllNotificationItem({
         </div>
       </div>
       <div className="all_notification_delivered">
-        {notification.status === "seen" ? <div></div> : null}
+        {notification.status !== "seen" ? <div></div> : null}
       </div>
     </div>
   );

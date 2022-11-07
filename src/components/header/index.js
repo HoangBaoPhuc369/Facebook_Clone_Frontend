@@ -31,14 +31,18 @@ import {
 } from "../../redux/features/conversationSlice";
 import Moment from "react-moment";
 import AllNotifications from "./AllNotifications";
+import { getNotification } from "../../redux/features/notificationSlice";
 
-export default function Header({ page, onlineUser, setOnlineUsers }) {
+export default function Header({
+  page,
+  onlineUser,
+  setOnlineUsers,
+  socketRef,
+}) {
   const { user } = useSelector((state) => ({ ...state.auth }));
-  const { conversations, chatBox, messageSendSuccess } = useSelector(
-    (state) => ({
-      ...state.messenger,
-    })
-  );
+  const { conversations, chatBox } = useSelector((state) => ({
+    ...state.messenger,
+  }));
   const color = "#65676b";
   const dispatch = useDispatch();
   const [showAllMenu, setShowAllMenu] = useState(false);
@@ -81,8 +85,6 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [closeArrivalMessage, setCloseArrivalMessage] = useState(false);
 
-  const socketRef = useRef();
-
   // Get message from socketRef io
   useEffect(() => {
     socketRef.current = io("ws://localhost:8900");
@@ -100,12 +102,21 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
   }, []);
 
   useEffect(() => {
+    socketRef.current.on("getNotification", (data) => {
+      //Cho nay chi can day vo state khong can call api
+      dispatch(getNotification({ userToken: user?.token }));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     socketRef.current.on("start typing message", (typingInfo) => {
       if (typingInfo.senderId !== socketRef.current.id) {
         const user = typingInfo.user;
         setTypingUsers((users) => [...users, user]);
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
