@@ -31,7 +31,11 @@ import {
 } from "../../redux/features/conversationSlice";
 import Moment from "react-moment";
 import AllNotifications from "./AllNotifications";
-import { getNotification } from "../../redux/features/notificationSlice";
+import {
+  clearNewNotifications,
+  getNewNotifications,
+  getNotification,
+} from "../../redux/features/notificationSlice";
 
 export default function Header({
   page,
@@ -40,6 +44,9 @@ export default function Header({
   socketRef,
 }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
+  const { newNotifications } = useSelector((state) => ({
+    ...state.notification,
+  }));
   const { conversations, chatBox } = useSelector((state) => ({
     ...state.messenger,
   }));
@@ -105,6 +112,7 @@ export default function Header({
     socketRef.current.on("getNotification", (data) => {
       //Cho nay chi can day vo state khong can call api
       dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -261,11 +269,14 @@ export default function Header({
             className="icon_wrapper"
             onClick={() => {
               setShowAllNotification((prev) => !prev);
+              dispatch(clearNewNotifications());
             }}
           >
             <Notifications />
           </div>
-          {/* <div className="right_notification">5</div> */}
+          {newNotifications.length > 0 && (
+            <div className="right_notification">{newNotifications.length}</div>
+          )}
 
           {showAllNotification && (
             <AllNotifications

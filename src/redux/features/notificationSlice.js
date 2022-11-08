@@ -6,7 +6,7 @@ export const createNotifications = createAsyncThunk(
   "notification/createNotifications",
   async ({ props, token }, { rejectWithValue }) => {
     try {
-        console.log(props);
+      console.log(props);
       const { data } = await api.createNotifications(props, token);
       return data;
     } catch (err) {
@@ -19,7 +19,6 @@ export const getNotification = createAsyncThunk(
   "notification/getNotification",
   async ({ userToken }, { rejectWithValue }) => {
     try {
-        console.log(userToken);
       const { data } = await api.getNotification(userToken);
       return data;
     } catch (err) {
@@ -41,7 +40,10 @@ export const seenNotification = createAsyncThunk(
 );
 
 const initialState = {
-  notification: null,
+  notifications: null,
+  newNotifications: Cookies.get("notification")
+    ? JSON.parse(Cookies.get("notification"))
+    : [],
   error: "",
   loading: false,
 };
@@ -50,20 +52,14 @@ export const notificationSlice = createSlice({
   name: "notification",
   initialState,
   reducers: {
-    // setLogout: (state, action) => {
-    //   state.user = null;
-    //   Cookies.set("user", "");
-    // },
-    // updatePicture: (state, action) => {
-    //   state.user.picture = action.payload;
-    //   Cookies.set(
-    //     "user",
-    //     JSON.stringify({
-    //       ...state.user,
-    //       picture: action.payload,
-    //     })
-    //   );
-    // },
+    getNewNotifications: (state, action) => {
+      state.newNotifications.push(action.payload.senderId);
+      Cookies.set("notification", JSON.stringify([...state.newNotifications]));
+    },
+    clearNewNotifications: (state, action) => {
+      state.newNotifications = [];
+      Cookies.set("notification", JSON.stringify([]));
+    },
   },
   extraReducers: {
     [getNotification.pending]: (state, action) => {
@@ -71,7 +67,7 @@ export const notificationSlice = createSlice({
     },
     [getNotification.fulfilled]: (state, action) => {
       state.loading = false;
-      state.notification = action.payload;
+      state.notifications = action.payload;
       state.error = "";
     },
     [getNotification.rejected]: (state, action) => {
@@ -87,7 +83,7 @@ export const notificationSlice = createSlice({
     },
 
     [seenNotification.fulfilled]: (state, action) => {
-      state.notification = [action.payload, ...state.notification];
+      state.notifications = action.payload;
       state.error = "";
     },
     [seenNotification.rejected]: (state, action) => {
@@ -97,6 +93,7 @@ export const notificationSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-// export const { setLogout, updatePicture } = notificationSlice.actions;
+export const { getNewNotifications, clearNewNotifications } =
+  notificationSlice.actions;
 
 export default notificationSlice.reducer;

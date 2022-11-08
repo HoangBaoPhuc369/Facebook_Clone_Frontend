@@ -380,6 +380,17 @@
   object-fit: cover;
 }
 
+.box::before {
+  content: ".";
+  opacity: 0;
+  display: block;
+  width: 300px;
+  height: 35px;
+  position: absolute;
+  top: -19px;
+  left: 0px;
+}
+
 .field-reactions:checked:focus ~ .text-desc,
 .field-reactions,
 [class*="reaction-"],

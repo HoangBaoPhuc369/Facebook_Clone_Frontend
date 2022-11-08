@@ -29,14 +29,13 @@ const reactsArray = [
 ];
 
 export default function ReactsPopup({
-  reactHandler,
-  postId,
   user,
-  postUserId,
+  postId,
   socketRef,
+  postUserId,
+  reactHandler,
 }) {
   const dispatch = useDispatch();
-  // console.log(socketRef);
   const handleSendNotifications = (icon) => {
     if (user?.id !== postUserId) {
       const notification = {
