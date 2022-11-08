@@ -14,6 +14,7 @@ import { getAllPosts } from "../../redux/features/postSlice";
 import "./style.css";
 
 export default function Home({
+  socketRef,
   setVisible,
   onlineUser,
   conversations,
@@ -26,7 +27,6 @@ export default function Home({
 
   const { user } = useSelector((state) => ({ ...state.auth }));
   const userId = user?.id;
-  const socketRef = useRef();
   const dispatch = useDispatch();
 
   useEffect(() => {

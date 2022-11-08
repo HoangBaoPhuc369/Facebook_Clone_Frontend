@@ -20,10 +20,7 @@ import CreatePostPopup from "../../components/createPostPopup";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { HashLoader } from "react-spinners";
-export default function Profile({
-  onlineUser,
-  setOnlineUsers,
-}) {
+export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
   const [visible, setVisible] = useState(false);
   const { username } = useParams();
   const navigate = useNavigate();
@@ -128,6 +125,7 @@ export default function Profile({
       )}
       <Header
         page="profile"
+        socketRef={socketRef}
         onlineUser={onlineUser}
         setOnlineUsers={setOnlineUsers}
       />

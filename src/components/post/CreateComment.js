@@ -12,11 +12,12 @@ export default function CreateComment({
   getParentId,
   handleTrigger,
   activeComment,
-  setActiveComment=null,
   initialText = "",
   createRelyFirstCm,
   handleTriggerEdit,
   createRelySecondCm,
+  setActiveComment = null,
+  handleSendNotifications,
 }) {
   const [picker, setPicker] = useState(false);
   const [text, setText] = useState(initialText);
@@ -68,7 +69,7 @@ export default function CreateComment({
   const handleComment = async (e) => {
     if (e.key === "Enter") {
       if (activeComment?.type === "editing") {
-        if (commentImage != "") {
+        if (commentImage !== "") {
           setLoading(true);
           const img = dataURItoBlob(commentImage);
           const path = `${user.username}/post_images/${postId}`;
@@ -89,7 +90,8 @@ export default function CreateComment({
           setText("");
           setCommentImage("");
           setActiveComment(null);
-        } else if (text != "") {
+          // handleSendNotifications("comment");
+        } else if (text !== "") {
           setLoading(true);
 
           const comments = await editComment(
@@ -106,8 +108,7 @@ export default function CreateComment({
           setActiveComment(null);
         }
       } else {
-        // console.log(activeComment);
-        if (commentImage != "") {
+        if (commentImage !== "") {
           setLoading(true);
           const img = dataURItoBlob(commentImage);
           const path = `${user.username}/post_images/${postId}`;
@@ -128,7 +129,8 @@ export default function CreateComment({
           setLoading(false);
           setText("");
           setCommentImage("");
-        } else if (text != "") {
+          handleSendNotifications("comment", "comment");
+        } else if (text !== "") {
           setLoading(true);
 
           const comments = await comment(
@@ -143,6 +145,7 @@ export default function CreateComment({
           setLoading(false);
           setText("");
           setCommentImage("");
+          handleSendNotifications("comment", "comment");
         }
       }
     }

@@ -9,7 +9,15 @@ import PostMenu from "./PostMenu";
 import { getReacts, reactPost } from "../../functions/post";
 import Comment from "./Comment";
 import DeletePostPopUp from "../deletePost";
-export default function Post({ user, post, profile, setVisibleDelPost, socketRef }) {
+import { createNotifications } from "../../redux/features/notificationSlice";
+import { useDispatch } from "react-redux";
+export default function Post({
+  user,
+  post,
+  profile,
+  setVisibleDelPost,
+  socketRef,
+}) {
   // const [visible, setVisible] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
@@ -19,6 +27,7 @@ export default function Post({ user, post, profile, setVisibleDelPost, socketRef
   const [checkSaved, setCheckSaved] = useState();
 
   const postRef = useRef(null);
+  const dispatch = useDispatch();
 
   const [isOpen, setIsOpen] = useState(false);
   const [comments, setComments] = useState([]);
@@ -44,6 +53,32 @@ export default function Post({ user, post, profile, setVisibleDelPost, socketRef
     setCheckSaved(res.checkSaved);
   };
 
+  const handleSendNotifications = (icon, type) => {
+    if (user?.id !== post?.user._id) {
+      const typeNotification =
+        type === "react"
+          ? post.type === null
+            ? `reacted to your post: "${post.text}."`
+            : `reacted to your photo.`
+          : type === "comment"
+          ? post.type === null
+            ? " commented on your post."
+            : " commented on your photo."
+          : null;
+
+      const notification = {
+        senderId: user?.id,
+        receiverId: post?.user._id,
+        icon: icon,
+        text: typeNotification,
+      };
+      dispatch(
+        createNotifications({ props: notification, token: user?.token })
+      );
+      socketRef.current.emit("sendNotification", notification);
+    }
+  };
+
   const reactHandler = async (type) => {
     reactPost(post._id, type, user.token);
     if (check === type) {
@@ -65,6 +100,8 @@ export default function Post({ user, post, profile, setVisibleDelPost, socketRef
         setReacts([...reacts, (reacts[index1].count = --reacts[index1].count)]);
         setTotal((prev) => --prev);
       }
+
+      handleSendNotifications(type);
     }
   };
 
@@ -298,6 +335,7 @@ export default function Post({ user, post, profile, setVisibleDelPost, socketRef
           postId={post._id}
           setCount={setCount}
           setComments={setComments}
+          handleSendNotifications={handleSendNotifications}
         />
 
         {comments &&
@@ -330,6 +368,7 @@ export default function Post({ user, post, profile, setVisibleDelPost, socketRef
                 countRepliesThird={countRepliesThird}
                 repliesSecond={getReplies(comment?._id)}
                 showMoreRepliesThird={showMoreRepliesThird}
+                handleSendNotifications={handleSendNotifications}
               />
             ))}
 

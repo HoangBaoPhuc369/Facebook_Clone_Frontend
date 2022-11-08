@@ -1,6 +1,3 @@
-import { useDispatch } from "react-redux";
-import { createNotifications } from "../../redux/features/notificationSlice";
-
 const reactsArray = [
   {
     name: "like",
@@ -28,27 +25,7 @@ const reactsArray = [
   },
 ];
 
-export default function ReactsPopup({
-  user,
-  postId,
-  socketRef,
-  postUserId,
-  reactHandler,
-}) {
-  const dispatch = useDispatch();
-  const handleSendNotifications = (icon) => {
-    if (user?.id !== postUserId) {
-      const notification = {
-        senderId: user?.id,
-        receiverId: postUserId,
-        icon: icon,
-        text: `reacted to your post: ${icon}`,
-      };
-      dispatch(createNotifications({props: notification, token: user?.token}));
-      socketRef.current.emit("sendNotification", notification);
-    }
-  };
-
+export default function ReactsPopup({ reactHandler }) {
   return (
     <>
       <div className="toolbox"></div>
@@ -58,8 +35,7 @@ export default function ReactsPopup({
           key={i}
           onClick={(e) => {
             e.stopPropagation();
-            reactHandler(react.name);
-            handleSendNotifications(react.name);
+            reactHandler(react.name, "react");
           }}
         >
           <img src={react.image} alt="" />

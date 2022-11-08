@@ -24,6 +24,7 @@ function App() {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { darkTheme } = useSelector((state) => ({ ...state.theme }));
   const userId = user?.id;
+  const socketRef = useRef();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -47,6 +48,7 @@ function App() {
             path="/profile"
             element={
               <Profile
+                socketRef={socketRef}
                 setVisible={setVisible}
                 onlineUser={onlineUser}
                 setOnlineUsers={setOnlineUsers}
@@ -58,6 +60,7 @@ function App() {
             path="/profile/:username"
             element={
               <Profile
+                socketRef={socketRef}
                 setVisible={setVisible}
                 onlineUser={onlineUser}
                 setOnlineUsers={setOnlineUsers}
@@ -71,6 +74,7 @@ function App() {
             path="/"
             element={
               <Home
+                socketRef={socketRef}
                 onlineUser={onlineUser}
                 setVisible={setVisible}
                 setOnlineUsers={setOnlineUsers}
