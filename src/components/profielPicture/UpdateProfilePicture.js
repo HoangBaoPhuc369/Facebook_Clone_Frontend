@@ -88,7 +88,7 @@ export default function UpdateProfilePicture({
             payload: [new_post.data, ...profilePost],
           })
           dispatch(updatePicture(res[0].url));
-          setShow(false);
+          setShow(prev => !prev);
         } else {
           setLoading(false);
 

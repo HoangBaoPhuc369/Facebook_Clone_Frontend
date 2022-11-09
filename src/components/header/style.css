@@ -939,6 +939,119 @@ header {
   border-radius: 50%;
   margin-right: 10px;
 }
+
+.Toastify__toast-container:has(> .notification_form) {
+  width: 17.5%;
+  padding: 0;
+}
+
+.Toastify__toast-container:has(> .notification_form)
+  > .Toastify__toast-container--bottom-left {
+  bottom: 0.4em;
+  left: 1em;
+}
+
+.Toastify__toast-container > .notification_form {
+  background: var(--bg-primary);
+  box-shadow: 0 12px 28px 0 var(--shadow-1), 0 2px 4px 0 var(--shadow-2),
+    inset 0 0 0 1px var(--shadow-inset);
+  min-height: 100px;
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.Toastify__toast-container > .notification_form > .notification_body {
+  margin: 0;
+  padding: 0;
+}
+
+.Toastify__toast-container > .notification_form > .notification_body > div {
+  height: 100%;
+}
+
+.Toastify__toast-container
+  > .notification_form
+  > .notification_body
+  > div
+  > .notification-box_header {
+  padding: 6px 0px 4px 6px;
+}
+
+.Toastify__toast-container
+  > .notification_form
+  > .notification_body
+  > div
+  > .notification-box_container {
+  padding: 7px 7px 2px 14px;
+  position: relative;
+}
+
+.Toastify__toast-container
+  > .notification_form
+  > .notification_body
+  > div
+  > .notification-box_container::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background: var(--blue-color);
+  position: absolute;
+  top: calc((100% / 2) + -12px);
+  right: -12px;
+  border-radius: 50%;
+}
+
+.Toastify__toast-container
+  > .notification_form
+  > .notification_body
+  > div
+  > .notification-box_container
+  > .notification-information {
+  font-family: inherit;
+}
+
+.Toastify__toast-container
+  > .notification_form
+  > .notification_body
+  > div
+  > .notification-box_container
+  > .notification-information
+  > .notification-text
+  > span {
+  font-weight: 600;
+}
+
+.Toastify__toast-container
+  > .notification_form
+  > .notification_body
+  > div
+  > .notification-box_container
+  > .notification-information
+  > .notification-text {
+  max-width: 190px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  word-wrap: break-word;
+  white-space: normal;
+  overflow: hidden;
+}
+
+/*  */
+
+.Toastify__toast-container > .notification_form > .small_circle {
+  width: 24px;
+  height: 24px;
+}
+
+.Toastify__toast-container > .notification_form > .small_circle > i {
+  background-position: -131px -76px;
+  width: 10px;
+  height: 10px;
+}
+
 /* ----------All Notification----------- */
 
 /*---responsive----------*/

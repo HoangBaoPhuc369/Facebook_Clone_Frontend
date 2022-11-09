@@ -36,6 +36,40 @@ import {
   getNewNotifications,
   getNotification,
 } from "../../redux/features/notificationSlice";
+import "animate.css/animate.min.css";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast, cssTransition } from "react-toastify";
+
+const Msg = ({ picture, text, icon, name }) => (
+  <>
+    <div className="notification-box_header">
+      <span>New notification</span>
+    </div>
+    <div className="notification-box_container">
+      <div className="notification-picture">
+        <img src={picture} alt="" />
+        <i className={`notification_${icon}_icon`}></i>
+      </div>
+      <div className="notification-information">
+        <div className="notification-text">
+          <span>{name}</span> {text}
+        </div>
+        <span className="notification-time">a few second ago</span>
+      </div>
+    </div>
+  </>
+);
+
+const bounce = cssTransition({
+  enter: "animate__animated animate__bounceInUp",
+  exit: "animate__animated animate__bounceOutDown",
+});
+
+const CloseButton = ({ closeToast }) => (
+  <div className="small_circle" onClick={closeToast}>
+    <i className="exit_icon"></i>
+  </div>
+);
 
 export default function Header({
   page,
@@ -113,6 +147,24 @@ export default function Header({
       //Cho nay chi can day vo state khong can call api
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
+
+      toast(
+        <Msg
+          picture={data?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.name}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -320,6 +372,8 @@ export default function Header({
           />
         ))}
       </div>
+
+      <ToastContainer transition={bounce} closeButton={CloseButton} limit={5} />
     </header>
   );
 }

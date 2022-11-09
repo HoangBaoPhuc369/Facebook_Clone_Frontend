@@ -35,7 +35,7 @@ export default function ReactsPopup({ reactHandler }) {
           key={i}
           onClick={(e) => {
             e.stopPropagation();
-            reactHandler(react.name, "react");
+            reactHandler(react.name);
           }}
         >
           <img src={react.image} alt="" />

@@ -50,7 +50,7 @@ export default function Bio({
             className="blue_btn"
             onClick={() => {
               updateDetails();
-              setShow(false);
+              setShow((prev) => !prev);
             }}
           >
             Save

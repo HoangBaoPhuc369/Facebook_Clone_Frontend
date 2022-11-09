@@ -30,7 +30,6 @@ export default function Intro({ detailss, visitor, setOthername }) {
 
   const updateDetails = async () => {
     try {
-      console.log("sent");
       const { data } = await axios.patch(
         `${process.env.REACT_APP_BACKEND_URL}/users/update-details`,
         {
@@ -144,6 +143,7 @@ export default function Intro({ detailss, visitor, setOthername }) {
           <a
             href={`https://www.instagram.com/${details?.instagram}`}
             target="_blank"
+            rel="noreferrer"
           >
             {details?.instagram}
           </a>

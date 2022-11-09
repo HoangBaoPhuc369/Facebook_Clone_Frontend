@@ -45,6 +45,7 @@ export default function Post({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post]);
 
+  
   const getPostReacts = async () => {
     const res = await getReacts(post._id, user.token);
     setReacts(res.reacts);
@@ -72,10 +73,18 @@ export default function Post({
         icon: icon,
         text: typeNotification,
       };
+      const notificationSocket = {
+        senderId: user?.id,
+        receiverId: post?.user._id,
+        icon: icon,
+        text: typeNotification,
+        picture: post?.user.picture,
+        name: post?.user.first_name + " " + post?.user.last_name,
+      };
       dispatch(
         createNotifications({ props: notification, token: user?.token })
       );
-      socketRef.current.emit("sendNotification", notification);
+      socketRef.current.emit("sendNotification", notificationSocket);
     }
   };
 
@@ -101,7 +110,7 @@ export default function Post({
         setTotal((prev) => --prev);
       }
 
-      handleSendNotifications(type);
+      handleSendNotifications(type, "react");
     }
   };
 

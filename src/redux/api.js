@@ -18,6 +18,28 @@ export const activateAccount = (token, userToken) =>
     }
   );
 
+// --------------------------PROFILE API-----------------------------------
+export const getProfile = (userName, token) =>
+  axios.get(
+    `${process.env.REACT_APP_BACKEND_URL}/users/get-profile/${userName}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const getPhotos = (path, sort, max, token) =>
+  axios.post(
+    `${process.env.REACT_APP_BACKEND_URL}/uploads/list-images`,
+    { path, sort, max },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
 // --------------------------POST API--------------------------------------
 export const getPosts = (userToken) =>
   axios.get(`${process.env.REACT_APP_BACKEND_URL}/posts/get-all-posts`, {
@@ -121,16 +143,13 @@ export const createNotifications = (props, token) =>
   );
 
 export const getNotification = (userToken) =>
-  axios.get(
-    `${process.env.REACT_APP_BACKEND_URL}/notifications`,
-    {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
-    }
-  );
+  axios.get(`${process.env.REACT_APP_BACKEND_URL}/notifications`, {
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
 
-  export const seenNotification = (userToken, nofId) =>
+export const seenNotification = (userToken, nofId) =>
   axios.patch(
     `${process.env.REACT_APP_BACKEND_URL}/notifications/${nofId}/seen`,
     {},
@@ -140,4 +159,3 @@ export const getNotification = (userToken) =>
       },
     }
   );
-
