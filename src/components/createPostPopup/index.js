@@ -52,27 +52,6 @@ export default function CreatePostPopup({ setVisible }) {
         formData.append("file", image);
       });
       const response = await uploadImages(formData, user.token);
-      // const res = await createPost(
-      //   null,
-      //   null,
-      //   text,
-      //   response,
-      //   user.id,
-      //   user.token
-      // );
-      // setLoading(false);
-      // if (res.status === "ok") {
-      //   dispatch({
-      //     type: profile ? "PROFILE_POSTS" : "POSTS_SUCCESS",
-      //     payload: [res.data, ...posts],
-      //   });
-      //   setText("");
-      //   setImages("");
-      //   setVisible(false);
-      // } else {
-      //   setError(res);
-      // }
-
       dispatch(
         createPost({
           type: null,

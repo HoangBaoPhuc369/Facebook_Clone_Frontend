@@ -13,7 +13,7 @@ export default function OldCovers({ photos, setCoverPicture, setShow }) {
           <div
             className="small_circle"
             onClick={() => {
-              setShow(false);
+              setShow(prev => !prev);
             }}
           >
             <i className="exit_icon"></i>
@@ -38,7 +38,7 @@ export default function OldCovers({ photos, setCoverPicture, setShow }) {
                     alt=""
                     onClick={() => {
                       setCoverPicture(photo.secure_url);
-                      setShow(false);
+                      setShow(prev => !prev);
                     }}
                   />
                 ))}
@@ -54,7 +54,7 @@ export default function OldCovers({ photos, setCoverPicture, setShow }) {
                     alt=""
                     onClick={() => {
                       setCoverPicture(photo.secure_url);
-                      setShow(false);
+                      setShow(prev => !prev);
                     }}
                   />
                 ))}

@@ -25,34 +25,25 @@ const reactsArray = [
   },
 ];
 
-export default function ReactsPopup({ visible, setVisible, reactHandler }) {
+export default function ReactsPopup({ reactHandler }) {
   return (
     <>
-      {visible && (
+      <div className="toolbox"></div>
+      {reactsArray.map((react, i) => (
         <div
-          className="reacts_popup"
-          onMouseOver={() => {
-            setTimeout(() => {
-              setVisible(true);
-            }, 500);
-          }}
-          onMouseLeave={() => {
-            setTimeout(() => {
-              setVisible(false);
-            }, 500);
+          className={`reaction-${react.name}`}
+          key={i}
+          onClick={(e) => {
+            e.stopPropagation();
+            reactHandler(react.name);
           }}
         >
-          {reactsArray.map((react, i) => (
-            <div
-              className="react"
-              key={i}
-              onClick={() => reactHandler(react.name)}
-            >
-              <img src={react.image} alt="" />
-            </div>
-          ))}
+          <img src={react.image} alt="" />
+          <span className="legend-reaction">
+            {react.name.charAt(0).toUpperCase() + react.name.slice(1)}
+          </span>
         </div>
-      )}
+      ))}
     </>
   );
 }

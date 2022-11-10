@@ -2,11 +2,11 @@ import { useRef, useState } from "react";
 import ProfilePicture from "../../components/profielPicture";
 import Friendship from "./Friendship";
 import { Link } from "react-router-dom";
-export default function ProfielPictureInfos({
+export default function ProfilePictureInfos({
   profile,
   visitor,
   photos,
-  othername,
+  otherName,
   dispatch,
   profilePost,
 }) {
@@ -45,7 +45,7 @@ export default function ProfielPictureInfos({
         <div className="profile_w_col">
           <div className="profile_name">
             {profile.first_name} {profile.last_name}
-            <div className="othername">{othername && `(${othername})`}</div>
+            <div className="othername">{otherName && `(${otherName})`}</div>
           </div>
           <div className="profile_friend_count">
             {profile?.friends && (
@@ -76,7 +76,7 @@ export default function ProfielPictureInfos({
         </div>
       </div>
       {visitor ? (
-        <Friendship friendshipp={profile?.friendship} profileid={profile._id} />
+        <Friendship friendshipp={profile?.friendship} profileId={profile._id} />
       ) : (
         <div className="profile_w_right">
           <div className="blue_btn">

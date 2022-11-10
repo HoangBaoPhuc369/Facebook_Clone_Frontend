@@ -9,8 +9,16 @@ import PostMenu from "./PostMenu";
 import { getReacts, reactPost } from "../../functions/post";
 import Comment from "./Comment";
 import DeletePostPopUp from "../deletePost";
-export default function Post({ user, post, profile, setVisibleDelPost }) {
-  const [visible, setVisible] = useState(false);
+import { createNotifications } from "../../redux/features/notificationSlice";
+import { useDispatch } from "react-redux";
+export default function Post({
+  user,
+  post,
+  profile,
+  setVisibleDelPost,
+  socketRef,
+}) {
+  // const [visible, setVisible] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
   const [check, setCheck] = useState();
@@ -19,6 +27,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
   const [checkSaved, setCheckSaved] = useState();
 
   const postRef = useRef(null);
+  const dispatch = useDispatch();
 
   const [isOpen, setIsOpen] = useState(false);
   const [comments, setComments] = useState([]);
@@ -33,14 +42,50 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
 
   useEffect(() => {
     getPostReacts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post]);
 
+  
   const getPostReacts = async () => {
     const res = await getReacts(post._id, user.token);
     setReacts(res.reacts);
     setCheck(res.check);
     setTotal(res.total);
     setCheckSaved(res.checkSaved);
+  };
+
+  const handleSendNotifications = (icon, type) => {
+    if (user?.id !== post?.user._id) {
+      const typeNotification =
+        type === "react"
+          ? post.type === null
+            ? `reacted to your post: "${post.text}."`
+            : `reacted to your photo.`
+          : type === "comment"
+          ? post.type === null
+            ? " commented on your post."
+            : " commented on your photo."
+          : null;
+
+      const notification = {
+        senderId: user?.id,
+        receiverId: post?.user._id,
+        icon: icon,
+        text: typeNotification,
+      };
+      const notificationSocket = {
+        senderId: user?.id,
+        receiverId: post?.user._id,
+        icon: icon,
+        text: typeNotification,
+        picture: post?.user.picture,
+        name: post?.user.first_name + " " + post?.user.last_name,
+      };
+      dispatch(
+        createNotifications({ props: notification, token: user?.token })
+      );
+      socketRef.current.emit("sendNotification", notificationSocket);
+    }
   };
 
   const reactHandler = async (type) => {
@@ -59,13 +104,13 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
       if (index !== -1) {
         setReacts([...reacts, (reacts[index].count = ++reacts[index].count)]);
         setTotal((prev) => ++prev);
-        // console.log(reacts);
       }
       if (index1 !== -1) {
         setReacts([...reacts, (reacts[index1].count = --reacts[index1].count)]);
         setTotal((prev) => --prev);
-        // console.log(reacts);
       }
+
+      handleSendNotifications(type, "react");
     }
   };
 
@@ -88,7 +133,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-  
+
   return (
     <div
       className="post"
@@ -100,18 +145,21 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
           to={`/profile/${post?.user.username}`}
           className="post_header_left"
         >
-          <img src={post.user?._id === user.id ? user.picture : post.user.picture} alt="" />
+          <img
+            src={post.user?._id === user.id ? user.picture : post.user.picture}
+            alt=""
+          />
           <div className="header_col">
             <div className="post_profile_name">
               {post.user.first_name} {post.user.last_name}
               <div className="updated_p">
-                {post.type == "profilePicture" &&
+                {post.type === "profilePicture" &&
                   `updated ${
-                    post.user.gender == "male" ? "his" : "her"
+                    post.user.gender === "male" ? "his" : "her"
                   } profile picture`}
-                {post.type == "coverPicture" &&
+                {post.type === "coverPicture" &&
                   `updated ${
-                    post.user.gender == "male" ? "his" : "her"
+                    post.user.gender === "male" ? "his" : "her"
                   } cover picture`}
               </div>
             </div>
@@ -218,59 +266,64 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
         </div>
       </div>
       <div className="post_actions">
-        <ReactsPopup
-          visible={visible}
-          setVisible={setVisible}
-          reactHandler={reactHandler}
-        />
         <div
-          className="post_action hover1"
-          onMouseOver={() => {
-            setTimeout(() => {
-              setVisible(true);
-            }, 500);
-          }}
-          onMouseLeave={() => {
-            setTimeout(() => {
-              setVisible(false);
-            }, 500);
-          }}
+          className="post_action hover1 box"
           onClick={() => reactHandler(check ? check : "like")}
         >
-          {check ? (
-            <img
-              src={`../../../reacts/${check}.svg`}
-              alt=""
-              className="small_react"
-              style={{ width: "18px" }}
-            />
-          ) : (
-            <i className="like_icon"></i>
-          )}
-          <span
-            style={{
-              color: `
-          
-          ${
-            check === "like"
-              ? "#4267b2"
-              : check === "love"
-              ? "#f63459"
-              : check === "haha"
-              ? "#f7b125"
-              : check === "sad"
-              ? "#f7b125"
-              : check === "wow"
-              ? "#f7b125"
-              : check === "angry"
-              ? "#e4605a"
-              : ""
-          }
-          `,
-            }}
-          >
-            {check ? check : "Like"}
-          </span>
+          <ReactsPopup
+            user={user}
+            postId={post?._id}
+            socketRef={socketRef}
+            postUserId={post?.user._id}
+            reactHandler={reactHandler}
+          />
+          <div className="post_action_reaction_wrap">
+            {check ? (
+              check === "like" ? (
+                <div className="post_action_reaction_like_react">
+                  <img
+                    src={`../../../reacts/${check}.png`}
+                    alt=""
+                    className="like_react"
+                  />
+                </div>
+              ) : (
+                <img
+                  src={`../../../reacts/${check}.svg`}
+                  alt=""
+                  className="small_react"
+                  style={{ width: "18px" }}
+                />
+              )
+            ) : (
+              <i className="like_icon"></i>
+            )}
+            <span
+              className="post_action_text_react"
+              style={{
+                color: `
+            
+            ${
+              check === "like"
+                ? "#4267b2"
+                : check === "love"
+                ? "#f63459"
+                : check === "haha"
+                ? "#f7b125"
+                : check === "sad"
+                ? "#f7b125"
+                : check === "wow"
+                ? "#f7b125"
+                : check === "angry"
+                ? "#e4605a"
+                : ""
+            }
+            `,
+              }}
+            >
+              {check ? check : "Like"}
+            </span>
+          </div>
         </div>
         <div className="post_action hover1">
           <i className="comment_icon"></i>
@@ -291,6 +344,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
           postId={post._id}
           setCount={setCount}
           setComments={setComments}
+          handleSendNotifications={handleSendNotifications}
         />
 
         {comments &&
@@ -323,6 +377,7 @@ export default function Post({ user, post, profile, setVisibleDelPost }) {
                 countRepliesThird={countRepliesThird}
                 repliesSecond={getReplies(comment?._id)}
                 showMoreRepliesThird={showMoreRepliesThird}
+                handleSendNotifications={handleSendNotifications}
               />
             ))}
 

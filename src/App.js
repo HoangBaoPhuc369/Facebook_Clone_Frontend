@@ -8,13 +8,14 @@ import { useDispatch, useSelector } from "react-redux";
 import Activate from "./pages/home/activate";
 import Reset from "./pages/reset";
 import CreatePostPopup from "./components/createPostPopup";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Friends from "./pages/friends";
 import { useEffect } from "react";
 import { getAllPosts } from "./redux/features/postSlice";
 import { getConversations } from "./redux/features/conversationSlice";
 import NotificationPopUp from "./components/notificationPopUp";
 import DeletePostPopUp from "./components/deletePost";
+import { getNotification } from "./redux/features/notificationSlice";
 
 function App() {
   const [visible, setVisible] = useState(false);
@@ -23,11 +24,13 @@ function App() {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { darkTheme } = useSelector((state) => ({ ...state.theme }));
   const userId = user?.id;
+  const socketRef = useRef();
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (user?.token) {
       dispatch(getAllPosts({ userToken: user?.token }));
+      dispatch(getNotification({ userToken: user?.token }));
       dispatch(getConversations({ userToken: user?.token }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -45,6 +48,7 @@ function App() {
             path="/profile"
             element={
               <Profile
+                socketRef={socketRef}
                 setVisible={setVisible}
                 onlineUser={onlineUser}
                 setOnlineUsers={setOnlineUsers}
@@ -56,6 +60,7 @@ function App() {
             path="/profile/:username"
             element={
               <Profile
+                socketRef={socketRef}
                 setVisible={setVisible}
                 onlineUser={onlineUser}
                 setOnlineUsers={setOnlineUsers}
@@ -69,6 +74,7 @@ function App() {
             path="/"
             element={
               <Home
+                socketRef={socketRef}
                 onlineUser={onlineUser}
                 setVisible={setVisible}
                 setOnlineUsers={setOnlineUsers}

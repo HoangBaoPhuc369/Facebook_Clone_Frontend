@@ -18,6 +18,137 @@ export const activateAccount = (token, userToken) =>
     }
   );
 
+// --------------------------PROFILE API-----------------------------------
+export const getProfile = (userName, token) =>
+  axios.get(
+    `${process.env.REACT_APP_BACKEND_URL}/users/get-profile/${userName}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const getPhotos = (path, sort, max, token) =>
+  axios.post(
+    `${process.env.REACT_APP_BACKEND_URL}/uploads/list-images`,
+    { path, sort, max },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const updateDetails = (infos, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/update-details`,
+    {
+      infos,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const updateProfilePictureUser = (url, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/update-profile-picture`,
+    {
+      url,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const addFriend = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/add-friend/${id}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const cancelRequest = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/cancel-request/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const follow = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/follow/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const unFollow = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/unfollow/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const acceptRequest = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/accept-request/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const unfriend = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/unfriend/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const deleteRequest = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/delete-request/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
 // --------------------------POST API--------------------------------------
 export const getPosts = (userToken) =>
   axios.get(`${process.env.REACT_APP_BACKEND_URL}/posts/get-all-posts`, {
@@ -96,6 +227,41 @@ export const seenAllMessageChat = (userToken, currentChatId) =>
     {
       conversationId: currentChatId,
     },
+    {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    }
+  );
+
+// --------------------------NOTIFICATION API--------------------------------------
+export const createNotifications = (props, token) =>
+  axios.post(
+    `${process.env.REACT_APP_BACKEND_URL}/notifications`,
+    {
+      from: props.senderId,
+      user: props.receiverId,
+      icon: props.icon,
+      text: props.text,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const getNotification = (userToken) =>
+  axios.get(`${process.env.REACT_APP_BACKEND_URL}/notifications`, {
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+
+export const seenNotification = (userToken, nofId) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/notifications/${nofId}/seen`,
+    {},
     {
       headers: {
         Authorization: `Bearer ${userToken}`,

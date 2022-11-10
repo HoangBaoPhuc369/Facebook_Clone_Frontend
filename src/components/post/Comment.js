@@ -28,6 +28,7 @@ export default function Comment({
   showMoreReplies,
   countRepliesThird,
   showMoreRepliesThird,
+  handleSendNotifications,
 }) {
   const [parentId, setParentId] = useState(null);
   const [parentIdSecond, setParentIdSecond] = useState(null);
@@ -160,6 +161,7 @@ export default function Comment({
                 initialText={comment.comment}
                 setActiveComment={setActiveComment}
                 handleTriggerEdit={handleTriggerEdit}
+                handleSendNotifications={handleSendNotifications}
                 activeComment={isEditing ? activeComment : undefined}
               />
             )}
@@ -261,6 +263,7 @@ export default function Comment({
             setComments={setComments}
             handleTrigger={handleTrigger}
             getParentId={isReplying ? parentId : undefined}
+            handleSendNotifications={handleSendNotifications}
             activeComment={isReplying ? activeComment : undefined}
           />
         </div>
@@ -319,6 +322,7 @@ export default function Comment({
                 : undefined
             }
             setComments={setComments}
+            handleSendNotifications={handleSendNotifications}
             activeComment={
               isReplying || comment?._id === activeComment?.parentId
                 ? activeComment

@@ -320,21 +320,50 @@
   padding: 7px 0;
   border-radius: 5px;
 }
-.post_action span {
+
+.post_action .post_action_text_react {
   color: var(--color-secondary);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   transform: translateY(-1px);
   text-transform: capitalize;
+  margin: 0 4px;
+  width: 42px;
+  display: flex;
+  justify-content: flex-start;
 }
+
+.post_action_reaction_wrap > .small_react {
+  margin: 0 4px;
+}
+
+.post_action_reaction_wrap > i {
+  margin: 0 4px;
+}
+
+.post_action_reaction_wrap > .post_action_reaction_like_react {
+  width: 18px;
+  height: 18px;
+  position: relative;
+  margin: 0px 4px;
+}
+
+.post_action_reaction_wrap > .post_action_reaction_like_react > img {
+  width: 25px;
+  position: absolute;
+  top: -4px;
+  left: -4px;
+}
+
+/* -------------React PopUp --------------- */
 .reacts_popup {
   display: flex;
   align-items: center;
   position: absolute;
-  top: -3.4rem;
+  top: -3.1rem;
   background: var(--bg-primary);
-  padding: 5px 15px;
-  border-radius: 50px;
+  padding: 5px 5px 0px;
+  border-radius: 40px;
   gap: 8px;
   box-shadow: 0 1px 2px var(--shadow-1);
 }
@@ -350,6 +379,238 @@
   height: 42px;
   object-fit: cover;
 }
+
+.box::before {
+  content: ".";
+  opacity: 0;
+  display: block;
+  width: 300px;
+  height: 35px;
+  position: absolute;
+  top: -19px;
+  left: 0px;
+}
+
+.field-reactions:checked:focus ~ .text-desc,
+.field-reactions,
+[class*="reaction-"],
+.text-desc {
+  clip: rect(1px, 1px, 1px, 1px);
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.field-reactions:checked ~ [class*="reaction-"],
+.box:hover [class*="reaction-"],
+.field-reactions:focus ~ .text-desc {
+  clip: auto;
+  overflow: visible;
+  opacity: 1;
+}
+
+.main-title {
+  background: #3a5795;
+  padding: 10px;
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.text-desc {
+  font-weight: normal;
+  text-align: center;
+  transform: translateY(-50px);
+  white-space: nowrap;
+  font-size: 13px;
+  width: 100%;
+}
+[class*="reaction-"] {
+  border: none;
+  background-color: transparent;
+  display: block;
+  cursor: pointer;
+  height: 48px;
+  position: absolute;
+  width: 48px;
+  z-index: 11;
+  top: -40px;
+  transform-origin: 50% 100%;
+  transform: scale(0.1);
+  transition: all 0.3s;
+  outline: none;
+  will-change: transform;
+  opacity: 0;
+}
+
+[class*="reaction-"] > img {
+  width: 100%;
+}
+
+.post_action_reaction_wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9;
+  visibility: hidden;
+}
+
+.field-reactions:focus ~ .label-reactions {
+  border-color: rgba(88, 144, 255, 0.3);
+}
+.field-reactions:checked:focus ~ .label-reactions {
+  border-color: transparent;
+}
+.label-reactions {
+  display: none;
+}
+
+.toolbox {
+  background: #fff;
+  height: 52px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 2px rgba(0, 0, 0, 0.15);
+  width: 300px;
+  border-radius: 40px;
+  top: -53px;
+  left: 0;
+  position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.legend-reaction {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 15px;
+  box-sizing: border-box;
+  color: #fff;
+  display: inline-block;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  font-weight: bold;
+  max-width: 100%;
+  opacity: 0;
+  overflow: hidden;
+  padding: 3px 5px;
+  transition: opacity 50ms ease;
+  left: 50%;
+  position: absolute;
+  text-align: center;
+  top: -28px;
+  transform: translateX(-50%);
+}
+
+.box:hover [class*="reaction-"] {
+  transform: scale(0.8) translateY(-20px);
+}
+.box:hover [class*="reaction-"]:hover,
+.box:hover [class*="reaction-"]:focus {
+  transition: all 0.2s ease-in;
+  transform: scale(1) translateY(-25px);
+}
+.box:hover [class*="reaction-"]:hover .legend-reaction,
+.box:hover [class*="reaction-"]:focus .legend-reaction {
+  opacity: 1;
+}
+.box:hover .toolbox {
+  opacity: 1;
+}
+.box:hover .toolbox {
+  visibility: visible;
+}
+.box:hover .reaction-love {
+  transition-delay: 0.06s;
+}
+.box:hover .reaction-haha {
+  transition-delay: 0.09s;
+}
+.box:hover .reaction-wow {
+  transition-delay: 0.12s;
+}
+.box:hover .reaction-sad {
+  transition-delay: 0.15s;
+}
+.box:hover .reaction-angry {
+  transition-delay: 0.18s;
+}
+
+.field-reactions:checked ~ [class*="reaction-"] {
+  transform: scale(0.8) translateY(-40px);
+}
+.field-reactions:checked ~ [class*="reaction-"]:hover,
+.field-reactions:checked ~ [class*="reaction-"]:focus {
+  transition: all 0.2s ease-in;
+  transform: scale(1) translateY(-35px);
+}
+.field-reactions:checked ~ [class*="reaction-"]:hover .legend-reaction,
+.field-reactions:checked ~ [class*="reaction-"]:focus .legend-reaction {
+  opacity: 1;
+}
+.field-reactions:checked ~ .toolbox {
+  opacity: 1;
+}
+.field-reactions:checked ~ .toolbox,
+.field-reactions:checked ~ .overlay {
+  visibility: visible;
+}
+.field-reactions:checked ~ .reaction-love {
+  transition-delay: 0.03s;
+}
+.field-reactions:checked ~ .reaction-haha {
+  transition-delay: 0.09s;
+}
+.field-reactions:checked ~ .reaction-wow {
+  transition-delay: 0.12s;
+}
+.field-reactions:checked ~ .reaction-sad {
+  transition-delay: 0.15s;
+}
+.field-reactions:checked ~ .reaction-angry {
+  transition-delay: 0.18s;
+}
+
+.reaction-like {
+  left: 0;
+  background-position: 0 -144px;
+}
+
+.reaction-love {
+  background-position: -48px 0;
+  left: 50px;
+}
+
+.reaction-haha {
+  background-position: -96px 0;
+  left: 100px;
+}
+
+.reaction-wow {
+  background-position: -144px 0;
+  left: 150px;
+}
+
+.reaction-sad {
+  background-position: -192px 0;
+  left: 200px;
+}
+
+.reaction-angry {
+  background-position: -240px 0;
+  left: 250px;
+}
+
+/* -------------React PopUp --------------- */
 
 /*-----create comment-----*/
 .comments_wrap {

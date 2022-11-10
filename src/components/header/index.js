@@ -31,14 +31,59 @@ import {
 } from "../../redux/features/conversationSlice";
 import Moment from "react-moment";
 import AllNotifications from "./AllNotifications";
+import {
+  clearNewNotifications,
+  getNewNotifications,
+  getNotification,
+} from "../../redux/features/notificationSlice";
+import "animate.css/animate.min.css";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast, cssTransition } from "react-toastify";
 
-export default function Header({ page, onlineUser, setOnlineUsers }) {
+const Msg = ({ picture, text, icon, name }) => (
+  <>
+    <div className="notification-box_header">
+      <span>New notification</span>
+    </div>
+    <div className="notification-box_container">
+      <div className="notification-picture">
+        <img src={picture} alt="" />
+        <i className={`notification_${icon}_icon`}></i>
+      </div>
+      <div className="notification-information">
+        <div className="notification-text">
+          <span>{name}</span> {text}
+        </div>
+        <span className="notification-time">a few second ago</span>
+      </div>
+    </div>
+  </>
+);
+
+const bounce = cssTransition({
+  enter: "animate__animated animate__bounceInUp",
+  exit: "animate__animated animate__bounceOutDown",
+});
+
+const CloseButton = ({ closeToast }) => (
+  <div className="small_circle" onClick={closeToast}>
+    <i className="exit_icon"></i>
+  </div>
+);
+
+export default function Header({
+  page,
+  onlineUser,
+  setOnlineUsers,
+  socketRef,
+}) {
   const { user } = useSelector((state) => ({ ...state.auth }));
-  const { conversations, chatBox, messageSendSuccess } = useSelector(
-    (state) => ({
-      ...state.messenger,
-    })
-  );
+  const { newNotifications } = useSelector((state) => ({
+    ...state.notification,
+  }));
+  const { conversations, chatBox } = useSelector((state) => ({
+    ...state.messenger,
+  }));
   const color = "#65676b";
   const dispatch = useDispatch();
   const [showAllMenu, setShowAllMenu] = useState(false);
@@ -81,8 +126,6 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [closeArrivalMessage, setCloseArrivalMessage] = useState(false);
 
-  const socketRef = useRef();
-
   // Get message from socketRef io
   useEffect(() => {
     socketRef.current = io("ws://localhost:8900");
@@ -100,12 +143,40 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
   }, []);
 
   useEffect(() => {
+    socketRef.current.on("getNotification", (data) => {
+      //Cho nay chi can day vo state khong can call api
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+
+      toast(
+        <Msg
+          picture={data?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.name}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     socketRef.current.on("start typing message", (typingInfo) => {
       if (typingInfo.senderId !== socketRef.current.id) {
         const user = typingInfo.user;
         setTypingUsers((users) => [...users, user]);
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -250,11 +321,14 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
             className="icon_wrapper"
             onClick={() => {
               setShowAllNotification((prev) => !prev);
+              dispatch(clearNewNotifications());
             }}
           >
             <Notifications />
           </div>
-          {/* <div className="right_notification">5</div> */}
+          {newNotifications.length > 0 && (
+            <div className="right_notification">{newNotifications.length}</div>
+          )}
 
           {showAllNotification && (
             <AllNotifications
@@ -298,6 +372,8 @@ export default function Header({ page, onlineUser, setOnlineUsers }) {
           />
         ))}
       </div>
+
+      <ToastContainer transition={bounce} closeButton={CloseButton} limit={5} />
     </header>
   );
 }
