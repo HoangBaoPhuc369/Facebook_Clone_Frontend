@@ -183,7 +183,7 @@ export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
                 profile={profile}
                 visitor={visitor}
                 photos={photos.resources}
-                othername={othername}
+                otherName={profile?.details?.otherName}
                 loading={loading}
                 profilePost={profile?.posts}
                 dispatch={dispatch}

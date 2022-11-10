@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import Bio from "./Bio";
 import "./style.css";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import EditDetails from "./EditDetails";
+import { updateDetailsInfo } from "../../redux/features/profileSlice";
 export default function Intro({ detailss, visitor, setOthername }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const [details, setDetails] = useState();
@@ -24,29 +25,15 @@ export default function Intro({ detailss, visitor, setOthername }) {
     relationship: details?.relationship ? details.relationship : "",
     instagram: details?.instagram ? details.instagram : "",
   };
+  
+  const dispatch = useDispatch();
   const [infos, setInfos] = useState(initial);
   const [showBio, setShowBio] = useState(false);
   const [max, setMax] = useState(infos?.bio ? 100 - infos?.bio.length : 100);
 
-  const updateDetails = async () => {
-    try {
-      const { data } = await axios.patch(
-        `${process.env.REACT_APP_BACKEND_URL}/users/update-details`,
-        {
-          infos,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
-      setShowBio(false);
-      setDetails(data);
-      setOthername(data.otherName);
-    } catch (error) {
-      console.log(error.response.data.message);
-    }
+  const updateDetails = () => {
+    setShowBio(false);
+    dispatch(updateDetailsInfo({ infos, token: user.token }));
   };
   const handleChange = (e) => {
     const { name, value } = e.target;

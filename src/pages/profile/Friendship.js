@@ -1,20 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import useClickOutside from "../../helpers/clickOutside";
 import { useSelector } from "react-redux";
+// import {
+//   acceptRequest,
+//   addFriend,
+//   cancelRequest,
+//   deleteRequest,
+//   follow,
+//   unfollow,
+//   unfriend,
+// } from "../../functions/user";
+import { useDispatch } from "react-redux";
 import {
   acceptRequest,
   addFriend,
   cancelRequest,
   deleteRequest,
   follow,
-  unfollow,
+  unFollow,
   unfriend,
-} from "../../functions/user";
-export default function Friendship({ friendshipp, profileid }) {
-  const [friendship, setFriendship] = useState(friendshipp);
-  useEffect(() => {
-    setFriendship(friendshipp);
-  }, [friendshipp]);
+} from "../../redux/features/profileSlice";
+export default function Friendship({ friendshipp, profileId }) {
+  // const [friendship, setFriendship] = useState(friendshipp);
+
+  // useEffect(() => {
+  //   setFriendship(friendshipp);
+  // }, [friendshipp]);
+
+  const dispatch = useDispatch();
   const [friendsMenu, setFriendsMenu] = useState(false);
   const [respondMenu, setRespondMenu] = useState(false);
   const menu = useRef(null);
@@ -22,56 +35,66 @@ export default function Friendship({ friendshipp, profileid }) {
   useClickOutside(menu, () => setFriendsMenu(false));
   useClickOutside(menu1, () => setRespondMenu(false));
   const { user } = useSelector((state) => ({ ...state.auth }));
-  const addFriendHandler = async () => {
-    setFriendship({ ...friendship, requestSent: true, following: true });
-    await addFriend(profileid, user.token);
+  const { profile } = useSelector((state) => ({ ...state.profile }));
+  const addFriendHandler = () => {
+    // setFriendship({ ...friendship, requestSent: true, following: true });
+    // await addFriend(profileid, user.token);
+    dispatch(addFriend({ profileId: profileId, token: user.token }));
   };
-  const cancelRequestHandler = async () => {
-    setFriendship({ ...friendship, requestSent: false, following: false });
-    await cancelRequest(profileid, user.token);
+  const cancelRequestHandler = () => {
+    // setFriendship({ ...friendship, requestSent: false, following: false });
+    // await cancelRequest(profileid, user.token);
+
+    dispatch(cancelRequest({ profileId: profileId, token: user.token }));
   };
   const followHandler = async () => {
-    setFriendship({ ...friendship, following: true });
-    await follow(profileid, user.token);
+    // setFriendship({ ...friendship, following: true });
+    // await follow(profileid, user.token);
+
+    dispatch(follow({ profileId: profileId, token: user.token }));
   };
-  const unfollowHandler = async () => {
-    setFriendship({ ...friendship, following: false });
-    await unfollow(profileid, user.token);
+  const unFollowHandler = async () => {
+    // setFriendship({ ...friendship, following: false });
+    // await unfollow(profileid, user.token);
+    dispatch(unFollow({ profileId: profileId, token: user.token }));
   };
-  const acceptRequestHanlder = async () => {
-    setFriendship({
-      ...friendship,
-      friends: true,
-      following: true,
-      requestSent: false,
-      requestReceived: false,
-    });
-    await acceptRequest(profileid, user.token);
+  const acceptRequestHandler = async () => {
+    // setFriendship({
+    //   ...friendship,
+    //   friends: true,
+    //   following: true,
+    //   requestSent: false,
+    //   requestReceived: false,
+    // });
+    // await acceptRequest(profileid, user.token);
+    dispatch(acceptRequest({ profileId: profileId, token: user.token }));
   };
   const unfriendHandler = async () => {
-    setFriendship({
-      ...friendship,
-      friends: false,
-      following: false,
-      requestSent: false,
-      requestReceived: false,
-    });
-    await unfriend(profileid, user.token);
+    // setFriendship({
+    //   ...friendship,
+    //   friends: false,
+    //   following: false,
+    //   requestSent: false,
+    //   requestReceived: false,
+    // });
+    // await unfriend(profileid, user.token);
+    dispatch(unfriend({ profileId: profileId, token: user.token }));
   };
-  const deleteRequestHanlder = async () => {
-    setFriendship({
-      ...friendship,
-      friends: false,
-      following: false,
-      requestSent: false,
-      requestReceived: false,
-    });
-    await deleteRequest(profileid, user.token);
+  const deleteRequestHandler = async () => {
+    // setFriendship({
+    //   ...friendship,
+    //   friends: false,
+    //   following: false,
+    //   requestSent: false,
+    //   requestReceived: false,
+    // });
+    // await deleteRequest(profileid, user.token);
+    dispatch(deleteRequest({ profileId: profileId, token: user.token }));
   };
 
   return (
     <div className="friendship">
-      {friendship?.friends ? (
+      {profile.friendship?.friends ? (
         <div className="friends_menu_wrap">
           <button className="gray_btn" onClick={() => setFriendsMenu(true)}>
             <img src="../../../icons/friends.png" alt="" />
@@ -87,13 +110,13 @@ export default function Friendship({ friendshipp, profileid }) {
                 <img src="../../../icons/editFriends.png" alt="" />
                 Edit Friend list
               </div>
-              {friendship?.following ? (
+              {profile.friendship?.following ? (
                 <div
                   className="open_cover_menu_item hover1"
-                  onClick={() => unfollowHandler()}
+                  onClick={() => unFollowHandler()}
                 >
                   <img src="../../../icons/unfollowOutlined.png" alt="" />
-                  Unfollow
+                  UnFollow
                 </div>
               ) : (
                 <div
@@ -109,21 +132,21 @@ export default function Friendship({ friendshipp, profileid }) {
                 onClick={() => unfriendHandler()}
               >
                 <i className="unfriend_outlined_icon"></i>
-                Unfriend
+                UnFriend
               </div>
             </div>
           )}
         </div>
       ) : (
-        !friendship?.requestSent &&
-        !friendship?.requestReceived && (
+        !profile.friendship?.requestSent &&
+        !profile.friendship?.requestReceived && (
           <button className="blue_btn" onClick={() => addFriendHandler()}>
             <img src="../../../icons/addFriend.png" alt="" className="invert" />
             <span>Add Friend</span>
           </button>
         )
       )}
-      {friendship?.requestSent ? (
+      {profile.friendship?.requestSent ? (
         <button className="blue_btn" onClick={() => cancelRequestHandler()}>
           <img
             src="../../../icons/cancelRequest.png"
@@ -133,7 +156,7 @@ export default function Friendship({ friendshipp, profileid }) {
           <span>Cancel Request</span>
         </button>
       ) : (
-        friendship?.requestReceived && (
+        profile.friendship?.requestReceived && (
           <div className="friends_menu_wrap">
             <button className="gray_btn" onClick={() => setRespondMenu(true)}>
               <img src="../../../icons/friends.png" alt="" />
@@ -143,13 +166,13 @@ export default function Friendship({ friendshipp, profileid }) {
               <div className="open_cover_menu" ref={menu1}>
                 <div
                   className="open_cover_menu_item hover1"
-                  onClick={() => acceptRequestHanlder()}
+                  onClick={() => acceptRequestHandler()}
                 >
                   Confirm
                 </div>
                 <div
                   className="open_cover_menu_item hover1"
-                  onClick={() => deleteRequestHanlder()}
+                  onClick={() => deleteRequestHandler()}
                 >
                   Delete
                 </div>
@@ -159,8 +182,8 @@ export default function Friendship({ friendshipp, profileid }) {
         )
       )}
       <div className="flex">
-        {friendship?.following ? (
-          <button className="gray_btn" onClick={() => unfollowHandler()}>
+        {profile.friendship?.following ? (
+          <button className="gray_btn" onClick={() => unFollowHandler()}>
             <img src="../../../icons/follow.png" alt="" />
             <span>Following</span>
           </button>
@@ -170,10 +193,10 @@ export default function Friendship({ friendshipp, profileid }) {
             <span>Follow</span>
           </button>
         )}
-        <button className={friendship?.friends ? "blue_btn" : "gray_btn"}>
+        <button className={profile.friendship?.friends ? "blue_btn" : "gray_btn"}>
           <img
             src="../../../icons/message.png"
-            className={friendship?.friends && "invert"}
+            className={profile.friendship?.friends ? "invert" : ""}
             alt=""
           />
           <span>Message</span>

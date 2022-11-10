@@ -3,11 +3,11 @@ import Cropper from "react-easy-crop";
 import { useDispatch, useSelector } from "react-redux";
 import { createPost } from "../../functions/post";
 import { uploadImages } from "../../functions/uploadImages";
-import { updateprofilePicture } from "../../functions/user";
+// import { updateProfilePictureUser } from "../../functions/user";
 import getCroppedImg from "../../helpers/getCroppedImg";
 import PulseLoader from "react-spinners/PulseLoader";
-import Cookies from "js-cookie";
 import { updatePicture } from "../../redux/features/authSlice";
+import { updateProfilePictureUser } from "../../redux/features/profileSlice";
 export default function UpdateProfilePicture({
   setImage,
   image,
@@ -21,10 +21,10 @@ export default function UpdateProfilePicture({
   const [description, setDescription] = useState("");
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const slider = useRef(null);
   const { user } = useSelector((state) => ({ ...state.auth }));
-  const [loading, setLoading] = useState(false);
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
@@ -53,7 +53,7 @@ export default function UpdateProfilePicture({
     },
     [croppedAreaPixels]
   );
-  const updateProfielPicture = async () => {
+  const updateProfilePicture = async () => {
     try {
       setLoading(true);
       let img = await getCroppedImage();
@@ -63,44 +63,59 @@ export default function UpdateProfilePicture({
       formData.append("file", blob);
       formData.append("path", path);
       const res = await uploadImages(formData, user.token);
-      const updated_picture = await updateprofilePicture(
-        res[0].url,
-        user.token
+      // const updated_picture = await updateProfilePictureUser(
+      //   res[0].url,
+      //   user.token
+      // );
+
+      // if (updated_picture === "ok") {
+      //   const new_post = await createPost(
+      //     "profilePicture",
+      //     null,
+      //     description,
+      //     res,
+      //     user.id,
+      //     user.token
+      //   );
+
+      //   if (new_post.status === "ok") {
+      //     setLoading(false);
+      //     setImage("");
+      //     pRef.current.style.backgroundImage = `url(${res[0].url})`;
+
+      //     profileReducerDispatch({
+      //       type: "PROFILE_POSTS",
+      //       payload: [new_post.data, ...profilePost],
+      //     })
+      //     dispatch(updatePicture(res[0].url));
+      //     setShow(prev => !prev);
+      //   } else {
+      //     setLoading(false);
+
+      //     setError(new_post);
+      //   }
+      // } else {
+      //   setLoading(false);
+
+      //   setError(updated_picture);
+      // }
+      dispatch(
+        updateProfilePictureUser({
+          url: res[0].url,
+          token: user.token,
+          type: "profilePicture",
+          background: null,
+          text: description,
+          images: res,
+          user: user.id,
+        })
       );
-      
-      if (updated_picture === "ok") {
-        const new_post = await createPost(
-          "profilePicture",
-          null,
-          description,
-          res,
-          user.id,
-          user.token
-        );
-
-        if (new_post.status === "ok") {
-          setLoading(false);
-          setImage("");
-          pRef.current.style.backgroundImage = `url(${res[0].url})`;
-          
-          profileReducerDispatch({
-            type: "PROFILE_POSTS",
-            payload: [new_post.data, ...profilePost],
-          })
-          dispatch(updatePicture(res[0].url));
-          setShow(prev => !prev);
-        } else {
-          setLoading(false);
-
-          setError(new_post);
-        }
-      } else {
-        setLoading(false);
-
-        setError(updated_picture);
-      }
-    } catch (error) {
       setLoading(false);
+      setImage("");
+      pRef.current.style.backgroundImage = `url(${res[0].url})`;
+      dispatch(updatePicture(res[0].url));
+      setShow(prev => !prev);
+    } catch (error) {
       setError(error?.response?.data?.message);
     }
   };
@@ -172,7 +187,7 @@ export default function UpdateProfilePicture({
         <button
           className="blue_btn"
           disabled={loading}
-          onClick={() => updateProfielPicture()}
+          onClick={() => updateProfilePicture()}
         >
           {loading ? <PulseLoader color="#fff" size={5} /> : "Save"}
         </button>

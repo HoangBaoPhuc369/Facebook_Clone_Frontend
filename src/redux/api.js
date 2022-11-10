@@ -40,6 +40,115 @@ export const getPhotos = (path, sort, max, token) =>
     }
   );
 
+export const updateDetails = (infos, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/update-details`,
+    {
+      infos,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const updateProfilePictureUser = (url, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/update-profile-picture`,
+    {
+      url,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const addFriend = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/add-friend/${id}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const cancelRequest = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/cancel-request/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const follow = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/follow/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const unFollow = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/unfollow/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const acceptRequest = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/accept-request/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const unfriend = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/unfriend/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const deleteRequest = (id, token) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/delete-request/${id}`,
+    {},
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
 // --------------------------POST API--------------------------------------
 export const getPosts = (userToken) =>
   axios.get(`${process.env.REACT_APP_BACKEND_URL}/posts/get-all-posts`, {
