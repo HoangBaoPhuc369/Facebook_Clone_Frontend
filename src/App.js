@@ -16,6 +16,7 @@ import { getConversations } from "./redux/features/conversationSlice";
 import NotificationPopUp from "./components/notificationPopUp";
 import DeletePostPopUp from "./components/deletePost";
 import { getNotification } from "./redux/features/notificationSlice";
+import VideoCall from "./pages/videoCall/VideoCall";
 
 function App() {
   const [visible, setVisible] = useState(false);
@@ -84,6 +85,7 @@ function App() {
             exact
           />
           <Route path="/activate/:token" element={<Activate />} exact />
+          <Route path="/video-call" element={<VideoCall />} exact />
         </Route>
         <Route element={<NotLoggedInRoutes />}>
           <Route path="/login" element={<Login />} exact />

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 const useTyping = () => {
   const [isTyping, setIsTyping] = useState(false);
-  const [isKeyPressed, setIsKeyPressed] = useState(false);
+  const [isKeyPressed, setIsKeyPressed] = useState(null);
   const [countdown, setCountdown] = useState(3);
 
   const startTyping = () => {
@@ -21,16 +21,17 @@ const useTyping = () => {
 
   useEffect(() => {
     let interval;
-    if (!isKeyPressed) {
+    if (isKeyPressed === false) {
       interval = setInterval(() => {
         setCountdown((c) => c - 1);
       }, 1000);
-    } else if (isKeyPressed || countdown <= 0) {
+    } else if (isKeyPressed || countdown === 0) {
       clearInterval(interval);
     }
 
-    if (countdown <= 0) {
+    if (countdown === 0) {
       setIsTyping(false);
+      clearInterval(interval);
     }
 
     return () => clearInterval(interval);

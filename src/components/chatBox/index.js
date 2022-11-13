@@ -209,7 +209,7 @@ export default function ChatBox({
     const lastSeenMessage = messagesChat.filter((m) => m.status === "seen");
     SetGetLastSeenMessage(lastSeenMessage[lastSeenMessage.length - 1]?._id);
   }, [messagesChat]);
-
+  // console.log("render")
   return (
     <>
       <div

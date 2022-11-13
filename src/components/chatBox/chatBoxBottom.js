@@ -42,12 +42,10 @@ export default function ChatBoxBottom({
               onKeyPress={startTyping}
               onKeyUp={(e) => {
                 stopTyping();
-                // handleKeyDown(e);
                 if (e.key === "Enter" && e.target.value !== "") {
                   handleSendMessage(e);
                 }
               }}
-              // onKeyUp={handleSendMessage}
             />
 
             <div className="face_icon circle_hover_cover hover1">
