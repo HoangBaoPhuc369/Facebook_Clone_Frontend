@@ -17,6 +17,7 @@ import NotificationPopUp from "./components/notificationPopUp";
 import DeletePostPopUp from "./components/deletePost";
 import { getNotification } from "./redux/features/notificationSlice";
 import VideoCall from "./pages/videoCall/VideoCall";
+import { io } from 'socket.io-client';
 
 function App() {
   const [visible, setVisible] = useState(false);

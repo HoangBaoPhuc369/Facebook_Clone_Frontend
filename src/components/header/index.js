@@ -39,6 +39,11 @@ import {
 import "animate.css/animate.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast, cssTransition } from "react-toastify";
+import {
+  connectWithWebSocket,
+  handleBroadcastEvents,
+} from "./../../utils/wssConnection/wssConnection";
+import { setActiveUsers } from "../../redux/features/dashboardSlice";
 
 const Msg = ({ picture, text, icon, name }) => (
   <>
@@ -129,6 +134,7 @@ export default function Header({
   // Get message from socketRef io
   useEffect(() => {
     socketRef.current = io("ws://localhost:8900");
+    console.log(socketRef.current);
     socketRef.current.on("getMessage", ({ messages, currentChatID }) => {
       const message = { messages, currentChatID };
       setArrivalMessage(message);
@@ -141,6 +147,13 @@ export default function Header({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // useEffect(() => {
+  //   socketRef.current.on('broadcast', (data) => {
+  //     handleBroadcastEvents({data, socketRef, dispatch, user});
+  //   });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     socketRef.current.on("getNotification", (data) => {
@@ -182,9 +195,17 @@ export default function Header({
   useEffect(() => {
     socketRef.current.emit("addUser", user.id);
     socketRef.current.on("getUsers", (users) => {
-      setOnlineUsers(
-        user.following.filter((f) => users.some((u) => u.userId === f._id))
+      const activeUsers = user.following.filter((f) =>
+        users.some((u) => u.userId === f._id)
       );
+
+      const activeUsersSocket = users.filter(
+        (activeUser) =>
+          activeUser.socketId !== socketRef.current?.id &&
+          user.following.some(u => u._id === activeUser.userId)
+      );
+      setOnlineUsers(activeUsers);
+      dispatch(setActiveUsers(activeUsersSocket));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.id]);
