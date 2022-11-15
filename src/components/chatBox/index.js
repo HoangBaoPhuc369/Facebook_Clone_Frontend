@@ -50,7 +50,7 @@ export default function ChatBox({
     if (messageSendSuccess) {
       const messages = messagesChat[messagesChat.length - 1];
       const currentChatID = currentChat?._id;
-      socket.current.emit("sendMessage", { messages, currentChatID });
+      socket.emit("sendMessage", { messages, currentChatID });
       dispatch(clearMessageSuccess());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -58,7 +58,7 @@ export default function ChatBox({
 
   useEffect(() => {
     if (arrivalMessage?.currentChatID === currentChat?._id) {
-      socket.current?.emit("messageDelivered", {
+      socket?.emit("messageDelivered", {
         message: arrivalMessage?.messages,
         currentChatId: arrivalMessage?.currentChatID,
       });
@@ -71,7 +71,7 @@ export default function ChatBox({
     }
 
     if (arrivalMessage?.currentChatID === chatBox.currentChatBox) {
-      socket.current?.emit("messageSeen", {
+      socket?.emit("messageSeen", {
         message: arrivalMessage?.messages,
         currentChatId: arrivalMessage?.currentChatID,
       });
@@ -87,7 +87,7 @@ export default function ChatBox({
   }, [arrivalMessage]);
 
   useEffect(() => {
-    socket.current?.on("getMessageDelivered", (data) => {
+    socket?.on("getMessageDelivered", (data) => {
       if (data.currentChatId === currentChat?._id) {
         dispatch(
           deliveredMessageChat({
@@ -103,7 +103,7 @@ export default function ChatBox({
   }, []);
 
   useEffect(() => {
-    socket.current?.on("getMessageSeen", (data) => {
+    socket?.on("getMessageSeen", (data) => {
       if (data.currentChatId === currentChat?._id) {
         dispatch(
           seenMessageChat({
@@ -115,7 +115,7 @@ export default function ChatBox({
       }
     });
 
-    socket.current?.on("getMessageSeenAll", (data) => {
+    socket?.on("getMessageSeenAll", (data) => {
       if (data.currentChatId === currentChat?._id) {
         dispatch(
           seenAllMessageChat({
@@ -133,8 +133,8 @@ export default function ChatBox({
   };
 
   useEffect(() => {
-    socket.current?.on("stop typing message", (typingInfo) => {
-      if (typingInfo.senderId !== socket.current.id) {
+    socket?.on("stop typing message", (typingInfo) => {
+      if (typingInfo.senderId !== socket.id) {
         const user = typingInfo.user;
         setTypingUsers((users) => checkUsers(users, user));
         setShowTyping((users) => checkUsers(users, user));
@@ -174,18 +174,18 @@ export default function ChatBox({
   }, [messagesChat, scrollBottom]);
 
   const startTypingMessage = () => {
-    if (!socket.current) return;
-    socket.current.emit("start typing message", {
-      senderId: socket.current.id,
+    if (!socket) return;
+    socket.emit("start typing message", {
+      senderId: socket.id,
       receiverId: friendChat._id,
       user: user.id,
     });
   };
 
   const stopTypingMessage = () => {
-    if (!socket.current) return;
-    socket.current.emit("stop typing message", {
-      senderId: socket.current.id,
+    if (!socket) return;
+    socket.emit("stop typing message", {
+      senderId: socket.id,
       receiverId: friendChat._id,
       user: user.id,
     });

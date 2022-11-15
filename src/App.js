@@ -17,7 +17,7 @@ import NotificationPopUp from "./components/notificationPopUp";
 import DeletePostPopUp from "./components/deletePost";
 import { getNotification } from "./redux/features/notificationSlice";
 import VideoCall from "./pages/videoCall/VideoCall";
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 
 function App() {
   const [visible, setVisible] = useState(false);
@@ -26,7 +26,7 @@ function App() {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { darkTheme } = useSelector((state) => ({ ...state.theme }));
   const userId = user?.id;
-  const socketRef = useRef();
+  const [socketRef, setSocketRef] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -37,6 +37,13 @@ function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
+
+  useEffect(() => {
+    const newSocket = io("ws://localhost:8900", { transports: ["polling"] });
+    setSocketRef(newSocket);
+    return () => newSocket.close();
+  }, [setSocketRef]);
+
 
   return (
     <div className={darkTheme ? "dark" : "light"}>
@@ -75,18 +82,23 @@ function App() {
           <Route
             path="/"
             element={
+              socketRef ?
               <Home
                 socketRef={socketRef}
                 onlineUser={onlineUser}
                 setVisible={setVisible}
                 setOnlineUsers={setOnlineUsers}
                 setVisibleDelPost={setVisibleDelPost}
-              />
+              /> : null
             }
             exact
           />
           <Route path="/activate/:token" element={<Activate />} exact />
-          <Route path="/video-call" element={<VideoCall />} exact />
+          <Route
+            path="/video-call"
+            element={socketRef ? <VideoCall socketRef={socketRef} /> : null}
+            exact
+          />
         </Route>
         <Route element={<NotLoggedInRoutes />}>
           <Route path="/login" element={<Login />} exact />

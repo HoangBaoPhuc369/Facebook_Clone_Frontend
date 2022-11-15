@@ -40,10 +40,6 @@ export const callSlice = createSlice({
   name: "call",
   initialState,
   reducers: {
-    // setUsername: (state, action) => {
-    //   state.username = action.payload;
-    // },
-
     setLocalStream: (state, action) => {
       state.localStream = action.payload;
     },
@@ -88,6 +84,14 @@ export const callSlice = createSlice({
       state.localMicrophoneEnabled = true;
       state.screenSharingActive = false;
     },
+
+    setGroupCallActive: (state, action) => {
+      state.groupCallActive = action.payload;
+    },
+
+    setGroupCallStreams: (state, action) => {
+      state.groupCallStreams = [...state.groupCallStreams, action.payload];
+    },
   },
   //   extraReducers: {
   //     [createNotifications.fulfilled]: (state, action) => {
@@ -100,7 +104,18 @@ export const callSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setUsername, setActiveUsers, setGroupCallRooms } =
-  callSlice.actions;
+export const {
+  setLocalStream,
+  setCallState,
+  setCallingDialogVisible,
+  setCallerUsername,
+  setCallRejected,
+  setRemoteStream,
+  setLocalCameraEnabled,
+  setLocalMicrophoneEnabled,
+  setScreenSharingActive,
+  setGroupCallActive,
+  setGroupCallStreams,
+} = callSlice.actions;
 
 export default callSlice.reducer;

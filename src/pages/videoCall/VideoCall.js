@@ -8,16 +8,39 @@ import {
   faUserPlus,
   faVideo,
 } from "@fortawesome/free-solid-svg-icons";
-import { createPortal } from "react-dom";
+import { useEffect } from "react";
+import * as webRTCHandler from '../../utils/webRTC/webRTCHandler';
+import * as webRTCGroupHandler from '../../utils/webRTC/webRTCGroupCallHandler';
+import { useSelector } from 'react-redux';
+import { useRef } from "react";
 
-export default function VideoCall() {
+export default function VideoCall({socket}) {
+  const { localStream } = useSelector((state) => ({ ...state.call }));
+  const localVideoRef = useRef(); 
+  useEffect(() => {
+    webRTCHandler.getLocalStream(socket);
+    webRTCGroupHandler.connectWithMyPeer();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // useEffect(() => {
+  //   if (localStream) {
+  //     const localVideo = localVideoRef.current;
+  //     localVideo.srcObject = localStream;
+
+  //     localVideo.onloadedmetadata = () => {
+  //       localVideo.play();
+  //     };
+  //   }
+  // }, [localStream]);
+
   return (
     <>
       <div className="dashboard_container">
         <div className="dashboard_left_section">
           <div className="dashboard_content_container">
             {/* <DashboardInformation /> */}
-            <video src=""></video>
+            <video autoPlay muted ></video>
           </div>
           <div className="dashboard_rooms_container">
             <div className="dashboard_hidden"></div>
@@ -41,7 +64,7 @@ export default function VideoCall() {
             </div>
 
             <div className="dashboard_local_video">
-              <video src=""></video>
+              <video ref={localVideoRef} width="300" autoPlay muted></video>
               {/* <video src=""></video> */}
             </div>
           </div>

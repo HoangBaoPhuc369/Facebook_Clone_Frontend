@@ -19,4 +19,8 @@ export const store = configureStore({
     messenger: ConversationReducer,
     notification: NotificationReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });

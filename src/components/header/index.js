@@ -133,9 +133,9 @@ export default function Header({
 
   // Get message from socketRef io
   useEffect(() => {
-    socketRef.current = io("ws://localhost:8900");
-    console.log(socketRef.current);
-    socketRef.current.on("getMessage", ({ messages, currentChatID }) => {
+    // socketRef = io("ws://localhost:8900", { transports: ["polling"] });
+
+    socketRef.on("getMessage", ({ messages, currentChatID }) => {
       const message = { messages, currentChatID };
       setArrivalMessage(message);
       dispatch(
@@ -149,14 +149,14 @@ export default function Header({
   }, []);
 
   // useEffect(() => {
-  //   socketRef.current.on('broadcast', (data) => {
+  //   socketRef.on('broadcast', (data) => {
   //     handleBroadcastEvents({data, socketRef, dispatch, user});
   //   });
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, []);
 
   useEffect(() => {
-    socketRef.current.on("getNotification", (data) => {
+    socketRef.on("getNotification", (data) => {
       //Cho nay chi can day vo state khong can call api
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
@@ -183,8 +183,8 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    socketRef.current.on("start typing message", (typingInfo) => {
-      if (typingInfo.senderId !== socketRef.current.id) {
+    socketRef.on("start typing message", (typingInfo) => {
+      if (typingInfo.senderId !== socketRef.id) {
         const user = typingInfo.user;
         setTypingUsers((users) => [...users, user]);
       }
@@ -193,16 +193,16 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    socketRef.current.emit("addUser", user.id);
-    socketRef.current.on("getUsers", (users) => {
+    socketRef.emit("addUser", user.id);
+    socketRef.on("getUsers", (users) => {
       const activeUsers = user.following.filter((f) =>
         users.some((u) => u.userId === f._id)
       );
 
       const activeUsersSocket = users.filter(
         (activeUser) =>
-          activeUser.socketId !== socketRef.current?.id &&
-          user.following.some(u => u._id === activeUser.userId)
+          activeUser.socketId !== socketRef?.id &&
+          user.following.some((u) => u._id === activeUser.userId)
       );
       setOnlineUsers(activeUsers);
       dispatch(setActiveUsers(activeUsersSocket));
@@ -227,7 +227,7 @@ export default function Header({
           currentChatId: currentChatId,
         })
       );
-      socketRef.current?.emit("messageSeenAll", {
+      socketRef?.emit("messageSeenAll", {
         receiverId: friendChatId,
         currentChatId: currentChatId,
       });

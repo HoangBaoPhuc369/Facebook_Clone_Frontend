@@ -36,6 +36,17 @@ export default function Home({
   }, [userId]);
 
   return (
+    // <>
+    //   {socketRef ? (
+
+    //   ) : (
+    //     <div className="skeleton_loader">
+    //       {" "}
+    //       <HashLoader color="#1876f2" />
+    //     </div>
+    //   )}
+    // </>
+
     <div className="background-secondary">
       <Header
         page="home"

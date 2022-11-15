@@ -84,7 +84,7 @@ export default function Post({
       dispatch(
         createNotifications({ props: notification, token: user?.token })
       );
-      socketRef.current.emit("sendNotification", notificationSocket);
+      socketRef.emit("sendNotification", notificationSocket);
     }
   };
 
@@ -273,7 +273,6 @@ export default function Post({
           <ReactsPopup
             user={user}
             postId={post?._id}
-            socketRef={socketRef}
             postUserId={post?.user._id}
             reactHandler={reactHandler}
           />

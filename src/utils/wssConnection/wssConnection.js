@@ -2,7 +2,6 @@ import socketClient from "socket.io-client";
 // import * as dashboardActions from '../../store/actions/dashboardActions';
 // import * as webRTCHandler from '../webRTC/webRTCHandler';
 // import * as webRTCGroupCallHandler from '../webRTC/webRTCGroupCallHandler';
-import { useDispatch, useSelector } from "react-redux";
 import { store } from "./../../app/store";
 import { getSocket, setActiveUsers } from "../../redux/features/dashboardSlice";
 import { io } from "socket.io-client";
@@ -15,6 +14,8 @@ const broadcastEventTypes = {
 let socket;
 
 export const connectWithWebSocket = () => {
+  socket = io("ws://localhost:8900", { transports: ["polling"] });
+
   socket.on("broadcast", (data) => {
     handleBroadcastEvents(data);
   });
@@ -63,6 +64,8 @@ export const connectWithWebSocket = () => {
 };
 
 // emitting events to server related with direct call
+
+
 
 export const sendPreOffer = (data) => {
   socket.emit("pre-offer", data);
