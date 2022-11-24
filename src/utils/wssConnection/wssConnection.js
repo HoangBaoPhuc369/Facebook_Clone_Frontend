@@ -1,10 +1,13 @@
-import socketClient from "socket.io-client";
-// import * as dashboardActions from '../../store/actions/dashboardActions';
-// import * as webRTCHandler from '../webRTC/webRTCHandler';
-// import * as webRTCGroupCallHandler from '../webRTC/webRTCGroupCallHandler';
+import * as webRTCGroupCallHandler from "../webRTC/webRTCGroupCallHandler";
+import * as webRTCHandler from '../webRTC/webRTCHandler';
 import { store } from "./../../app/store";
-import { getSocket, setActiveUsers } from "../../redux/features/dashboardSlice";
+import {
+  setActiveUsers,
+  setGroupCallRooms,
+} from "../../redux/features/dashboardSlice";
 import { io } from "socket.io-client";
+import { setRoomSocketId } from "../../redux/features/callSlice";
+const SERVER = "http://localhost:8901";
 
 const broadcastEventTypes = {
   ACTIVE_USERS: "ACTIVE_USERS",
@@ -14,124 +17,73 @@ const broadcastEventTypes = {
 let socket;
 
 export const connectWithWebSocket = () => {
-  socket = io("ws://localhost:8900", { transports: ["polling"] });
+  socket = io(SERVER, {
+    transports: ["polling"],
+  });
+
+  socket.on("connection", () => {
+    console.log("succesfully connected with wss server");
+  });
 
   socket.on("broadcast", (data) => {
     handleBroadcastEvents(data);
   });
 
-  // listeners related with direct call
-  // socket.on('pre-offer', (data) => {
-  //   webRTCHandler.handlePreOffer(data);
-  // });
+  socket.on('webRTC-candidate', (data) => {
+    webRTCHandler.handleCandidate(data);
+  });
 
-  // socket.on('pre-offer-answer', (data) => {
-  //   webRTCHandler.handlePreOfferAnswer(data);
-  // });
+  socket.on('group-call-join-request', (data) => {
+    webRTCGroupCallHandler.connectToNewUser(data);
+  });
 
-  // socket.on('webRTC-offer', (data) => {
-  //   webRTCHandler.handleOffer(data);
-  // });
-
-  // socket.on('webRTC-answer', (data) => {
-  //   webRTCHandler.handleAnswer(data);
-  // });
-
-  // socket.on('webRTC-candidate', (data) => {
-  //   webRTCHandler.handleCandidate(data);
-  // });
-
-  // socket.on('user-hanged-up', () => {
-  //   webRTCHandler.handleUserHangedUp();
-  // });
-
-  // listeners related with group calls
-
-  //   socket.on('group-call-join-request', (data) => {
-  //     webRTCGroupCallHandler.connectToNewUser(data);
-  //   });
-
-  //   socket.on('group-call-user-left', (data) => {
-  //     webRTCGroupCallHandler.removeInactiveStream(data);
-  //   });
-  // };
-
-  // export const registerNewUser = (username) => {
-  //   socket.emit('register-new-user', {
-  //     username: username,
-  //     socketId: socket.id
-  //   });
-};
-
-// emitting events to server related with direct call
-
-
-
-export const sendPreOffer = (data) => {
-  socket.emit("pre-offer", data);
-};
-
-export const sendPreOfferAnswer = (data) => {
-  socket.emit("pre-offer-answer", data);
-};
-
-export const sendWebRTCOffer = (data) => {
-  socket.emit("webRTC-offer", data);
-};
-
-export const sendWebRTCAnswer = (data) => {
-  socket.emit("webRTC-answer", data);
+  // listeners related with group call
 };
 
 export const sendWebRTCCandidate = (data) => {
-  socket.emit("webRTC-candidate", data);
+  socket.emit('webRTC-candidate', data);
 };
 
-export const sendUserHangedUp = (data) => {
-  socket.emit("user-hanged-up", data);
-};
-
-// emitting events related with group calls
-
+// emitting events to server related with group call
 export const registerGroupCall = (data) => {
   socket.emit("group-call-register", data);
 };
 
 export const userWantsToJoinGroupCall = (data) => {
-  socket.emit("group-call-join-request", data);
+  console.log(data);
+  socket.emit('group-call-join-request', data);
 };
+// emitting events related with group calls
 
-export const userLeftGroupCall = (data) => {
-  socket.emit("group-call-user-left", data);
-};
-
-export const groupCallClosedByHost = (data) => {
-  socket.emit("group-call-closed-by-host", data);
-};
-
-export const handleBroadcastEvents = ({ data, socketRef, dispatch, user }) => {
+export const handleBroadcastEvents = (data) => {
   switch (data.event) {
     case broadcastEventTypes.ACTIVE_USERS:
       const activeUsers = data.activeUsers.filter(
-        (activeUser) =>
-          activeUser.socketId !== socketRef.current?.id &&
-          user.following.some(u => u._id === activeUser.userId)
+        (activeUser) => activeUser.socketId !== socket.id
       );
-      // store.dispatch(dashboardActions.setActiveUsers(activeUsers));
       store.dispatch(setActiveUsers(activeUsers));
       break;
-    // case broadcastEventTypes.GROUP_CALL_ROOMS:
-    //   const groupCallRooms = data.groupCallRooms.filter(room => room.socketId !== socket.id);
-    //   const activeGroupCallRoomId = webRTCGroupCallHandler.checkActiveGroupCall();
+    case broadcastEventTypes.GROUP_CALL_ROOMS:
+      const groupCallRooms = data.groupCallRooms.filter(
+        (room) => room.socketId !== socket.id
+      );
+      const hostRooms = data.groupCallRooms.find(
+        (room) => room.socketId === socket.id
+      );
+      const activeGroupCallRoomId =
+        webRTCGroupCallHandler.checkActiveGroupCall();
 
-    //   if (activeGroupCallRoomId) {
-    //     const room = groupCallRooms.find(room => room.roomId === activeGroupCallRoomId);
-    //     if (!room) {
-    //       webRTCGroupCallHandler.clearGroupData();
-    //     }
-    //   }
-    //   store.dispatch(dashboardActions.setGroupCalls(groupCallRooms));
-    //   break;
+      if (activeGroupCallRoomId) {
+        const room = groupCallRooms.find(
+          (room) => room.roomId === activeGroupCallRoomId
+        );
+        if (!room) {
+          webRTCGroupCallHandler.clearGroupData();
+        }
+      }
+      store.dispatch(setGroupCallRooms(groupCallRooms));
+      store.dispatch(setRoomSocketId(hostRooms.socketId));
+      break;
     default:
       break;
   }

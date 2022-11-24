@@ -18,12 +18,17 @@ import DeletePostPopUp from "./components/deletePost";
 import { getNotification } from "./redux/features/notificationSlice";
 import VideoCall from "./pages/videoCall/VideoCall";
 import { io } from "socket.io-client";
+import { connectWithWebSocket } from "./utils/wssConnection/wssConnection";
+import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInParent";
 
 function App() {
   const [visible, setVisible] = useState(false);
   const [onlineUser, setOnlineUsers] = useState([]);
   const [visibleDelPost, setVisibleDelPost] = useState(false);
   const { user } = useSelector((state) => ({ ...state.auth }));
+  const { callerUser, callState, connectedUserSocketId } = useSelector(
+    (state) => ({ ...state.call })
+  );
   const { darkTheme } = useSelector((state) => ({ ...state.theme }));
   const userId = user?.id;
   const [socketRef, setSocketRef] = useState(null);
@@ -39,11 +44,13 @@ function App() {
   }, [userId]);
 
   useEffect(() => {
-    const newSocket = io("ws://localhost:8900", { transports: ["polling"] });
+    const newSocket = io("http://localhost:8900/", {
+      transports: ["polling"],
+    });
     setSocketRef(newSocket);
+    handleWSSCallInParent(newSocket);
     return () => newSocket.close();
   }, [setSocketRef]);
-
 
   return (
     <div className={darkTheme ? "dark" : "light"}>
@@ -77,28 +84,24 @@ function App() {
             }
             exact
           />
-          <Route path="/friends" element={<Friends />} exact />
-          <Route path="/friends/:type" element={<Friends />} exact />
+          <Route path="/friends" element={socketRef ? <Friends socketRef={socketRef} />  : null} exact />
+          <Route path="/friends/:type" element={socketRef ? <Friends socketRef={socketRef} /> : null} exact />
           <Route
             path="/"
             element={
-              socketRef ?
-              <Home
-                socketRef={socketRef}
-                onlineUser={onlineUser}
-                setVisible={setVisible}
-                setOnlineUsers={setOnlineUsers}
-                setVisibleDelPost={setVisibleDelPost}
-              /> : null
+              socketRef ? (
+                <Home
+                  socketRef={socketRef}
+                  onlineUser={onlineUser}
+                  setVisible={setVisible}
+                  setOnlineUsers={setOnlineUsers}
+                  setVisibleDelPost={setVisibleDelPost}
+                />
+              ) : null
             }
             exact
           />
           <Route path="/activate/:token" element={<Activate />} exact />
-          <Route
-            path="/video-call"
-            element={socketRef ? <VideoCall socketRef={socketRef} /> : null}
-            exact
-          />
         </Route>
         <Route element={<NotLoggedInRoutes />}>
           <Route path="/login" element={<Login />} exact />
@@ -106,7 +109,7 @@ function App() {
         <Route path="/reset" element={<Reset />} />
       </Routes>
 
-      {/* <NotificationPopUp>{user?.picture}</NotificationPopUp> */}
+      
     </div>
   );
 }

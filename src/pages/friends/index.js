@@ -6,7 +6,7 @@ import { friendspage } from "../../functions/reducers";
 import { getFriendsPageInfos } from "../../functions/user";
 import Card from "./Card";
 import "./style.css";
-export default function Friends() {
+export default function Friends({socketRef}) {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { type } = useParams();
 
@@ -30,7 +30,7 @@ export default function Friends() {
 
   return (
     <>
-      <Header page="friends" />
+      <Header page="friends" socketRef={socketRef} />
       <div className="friends">
         <div className="friends_left">
           <div className="friends_left_header">

@@ -144,8 +144,10 @@
   box-shadow: 0 12px 28px 0 var(--shadow-1), 0 2px 4px 0 var(--shadow-2),
     inset 0 0 0 1px var(--shadow-inset);
   min-height: 100px;
-  width: 16%;
+  width: 304px;
+  height: 277px;
   border-radius: 12px;
+  z-index: 999999999;
 }
 
 .call-box_header {
@@ -247,7 +249,6 @@
   width: 18px;
   height: 18px;
   color: #fff;
-  
 }
 
 .call-decline {

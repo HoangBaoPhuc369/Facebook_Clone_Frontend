@@ -1,25 +1,15 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import Cookies from "js-cookie";
-// import * as api from "../api";
-
-// export const createNotifications = createAsyncThunk(
-//   "notification/createNotifications",
-//   async ({ props, token }, { rejectWithValue }) => {
-//     try {
-//       console.log(props);
-//       const { data } = await api.createNotifications(props, token);
-//       return data;
-//     } catch (err) {
-//       return rejectWithValue(err.response.data);
-//     }
-//   }
-// );
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  roomSocketId: null,
   localStream: null,
-  callState: "CALL_UNAVAILABLE",
+  callState: "CALL_AVAILABLE",
   callingDialogVisible: false,
-  callerUsername: "",
+  callerUser: {
+    username: "",
+    picture: "",
+    roomId: null,
+  },
   callRejected: {
     rejected: false,
     reason: "",
@@ -40,6 +30,9 @@ export const callSlice = createSlice({
   name: "call",
   initialState,
   reducers: {
+    setRoomSocketId: (state, action) => {
+      state.roomSocketId = action.payload;
+    },
     setLocalStream: (state, action) => {
       state.localStream = action.payload;
     },
@@ -52,8 +45,8 @@ export const callSlice = createSlice({
       state.callingDialogVisible = action.payload;
     },
 
-    setCallerUsername: (state, action) => {
-      state.callerUsername = action.payload;
+    setCallerUser: (state, action) => {
+      state.callerUser = action.payload;
     },
 
     setCallRejected: (state, action) => {
@@ -92,23 +85,29 @@ export const callSlice = createSlice({
     setGroupCallStreams: (state, action) => {
       state.groupCallStreams = [...state.groupCallStreams, action.payload];
     },
+
+    getCallUser: (state, action) => {
+      state.callUser = action.payload;
+    },
+
+    clearGroupCallData: (state, action) => {
+      state.groupCallActive = false;
+      state.groupCallStreams = [];
+      state.callState = "CALL_AVAILABLE";
+      state.localMicrophoneEnabled = true;
+      state.localCameraEnabled = true;
+    },
   },
-  //   extraReducers: {
-  //     [createNotifications.fulfilled]: (state, action) => {
-  //       state.error = "";
-  //     },
-  //     [createNotifications.rejected]: (state, action) => {
-  //       state.error = action.payload?.message;
-  //     },
-  //   },
 });
 
 // Action creators are generated for each case reducer function
 export const {
+  setRoomSocketId,
+  getCallUser,
   setLocalStream,
   setCallState,
   setCallingDialogVisible,
-  setCallerUsername,
+  setCallerUser,
   setCallRejected,
   setRemoteStream,
   setLocalCameraEnabled,
@@ -116,6 +115,7 @@ export const {
   setScreenSharingActive,
   setGroupCallActive,
   setGroupCallStreams,
+  clearGroupCallData,
 } = callSlice.actions;
 
 export default callSlice.reducer;

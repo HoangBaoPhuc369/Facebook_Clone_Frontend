@@ -44,6 +44,8 @@ import {
   handleBroadcastEvents,
 } from "./../../utils/wssConnection/wssConnection";
 import { setActiveUsers } from "../../redux/features/dashboardSlice";
+import VideoCall from "../../pages/videoCall/VideoCall";
+import NotificationPopUp from "../notificationPopUp";
 
 const Msg = ({ picture, text, icon, name }) => (
   <>
@@ -83,6 +85,7 @@ export default function Header({
   socketRef,
 }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
+  const { callState, callerUser } = useSelector((state) => ({ ...state.call }));
   const { newNotifications } = useSelector((state) => ({
     ...state.notification,
   }));
@@ -193,7 +196,12 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    socketRef.emit("addUser", user.id);
+    socketRef.emit("addUser", {
+      userId: user?.id,
+      userName: `${user?.first_name} ${user?.last_name}`,
+      picture: user?.picture,
+      timeJoin: new Date(),
+    });
     socketRef.on("getUsers", (users) => {
       const activeUsers = user.following.filter((f) =>
         users.some((u) => u.userId === f._id)
@@ -395,6 +403,15 @@ export default function Header({
       </div>
 
       <ToastContainer transition={bounce} closeButton={CloseButton} limit={5} />
+
+      {callState === "CALL_REQUESTED" && (
+        <NotificationPopUp
+          username={callerUser.username}
+          picture={callerUser.picture}
+          roomId={callerUser.roomId}
+        ></NotificationPopUp>
+      )}
+
     </header>
   );
 }

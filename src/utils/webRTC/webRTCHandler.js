@@ -1,46 +1,69 @@
-import { setCallingDialogVisible, setCallState, setLocalStream, setRemoteStream } from '../../redux/features/callSlice';
-import * as wss from '../wssConnection/wssConnection';
-import { store } from './../../app/store';
+import {
+  setCallerUser,
+  setCallingDialogVisible,
+  setCallRejected,
+  setCallState,
+  setLocalStream,
+  setRemoteStream,
+  setRoomSocketId,
+} from "../../redux/features/callSlice";
+import * as wss from "../wssConnection/wssConnection";
+import { store } from "./../../app/store";
 
-
-// const preOfferAnswers = {
-//   CALL_ACCEPTED: 'CALL_ACCEPTED',
-//   CALL_REJECTED: 'CALL_REJECTED',
-//   CALL_NOT_AVAILABLE: 'CALL_NOT_AVAILABLE'
-// };
-
-const defaultConstrains = {
-  video: {
-    width: 480,
-    height: 360
-  },
-  audio: true
+const preOfferAnswers = {
+  CALL_ACCEPTED: "CALL_ACCEPTED",
+  CALL_REJECTED: "CALL_REJECTED",
+  CALL_NOT_AVAILABLE: "CALL_NOT_AVAILABLE",
 };
 
+let videoConstraints = {
+  height: 150, //{ min: 640, ideal: 1920, max: 1920 }
+  width: 300, //{ min: 400, ideal: 1080 }
+  frameRate: { max: 30 }
+};
+
+let audioConstraints = {
+ channelCount: 1,
+ sampleRate: 48000,
+ sampleSize: 16,
+ volume: 1,
+ latency: 0.003,
+ echoCancellation: true,
+ noiseSuppression: true,
+ autoGainControl: true,
+};
+
+const defaultConstrains = { audio: audioConstraints, video: videoConstraints };
+
 const configuration = {
-  iceServers: [{
-    urls: 'stun:stun.l.google.com:13902'
-  }]
+  iceServers: [
+    {
+      urls: "stun:stun.l.google.com:13902",
+    },
+  ],
 };
 
 let connectedUserSocketId;
 let peerConnection;
 let dataChannel;
 
-export const getLocalStream = (socket) => {
-  navigator.mediaDevices.getUserMedia(defaultConstrains)
-    .then(stream => {
+export const getLocalStream = () => {
+  navigator.mediaDevices
+    .getUserMedia(defaultConstrains)
+    .then((stream) => {
       store.dispatch(setLocalStream(stream));
-      store.dispatch(setCallState("CALL_AVAILABLE"));
-      createPeerConnection(socket);
+      // store.dispatch(setCallState("CALL_AVAILABLE"));
+      createPeerConnection();
     })
-    .catch(err => {
-      console.log('error occured when trying to get an access to get local stream');
+    .catch((err) => {
+      console.log(
+        "error occured when trying to get an access to get local stream"
+      );
       console.log(err);
     });
 };
 
-const createPeerConnection = (socket) => {
+const createPeerConnection = () => {
   peerConnection = new RTCPeerConnection(configuration);
 
   const localStream = store.getState().call.localStream;
@@ -53,75 +76,76 @@ const createPeerConnection = (socket) => {
     store.dispatch(setRemoteStream(stream));
   };
 
-  // incoming data channel messages
-  // peerConnection.ondatachannel = (event) => {
-  //   const dataChannel = event.channel;
-
-  //   dataChannel.onopen = () => {
-  //     console.log('peer connection is ready to receive data channel messages');
-  //   };
-
-  //   dataChannel.onmessage = (event) => {
-  //     store.dispatch(setMessage(true, event.data));
-  //   };
-  // };
-
-  // dataChannel = peerConnection.createDataChannel('chat');
-
-  // dataChannel.onopen = () => {
-  //   console.log('chat data channel succesfully opened');
-  // };
-
   peerConnection.onicecandidate = (event) => {
-    console.log('geeting candidates from stun server');
+    console.log("geeting candidates from stun server");
     if (event.candidate) {
-      const data = {
+      const data = ({
         candidate: event.candidate,
-        connectedUserSocketId: connectedUserSocketId,
-      }
-      socket.emit("webRTC-candidate", data);
+        socketId: connectedUserSocketId,
+      })
+
+      wss.sendWebRTCCandidate(data);
     }
   };
 
   peerConnection.onconnectionstatechange = (event) => {
-    if (peerConnection.connectionState === 'connected') {
-      console.log('succesfully connected with other peer');
+    if (peerConnection.connectionState === "connected") {
+      console.log("succesfully connected with other peer");
     }
   };
 };
 
-// export const callToOtherUser = (calleeDetails) => {
-//   connectedUserSocketId = calleeDetails.socketId;
-//   store.dispatch(setCallState("CALL_IN_PROGRESS"));
+// export const callToOtherUser = (socketId, userId, userCall, picture) => {
+//   connectedUserSocketId = socketId;
+//   store.dispatch(setCallState("CALL_IN_PROGRESS")); 
 //   store.dispatch(setCallingDialogVisible(true));
 //   wss.sendPreOffer({
-//     callee: calleeDetails,
+//     callee: userId,
 //     caller: {
-//       username: store.getState().dashboard.username
-//     }
+//       username: userCall,
+//       picture,
+//     },
 //   });
 // };
 
 // export const handlePreOffer = (data) => {
 //   if (checkIfCallIsPossible()) {
-//     connectedUserSocketId = data.callerSocketId;
-//     store.dispatch(setCallerUsername(data.callerUsername));
-//     store.dispatch(setCallState(callStates.CALL_REQUESTED));
+//     store.dispatch(setConnectedUserSocketId(data.callerSocketId));
+//     const userCaller = {
+//       username: data.callerUsername,
+//       picture: data.callerPicture,
+//     };
+//     store.dispatch(setCallerUser(userCaller));
+//     store.dispatch(setCallState("CALL_REQUESTED"));
 //   } else {
 //     wss.sendPreOfferAnswer({
 //       callerSocketId: data.callerSocketId,
-//       answer: preOfferAnswers.CALL_NOT_AVAILABLE
+//       answer: preOfferAnswers.CALL_NOT_AVAILABLE,
 //     });
 //   }
 // };
 
-// export const acceptIncomingCallRequest = () => {
+export const handlePreOfferInParent = (data) => {
+  if (checkIfCallIsPossible()) {
+    const userCaller = {
+      userId: data.callerUserId,
+      username: data.callerUsername,
+      picture: data.callerPicture,
+      roomId: data.roomId,
+    };
+    store.dispatch(setCallerUser(userCaller));
+    store.dispatch(setCallState("CALL_REQUESTED"));
+  } else {
+  }
+};
+
+// export const acceptIncomingCallRequest = (connectedUserSocketId) => {
 //   wss.sendPreOfferAnswer({
 //     callerSocketId: connectedUserSocketId,
-//     answer: preOfferAnswers.CALL_ACCEPTED
+//     answer: preOfferAnswers.CALL_ACCEPTED,
 //   });
 
-//   store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
+//   store.dispatch(setCallState("CALL_IN_PROGRESS"));
 // };
 
 // export const rejectIncomingCallRequest = () => {
@@ -134,7 +158,6 @@ const createPeerConnection = (socket) => {
 
 // export const handlePreOfferAnswer = (data) => {
 //   store.dispatch(setCallingDialogVisible(false));
-
 //   if (data.answer === preOfferAnswers.CALL_ACCEPTED) {
 //     sendOffer();
 //   } else {
@@ -167,7 +190,7 @@ const createPeerConnection = (socket) => {
 //   const answer = await peerConnection.createAnswer();
 //   await peerConnection.setLocalDescription(answer);
 //   wss.sendWebRTCAnswer({
-//     callerSocketId: connectedUserSocketId,
+//     callerSocketId: data.callerSocketId,
 //     answer: answer
 //   });
 // };
@@ -176,23 +199,22 @@ const createPeerConnection = (socket) => {
 //   await peerConnection.setRemoteDescription(data.answer);
 // };
 
-// export const handleCandidate = async (data) => {
-//   try {
-//     console.log('adding ice candidates');
-//     await peerConnection.addIceCandidate(data.candidate);
-//   } catch (err) {
-//     console.error('error occured when trying to add received ice candidate', err);
-//   }
-// };
+export const handleCandidate = async (data) => {
+  try {
+    console.log('adding ice candidates');
+    await peerConnection.addIceCandidate(data.candidate);
+  } catch (err) {
+    console.error('error occured when trying to add received ice candidate', err);
+  }
+};
 
-// export const checkIfCallIsPossible = () => {
-//   if (store.getState().call.localStream === null ||
-//   store.getState().call.callState !== callStates.CALL_AVAILABLE) {
-//     return false;
-//   } else {
-//     return true;
-//   }
-// };
+export const checkIfCallIsPossible = () => {
+  if (store.getState().call.callState !== "CALL_AVAILABLE") {
+    return false;
+  } else {
+    return true;
+  }
+};
 
 // let screenSharingStream;
 
@@ -250,7 +272,7 @@ const createPeerConnection = (socket) => {
 
 // export const resetCallData = () => {
 //   connectedUserSocketId = null;
-//   store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+//   store.dispatch(setCallState("CALL_AVAILABLE"));
 // };
 
 // export const sendMessageUsingDataChannel = (message) => {

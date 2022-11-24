@@ -1,21 +1,27 @@
 import { closePopup } from "../../helpers/displayChatBox";
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ArrowDown2 from "../../svg/arrowDown2";
 import MiniMize from "../../svg/miniMize";
 import PhoneCall from "../../svg/phoneCall";
 import VideoCall from "../../svg/videoCall";
 import XClose from "../../svg/xClose";
 import { removeChatBox } from "../../redux/features/conversationSlice";
-import NewWindow from "react-new-window";
+import { callToOtherUser } from "../../utils/webRTC/webRTCHandler";
+import { getCallUser } from "../../redux/features/callSlice";
+import { sendPreOffer } from "../../utils/wssConnection/wssConnectionInParent";
 
 export default function ChatBoxHeader({
+  user,
+  socket,
   friendChat,
   currentChat,
   onlineUser,
   chatBox,
 }) {
   const [checkOnline, setCheckOnline] = useState(false);
+  const { callState } = useSelector((state) => ({ ...state.call }));
+  const { activeUsers } = useSelector((state) => ({ ...state.dashboard }));
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -58,8 +64,15 @@ export default function ChatBoxHeader({
     const left = (width - w) / 2 / systemZoom + dualScreenLeft;
     const top = (height - h) / 2 / systemZoom + dualScreenTop;
 
+    const userCall = currentChat.members.find((u) => u._id === friendChat._id);
+    // if (activeUser) {
+    // }
+    console.log(userCall);
+    const roomId = currentChat?._id;
+    const type = "host";
+    const username =  `${user.first_name} ${user.last_name}`
     const videoCallWindow = window.open(
-      `http://localhost:3000/video-call/`,
+      `http://localhost:3001/?roomId=${roomId}&username=${username}&type=${type}`, 
       "Video Call",
       `
       width=${w / systemZoom}, 
@@ -72,6 +85,20 @@ export default function ChatBoxHeader({
       `
     );
     videoCallWindow.focus();
+
+    const data = {
+      senderId: user.id,
+      receiveId: userCall._id,
+      username: username,
+      picture: user.picture,
+      roomId: roomId,
+    }
+    socket.emit('call-other', data);
+  };
+  const handleCallPressed = () => {
+    // dispatch(getCallUser(activeUser));
+    openVideoCallWindow();
+    // callToOtherUser(activeUser, user, socket);
   };
 
   return (
@@ -115,7 +142,7 @@ export default function ChatBoxHeader({
           </span>
           <span
             className="ChatBox_header_right_item hover3"
-            onClick={openVideoCallWindow}
+            onClick={handleCallPressed}
           >
             <VideoCall color={setColorIcon} />
           </span>
