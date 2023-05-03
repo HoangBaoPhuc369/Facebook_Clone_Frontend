@@ -138,7 +138,7 @@ export default function Header({
   useEffect(() => {
     // socketRef = io("ws://localhost:8900", { transports: ["polling"] });
 
-    socketRef.on("getMessage", ({ messages, currentChatID }) => {
+    socketRef?.on("getMessage", ({ messages, currentChatID }) => {
       const message = { messages, currentChatID };
       setArrivalMessage(message);
       dispatch(
@@ -159,7 +159,7 @@ export default function Header({
   // }, []);
 
   useEffect(() => {
-    socketRef.on("getNotification", (data) => {
+    socketRef?.on("getNotification", (data) => {
       //Cho nay chi can day vo state khong can call api
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
@@ -175,7 +175,7 @@ export default function Header({
           className: "notification_form",
           toastClassName: "notification_toast",
           bodyClassName: "notification_body",
-          position: "bottom-left",
+          position: "bottom-center",
           hideProgressBar: true,
           autoClose: 3000,
           transition: bounce,
@@ -186,7 +186,7 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    socketRef.on("start typing message", (typingInfo) => {
+    socketRef?.on("start typing message", (typingInfo) => {
       if (typingInfo.senderId !== socketRef.id) {
         const user = typingInfo.user;
         setTypingUsers((users) => [...users, user]);
@@ -196,13 +196,13 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    socketRef.emit("addUser", {
+    socketRef?.emit("addUser", {
       userId: user?.id,
       userName: `${user?.first_name} ${user?.last_name}`,
       picture: user?.picture,
       timeJoin: new Date(),
     });
-    socketRef.on("getUsers", (users) => {
+    socketRef?.on("getUsers", (users) => {
       const activeUsers = user.following.filter((f) =>
         users.some((u) => u.userId === f._id)
       );
@@ -250,7 +250,8 @@ export default function Header({
       <div className="header_left">
         <Link to="/" className="header_logo">
           <div className="circle">
-            <Logo />
+            {/* <Logo /> */}
+            <img src="../../icons/logo_clone.svg" alt="" />
           </div>
         </Link>
         <div
@@ -411,7 +412,6 @@ export default function Header({
           roomId={callerUser.roomId}
         ></NotificationPopUp>
       )}
-
     </header>
   );
 }

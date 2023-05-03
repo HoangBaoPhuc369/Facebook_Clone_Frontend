@@ -88,7 +88,7 @@ export default function CreatePostPopup({ setVisible }) {
     }
   };
   return (
-    <div className="blur">
+    <div className="blur-background">
       <div className="postBox" ref={popup}>
         {errorCreatePost && <PostError error={errorCreatePost} />}
         <div className="box_header">

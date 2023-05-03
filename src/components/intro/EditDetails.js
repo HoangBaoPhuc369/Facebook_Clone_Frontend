@@ -11,7 +11,7 @@ export default function EditDetails({
   const modal = useRef(null);
   useOnCLickOutside(modal, () => setVisible(false));
   return (
-    <div className="blur">
+    <div className="blur-background">
       <div className="postBox infosBox" ref={modal}>
         <div className="box_header">
           <div className="small_circle" onClick={() => setVisible(false)}>

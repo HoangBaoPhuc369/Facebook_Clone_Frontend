@@ -62,14 +62,20 @@ export const getReacts = async (postId, token) => {
     return error.response.data.message;
   }
 };
-export const comment = async (postId, getParentId="", comment, image, token) => {
+export const comment = async (
+  postId,
+  getParentId = "",
+  comment,
+  image,
+  token
+) => {
   try {
     const { data } = await axios.put(
       `${process.env.REACT_APP_BACKEND_URL}/posts/comment`,
       {
         postId,
         comment,
-        "parentId": getParentId,
+        parentId: getParentId,
         image,
       },
 
@@ -90,8 +96,8 @@ export const deleteComment = async (props) => {
     const { data } = await axios.put(
       `${process.env.REACT_APP_BACKEND_URL}/posts/delete-comment`,
       {
-        "id": props.commentId,
-        "post": props.postId,
+        id: props.commentId,
+        post: props.postId,
       },
 
       {

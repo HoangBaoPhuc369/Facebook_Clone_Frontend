@@ -37,7 +37,9 @@ export default function Post({
   const [activeOptions, setActiveOptions] = useState(null);
 
   useEffect(() => {
-    setComments(post?.comments);
+    if (post) {
+      setComments(post?.comments);
+    }
   }, [post]);
 
   useEffect(() => {
@@ -45,7 +47,6 @@ export default function Post({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post]);
 
-  
   const getPostReacts = async () => {
     const res = await getReacts(post._id, user.token);
     setReacts(res.reacts);
@@ -84,7 +85,7 @@ export default function Post({
       dispatch(
         createNotifications({ props: notification, token: user?.token })
       );
-      socketRef.emit("sendNotification", notificationSocket);
+      socketRef?.emit("sendNotification", notificationSocket);
     }
   };
 
@@ -178,7 +179,20 @@ export default function Post({
           <Dots color="#828387" />
         </div>
       </div>
-      {post.background ? (
+      {post.hidePost ? (
+        <div className="mx-4 border border-solid border-gray-500 shadow-sm">
+          <div className="p-2">
+            <div className="text-lg font-medium flex gap-0">
+              <i className="m_warning"></i>
+              We remove something you posted
+            </div>
+            <div className="text-sm text-gray-500">
+              We removed the post because it doesn't follow the Net Friend
+              Community Standard
+            </div>
+          </div>
+        </div>
+      ) : post.background ? (
         <div
           className="post_bg"
           style={{ backgroundImage: `url(${post.background})` }}

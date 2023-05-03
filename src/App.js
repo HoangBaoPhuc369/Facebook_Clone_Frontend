@@ -20,6 +20,7 @@ import VideoCall from "./pages/videoCall/VideoCall";
 import { io } from "socket.io-client";
 import { connectWithWebSocket } from "./utils/wssConnection/wssConnection";
 import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInParent";
+import Test from "./components/test";
 
 function App() {
   const [visible, setVisible] = useState(false);
@@ -107,9 +108,9 @@ function App() {
           <Route path="/login" element={<Login />} exact />
         </Route>
         <Route path="/reset" element={<Reset />} />
-      </Routes>
 
-      
+        <Route path="/test-ui" element={<Test />} />
+      </Routes>
     </div>
   );
 }

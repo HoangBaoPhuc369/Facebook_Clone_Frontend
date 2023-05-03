@@ -89,7 +89,7 @@ export default function RegisterForm({ setVisible }) {
     }
   };
   return (
-    <div className="blur">
+    <div className="blur-background">
       <div className="register">
         <div className="register_header">
           <i className="exit_icon" onClick={() => setVisible(false)}></i>

@@ -3,9 +3,9 @@ import * as Yup from "yup";
 import LoginInput from "../../components/inputs/loginInput";
 import { useState } from "react";
 import DotLoader from "react-spinners/DotLoader";
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { login } from './../../redux/features/authSlice';
+import { login } from "./../../redux/features/authSlice";
 const loginInfos = {
   email: "",
   password: "",

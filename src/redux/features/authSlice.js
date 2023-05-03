@@ -7,7 +7,7 @@ export const login = createAsyncThunk(
   async ({ formValue, navigate }, { rejectWithValue }) => {
     try {
       const { data } = await api.userLogin(formValue);
-      navigate("/");
+      // navigate("/");
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);

@@ -40,7 +40,7 @@ export default function ProfilePicture({
   };
 
   return (
-    <div className="blur">
+    <div className="blur-background">
       <input
         type="file"
         ref={refInput}
