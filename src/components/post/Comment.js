@@ -1,8 +1,10 @@
-import Moment from "react-moment";
 import CreateComment from "./CreateComment";
 import { useState, useRef } from "react";
 import CommentOptions from "./CommentOptions";
 import useClickOutside from "./../../helpers/clickOutside";
+import { viewNegativeCommentInUserPost } from "../../redux/features/profileSlice";
+import { viewNegativeCommentInPost } from "../../redux/features/postSlice";
+import { formatTime } from "../../functions/formatTime";
 
 export default function Comment({
   user,
@@ -13,6 +15,8 @@ export default function Comment({
   first,
   second,
   third,
+  dispatch,
+  postUserId,
   repliesSecond = [],
   repliesThird = [],
   setActiveComment,
@@ -72,6 +76,24 @@ export default function Comment({
     triggerEditRef.current.click();
   };
 
+  const handleViewNegativeComment = () => {
+    if (postUserId === user.id) {
+      dispatch(
+        viewNegativeCommentInUserPost({
+          postId: postId,
+          commentId: comment?._id,
+        })
+      );
+    } else {
+      dispatch(
+        viewNegativeCommentInPost({
+          postId: postId,
+          commentId: comment?._id,
+        })
+      );
+    }
+  };
+
   return (
     <>
       <div
@@ -120,7 +142,11 @@ export default function Comment({
                   <div className="comment_name">
                     {comment.commentBy.first_name} {comment.commentBy.last_name}
                   </div>
-                  <div className="comment_text">{comment.comment}</div>
+                  <div className="comment_text">
+                    {comment.hideComment
+                      ? "This comment is hidden because it might be offensive"
+                      : comment.comment}
+                  </div>
                 </div>
                 <div className="comment_options">
                   <div className="comment_options-wrap" ref={commentOptionsRef}>
@@ -173,33 +199,43 @@ export default function Comment({
           <div className="comment_actions">
             {!isEditing && (
               <>
-                <div>Like</div>
-                <div
-                  onClick={() => {
-                    setActiveComment({
-                      id: comment?._id,
-                      parentId: comment?.parentId,
-                      type: "replying",
-                    });
+                {comment.hideComment ? (
+                  <div
+                    onClick={() => {
+                      console.log(comment?._id);
+                      handleViewNegativeComment();
+                    }}
+                  >
+                    Unhide
+                  </div>
+                ) : (
+                  <>
+                    <div>Like</div>
+                    <div
+                      onClick={() => {
+                        setActiveComment({
+                          id: comment?._id,
+                          parentId: comment?.parentId,
+                          type: "replying",
+                        });
 
-                    if (first || second) {
-                      showReplyForm(comment?._id);
-                    } else if (third) {
-                      showReplyForm(RelyId);
-                    }
+                        if (first || second) {
+                          showReplyForm(comment?._id);
+                        } else if (third) {
+                          showReplyForm(RelyId);
+                        }
 
-                    first && setParentId(comment?._id);
-                    second && setParentIdSecond(comment?._id);
-                    third && setGetParentId(comment.parentId);
-                  }}
-                >
-                  Reply
-                </div>
-                <span>
-                  <Moment fromNow interval={30}>
-                    {comment.commentAt}
-                  </Moment>
-                </span>
+                        first && setParentId(comment?._id);
+                        second && setParentIdSecond(comment?._id);
+                        third && setGetParentId(comment.parentId);
+                      }}
+                    >
+                      Reply
+                    </div>
+                  </>
+                )}
+
+                <span>{formatTime(comment.commentAt)}</span>
               </>
             )}
 
@@ -229,6 +265,8 @@ export default function Comment({
               comment={reply}
               postId={postId}
               setCount={setCount}
+              dispatch={dispatch}
+              postUserId={postUserId}
               setIsOpen={setIsOpen}
               getParentId={parentId}
               setComments={setComments}
@@ -282,9 +320,11 @@ export default function Comment({
               second={false}
               postId={postId}
               comment={reply}
+              dispatch={dispatch}
               setCount={setCount}
               setIsOpen={setIsOpen}
               RelyId={comment?._id}
+              postUserId={postUserId}
               setComments={setComments}
               activeComment={activeComment}
               activeOptions={activeOptions}

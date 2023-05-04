@@ -27,7 +27,7 @@ export default function AllNotificationItem({
           {notification.isSystem ? (
             <div
               className="w-14 h-14 flex justify-center content-center bg-yellow-400
-            rounded-full mr-2.5 text-white text-xl"
+            rounded-full mr-2.5 text-white text-2xl"
             >
               <FontAwesomeIcon icon={faTriangleExclamation} />
             </div>

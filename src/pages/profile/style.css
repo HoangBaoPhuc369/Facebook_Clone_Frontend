@@ -7,6 +7,7 @@
   background: var(--bg-primary);
 }
 .profile_container {
+  /* 1063 */
   max-width: 945px;
   margin: 0 auto;
 }

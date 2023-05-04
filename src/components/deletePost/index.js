@@ -24,7 +24,7 @@ export default function DeletePostPopUp({
 
   return ReactDom.createPortal(
     <>
-      <div className="blur">
+      <div className="absolute z-[999999]">
         <div className="box_form">
           <div className="box_header">
             <div className="small_circle" onClick={onClose}>

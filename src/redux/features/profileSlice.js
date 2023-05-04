@@ -1,6 +1,11 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  createNextState,
+} from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import * as api from "../api";
+import { store } from "./../../app/store";
 
 export const getProfile = createAsyncThunk(
   "profile/getProfile",
@@ -151,14 +156,20 @@ export const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    // getNewNotifications: (state, action) => {
-    //   state.newNotifications.push(action.payload.senderId);
-    //   Cookies.set("notification", JSON.stringify([...state.newNotifications]));
-    // },
-    // clearNewNotifications: (state, action) => {
-    //   state.newNotifications = [];
-    //   Cookies.set("notification", JSON.stringify([]));
-    // },
+    viewNegativeCommentInUserPost: (state, action) => {
+      const findPost = state.profile?.posts?.find(
+        (p) => p._id === action.payload.postId
+      );
+      console.log(findPost);
+      if (findPost) {
+        const findCommnent = findPost.comments.find(
+          (c) => c._id === action.payload.commentId
+        );
+        if (findCommnent) {
+          findCommnent.hideComment = false;
+        }
+      }
+    },
   },
   extraReducers: {
     [getProfile.pending]: (state, action) => {
@@ -281,7 +292,6 @@ export const profileSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-// export const { getNewNotifications, clearNewNotifications } =
-//   profileSlice.actions;
+export const { viewNegativeCommentInUserPost } = profileSlice.actions;
 
 export default profileSlice.reducer;

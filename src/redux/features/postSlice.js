@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import * as api from "../api";
 
 export const getAllPosts = createAsyncThunk(
@@ -49,7 +49,10 @@ export const postSlice = createSlice({
   reducers: {
     setError: (state, action) => {
         state.errorCreatePost = action.payload;
-    }
+    },
+    viewNegativeCommentInPost: (state, action) => {
+      console.log(current(state.posts))
+    },
   },
   extraReducers: {
     [getAllPosts.pending]: (state, action) => {
@@ -81,6 +84,6 @@ export const postSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setError } = postSlice.actions;
+export const { setError, viewNegativeCommentInPost } = postSlice.actions;
 
 export default postSlice.reducer;

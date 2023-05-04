@@ -11,6 +11,7 @@ import Comment from "./Comment";
 import DeletePostPopUp from "../deletePost";
 import { createNotifications } from "../../redux/features/notificationSlice";
 import { useDispatch } from "react-redux";
+import { formatTime, formatTimePost } from "../../functions/formatTime";
 export default function Post({
   user,
   post,
@@ -165,10 +166,16 @@ export default function Post({
               </div>
             </div>
             <div className="post_profile_privacy_date">
-              <Moment fromNow interval={30}>
-                {post.createdAt}
-              </Moment>
-              . <Public color="#828387" />
+              {formatTimePost(post.createdAt)}
+              <div className="relative ml-1 mr-1">
+                <span
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 
+                -translate-y-3/4 font-medium"
+                >
+                  .
+                </span>
+              </div>
+              <Public color="#828387" />
             </div>
           </div>
         </Link>
@@ -360,42 +367,45 @@ export default function Post({
           handleSendNotifications={handleSendNotifications}
         />
 
-        {comments &&
-          comments
-            .filter((backendComment) => backendComment.parentId === "")
-            .sort((a, b) => {
-              return new Date(b.commentAt) - new Date(a.commentAt);
-            })
-            .slice(0, count)
-            .map((comment, i) => (
-              <Comment
-                key={i}
-                user={user}
-                first={true}
-                isOpen={isOpen}
-                postId={post._id}
-                comment={comment}
-                setCount={setCount}
-                setIsOpen={setIsOpen}
-                getReplies={getReplies}
-                setComments={setComments}
-                countReplies={countReplies}
-                activeOptions={activeOptions}
-                activeComment={activeComment}
-                setCountReplies={setCountReplies}
-                showMoreReplies={showMoreReplies}
-                setActiveOptions={setActiveOptions}
-                setActiveComment={setActiveComment}
-                setVisibleDelPost={setVisibleDelPost}
-                countRepliesThird={countRepliesThird}
-                repliesSecond={getReplies(comment?._id)}
-                showMoreRepliesThird={showMoreRepliesThird}
-                handleSendNotifications={handleSendNotifications}
-              />
-            ))}
+        {comments && comments.length > 0
+          ? comments
+              ?.filter((backendComment) => backendComment.parentId === "")
+              .sort((a, b) => {
+                return new Date(b.commentAt) - new Date(a.commentAt);
+              })
+              .slice(0, count)
+              .map((comment, i) => (
+                <Comment
+                  key={i}
+                  user={user}
+                  first={true}
+                  isOpen={isOpen}
+                  postId={post._id}
+                  comment={comment}
+                  setCount={setCount}
+                  dispatch={dispatch}
+                  setIsOpen={setIsOpen}
+                  getReplies={getReplies}
+                  setComments={setComments}
+                  postUserId={post.user._id}
+                  countReplies={countReplies}
+                  activeOptions={activeOptions}
+                  activeComment={activeComment}
+                  setCountReplies={setCountReplies}
+                  showMoreReplies={showMoreReplies}
+                  setActiveOptions={setActiveOptions}
+                  setActiveComment={setActiveComment}
+                  setVisibleDelPost={setVisibleDelPost}
+                  countRepliesThird={countRepliesThird}
+                  repliesSecond={getReplies(comment?._id)}
+                  showMoreRepliesThird={showMoreRepliesThird}
+                  handleSendNotifications={handleSendNotifications}
+                />
+              ))
+          : null}
 
         {count <
-          comments.filter((backendComment) => backendComment.parentId === "")
+          comments?.filter((backendComment) => backendComment.parentId === "")
             .length && (
           <div className="view_comments" onClick={() => showMore()}>
             View more comments

@@ -85,7 +85,7 @@ export default function CreateComment({
             imgComment[0].url,
             user.token
           );
-          setComments(comments);
+          setComments(comments.comments);
           setLoading(false);
           setText("");
           setCommentImage("");
@@ -101,7 +101,7 @@ export default function CreateComment({
             "",
             user.token
           );
-          setComments(comments);
+          setComments(comments.comments);
           setLoading(false);
           setText("");
           setCommentImage("");
@@ -124,7 +124,7 @@ export default function CreateComment({
             imgComment[0].url,
             user.token
           );
-          setComments(comments);
+          setComments(comments.comments);
           setCount((prev) => ++prev);
           setLoading(false);
           setText("");
@@ -140,12 +140,15 @@ export default function CreateComment({
             "",
             user.token
           );
-          setComments(comments);
-          setCount((prev) => ++prev);
-          setLoading(false);
-          setText("");
-          setCommentImage("");
-          handleSendNotifications("comment", "comment");
+          console.log(comments);
+          if (comments) {
+            setComments(comments.comments);
+            setCount((prev) => ++prev);
+            setLoading(false);
+            setText("");
+            setCommentImage("");
+            handleSendNotifications("comment", "comment");
+          }
         }
       }
     }
@@ -197,7 +200,7 @@ export default function CreateComment({
                 ? handleTriggerEdit()
                 : handleTrigger
                 ? handleTrigger()
-                : console.log("no trigger")
+                : null
             }
             onKeyUp={handleComment}
             onChange={(e) => setText(e.target.value)}
