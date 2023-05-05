@@ -2,7 +2,7 @@ import CreateComment from "./CreateComment";
 import { useState, useRef } from "react";
 import CommentOptions from "./CommentOptions";
 import useClickOutside from "./../../helpers/clickOutside";
-import { viewNegativeCommentInUserPost } from "../../redux/features/profileSlice";
+import { viewNegativeCommentInProfile } from "../../redux/features/profileSlice";
 import { viewNegativeCommentInPost } from "../../redux/features/postSlice";
 import { formatTime } from "../../functions/formatTime";
 
@@ -79,7 +79,7 @@ export default function Comment({
   const handleViewNegativeComment = () => {
     if (postUserId === user.id) {
       dispatch(
-        viewNegativeCommentInUserPost({
+        viewNegativeCommentInProfile({
           postId: postId,
           commentId: comment?._id,
         })
@@ -202,7 +202,6 @@ export default function Comment({
                 {comment.hideComment ? (
                   <div
                     onClick={() => {
-                      console.log(comment?._id);
                       handleViewNegativeComment();
                     }}
                   >

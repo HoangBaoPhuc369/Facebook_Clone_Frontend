@@ -1,12 +1,10 @@
-import axios from "axios";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { profileReducer } from "../../functions/reducers";
 import Header from "../../components/header";
 import "./style.css";
 import Cover from "./Cover";
-import ProfielPictureInfos from "./ProfilePictureInfos";
 import ProfileMenu from "./ProfileMenu";
 import PplYouMayKnow from "./PplYouMayKnow";
 import CreatePost from "../../components/createPost";
@@ -34,7 +32,6 @@ export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
   var userName = username === undefined ? user.username : username;
 
   var visitor = userName === user.username ? false : true;
-  const [othername, setOthername] = useState(profile?.details?.otherName);
   const path = `${userName}/*`;
   const max = 30;
   const sort = "desc";
@@ -247,7 +244,6 @@ export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
                     <Intro
                       detailss={profile.details}
                       visitor={visitor}
-                      setOthername={setOthername}
                     />
                     <Photos
                       username={userName}

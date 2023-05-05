@@ -174,6 +174,23 @@ export const createPost = (type, background, text, images, user, token) =>
     }
   );
 
+export const comment = (postId, getParentId = "", comment, image, token) =>
+  axios.put(
+    `${process.env.REACT_APP_BACKEND_URL}/posts/comment`,
+    {
+      postId,
+      comment,
+      parentId: getParentId,
+      image,
+    },
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
 // --------------------------CHAT API--------------------------------------
 export const getConversations = (userToken) =>
   axios.put(

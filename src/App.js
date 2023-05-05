@@ -44,10 +44,13 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
+
+  //  process.env.REACT_APP_BACKEND_URL
   useEffect(() => {
     const newSocket = io("http://localhost:8900/", {
       transports: ["polling"],
     });
+    // console.log(newSocket);
     setSocketRef(newSocket);
     handleWSSCallInParent(newSocket);
     return () => newSocket.close();
@@ -85,8 +88,16 @@ function App() {
             }
             exact
           />
-          <Route path="/friends" element={socketRef ? <Friends socketRef={socketRef} />  : null} exact />
-          <Route path="/friends/:type" element={socketRef ? <Friends socketRef={socketRef} /> : null} exact />
+          <Route
+            path="/friends"
+            element={socketRef ? <Friends socketRef={socketRef} /> : null}
+            exact
+          />
+          <Route
+            path="/friends/:type"
+            element={socketRef ? <Friends socketRef={socketRef} /> : null}
+            exact
+          />
           <Route
             path="/"
             element={

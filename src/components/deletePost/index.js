@@ -1,12 +1,17 @@
 import React from "react";
 import ReactDom from "react-dom";
 import { deleteComment } from "../../functions/post";
+import { deleteCommentInProfile } from "../../redux/features/profileSlice";
+import { deleteCommentInFeed } from "../../redux/features/postSlice";
 import "./style.css";
 
 export default function DeletePostPopUp({
   open,
   props,
+  postId,
   onClose,
+  profile,
+  dispatch,
   children,
   setComments,
 }) {
@@ -15,6 +20,17 @@ export default function DeletePostPopUp({
   const handleDeleteComment = async () => {
     const response = await deleteComment(props);
     if (response.status === "ok") {
+      if (profile) {
+        dispatch(deleteCommentInProfile({
+          postId,
+          comments: response.data
+        }))
+      } else {
+        dispatch(deleteCommentInFeed({
+          postId,
+          comments: response.data
+        }))
+      }
       setComments(response.data);
       onClose();
     } else {

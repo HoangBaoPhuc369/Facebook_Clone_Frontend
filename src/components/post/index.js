@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import "./style.css";
-import Moment from "react-moment";
 import { Dots, Public } from "../../svg";
 import ReactsPopup from "./ReactsPopup";
 import { useEffect, useRef, useState } from "react";
@@ -45,6 +44,12 @@ export default function Post({
 
   useEffect(() => {
     getPostReacts();
+    // return () => {
+    //   setReacts();
+    //   setCheck();
+    //   setTotal(0);
+    //   setCheckSaved();
+    // };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post]);
 
@@ -429,6 +434,9 @@ export default function Post({
 
       <DeletePostPopUp
         open={isOpen}
+        profile={profile}
+        postId={post?._id}
+        dispatch={dispatch}
         setComments={setComments}
         onClose={() => setIsOpen(false)}
         props={{

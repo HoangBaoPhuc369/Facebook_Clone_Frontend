@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import * as api from "../api";
+import { replaceComment, showNegativeComment } from "../helpers/handlePosts";
 
 export const getAllPosts = createAsyncThunk(
   "post/getAllPosts",
@@ -48,10 +49,21 @@ export const postSlice = createSlice({
   initialState,
   reducers: {
     setError: (state, action) => {
-        state.errorCreatePost = action.payload;
+      state.errorCreatePost = action.payload;
     },
     viewNegativeCommentInPost: (state, action) => {
-      console.log(current(state.posts))
+      showNegativeComment({
+        posts: state.posts,
+        postId: action.payload.postId,
+        commentId: action.payload.commentId,
+      });
+    },
+    deleteCommentInFeed: (state, action) => {
+      replaceComment({
+        posts: state.posts,
+        postId: action.payload.postId,
+        comments: action.payload.comments,
+      });
     },
   },
   extraReducers: {
@@ -84,6 +96,7 @@ export const postSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setError, viewNegativeCommentInPost } = postSlice.actions;
+export const { setError, viewNegativeCommentInPost, deleteCommentInFeed } =
+  postSlice.actions;
 
 export default postSlice.reducer;

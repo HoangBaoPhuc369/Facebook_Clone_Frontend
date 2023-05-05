@@ -1,11 +1,6 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  createNextState,
-} from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
+import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import * as api from "../api";
-import { store } from "./../../app/store";
+import { replaceComment, showNegativeComment } from "../helpers/handlePosts";
 
 export const getProfile = createAsyncThunk(
   "profile/getProfile",
@@ -50,7 +45,7 @@ export const updateProfilePictureUser = createAsyncThunk(
         type,
         background,
         text,
-        images,
+        (images = image),
         user,
         token
       );
@@ -145,30 +140,52 @@ export const deleteRequest = createAsyncThunk(
   }
 );
 
+export const createCommentInProfilePost = createAsyncThunk(
+  "profile/createComment",
+  async (
+    { postId, getParentId, comment, image, token },
+    { rejectWithValue }
+  ) => {
+    try {
+      const { data } = await api.comment(
+        postId,
+        getParentId,
+        comment,
+        image,
+        token
+      );
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 const initialState = {
   profile: {},
   photos: {},
   error: "",
   loading: false,
+  loadingComment: false,
 };
 
 export const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    viewNegativeCommentInUserPost: (state, action) => {
-      const findPost = state.profile?.posts?.find(
-        (p) => p._id === action.payload.postId
-      );
-      console.log(findPost);
-      if (findPost) {
-        const findCommnent = findPost.comments.find(
-          (c) => c._id === action.payload.commentId
-        );
-        if (findCommnent) {
-          findCommnent.hideComment = false;
-        }
-      }
+    viewNegativeCommentInProfile: (state, action) => {
+      showNegativeComment({
+        posts: state.profile?.posts,
+        postId: action.payload.postId,
+        commentId: action.payload.commentId,
+      });
+    },
+    deleteCommentInProfile: (state, action) => {
+      replaceComment({
+        posts: state.profile?.posts,
+        postId: action.payload.postId,
+        comments: action.payload.comments,
+      });
     },
   },
   extraReducers: {
@@ -288,10 +305,22 @@ export const profileSlice = createSlice({
     [deleteRequest.rejected]: (state, action) => {
       state.error = action.payload?.message;
     },
+    [createCommentInProfilePost.pending]: (state, action) => {
+      state.loadingComment = true;
+    },
+    [createCommentInProfilePost.fulfilled]: (state, action) => {
+      state.loadingComment = false;
+      state.profile = action.payload.data;
+      state.error = "";
+    },
+    [createCommentInProfilePost.rejected]: (state, action) => {
+      state.error = action.payload?.message;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { viewNegativeCommentInUserPost } = profileSlice.actions;
+export const { viewNegativeCommentInProfile, deleteCommentInProfile } =
+  profileSlice.actions;
 
 export default profileSlice.reducer;
