@@ -3,7 +3,7 @@ import Picker from "emoji-picker-react";
 import { comment, editComment } from "../../functions/post";
 import { uploadImages } from "../../functions/uploadImages";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
-import { MoonLoader } from "react-spinners";
+import { ClipLoader, MoonLoader, FadeLoader, PuffLoader} from "react-spinners";
 export default function CreateComment({
   user,
   postId,
@@ -208,7 +208,7 @@ export default function CreateComment({
           />
           {/* {getParentId ? getParentId : "Write a comment..."} */}
           <div className="comment_circle" style={{ marginTop: "5px" }}>
-            <MoonLoader size={20} color="#1876f2" loading={loading} />
+            <ClipLoader size={20} color="#1876f2" loading={loading} />
           </div>
           <div
             className="comment_circle_icon hover2"

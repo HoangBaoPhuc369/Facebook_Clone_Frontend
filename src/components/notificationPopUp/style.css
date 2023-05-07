@@ -39,7 +39,6 @@
 .notification-box_container {
   padding: 7px 7px 18px 14px;
   display: flex;
-  gap: 10px;
 }
 
 .notification-box_footer {
@@ -84,9 +83,9 @@
   background: var(--bg-forth);
 }
 
-.notification-picture > img {
-  width: 56px;
-  height: 56px;
+.notification-picture > .noftification-avatar {
+  width: 56px !important;
+  height: 56px !important;
   border-radius: 50%;
   object-fit: cover;
 }

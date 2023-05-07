@@ -85,8 +85,8 @@ export default function Post({
         receiverId: post?.user._id,
         icon: icon,
         text: typeNotification,
-        picture: post?.user.picture,
-        name: post?.user.first_name + " " + post?.user.last_name,
+        picture: user?.picture,
+        name: user?.first_name + " " + user?.last_name,
       };
       dispatch(
         createNotifications({ props: notification, token: user?.token })
@@ -250,14 +250,14 @@ export default function Post({
             <img src={post.user.cover} alt="" />
           </div>
           <img
-            src={post.images[0].url}
+            src={post.images[0]?.url}
             alt=""
             className="post_updated_picture"
           />
         </div>
       ) : (
         <div className="post_cover_wrap">
-          <img src={post.images[0].url} alt="" />
+          <img src={post.images[0]?.url} alt="" />
         </div>
       )}
 

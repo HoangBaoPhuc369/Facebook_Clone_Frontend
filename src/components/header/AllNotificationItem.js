@@ -38,12 +38,6 @@ export default function AllNotificationItem({
               className="all_notification_item_img"
             />
           )}
-          {/* <img
-            src={notification.isSystem ? '../../../icons/logo_fake.png' : notification?.from?.picture}
-            alt=""
-            className="all_notification_item_img"
-          /> */}
-
           <span className="all_notification_item_status"></span>
           {checkReact(notification.icon) ? (
             <img

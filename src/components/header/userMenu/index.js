@@ -3,16 +3,16 @@ import { Link, useNavigate } from "react-router-dom";
 import DisplayAccessibility from "./DisplayAccessibility";
 import HelpSupport from "./HelpSupport";
 import SettingsPrivacy from "./SettingsPrivacy";
-import Cookies from 'js-cookie';
 import { useDispatch } from "react-redux";
 import { setLogout } from "../../../redux/features/authSlice";
 
-export default function UserMenu({ user }) {
+export default function UserMenu({ user, socket }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [visible, setVisible] = useState(0);
   const logout = () => {
     dispatch(setLogout());
+    socket.disconnect();
     navigate("/login");
   }
   return (

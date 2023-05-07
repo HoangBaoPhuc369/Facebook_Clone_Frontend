@@ -8,17 +8,14 @@ import { useDispatch, useSelector } from "react-redux";
 import Activate from "./pages/home/activate";
 import Reset from "./pages/reset";
 import CreatePostPopup from "./components/createPostPopup";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Friends from "./pages/friends";
 import { useEffect } from "react";
 import { getAllPosts } from "./redux/features/postSlice";
 import { getConversations } from "./redux/features/conversationSlice";
-import NotificationPopUp from "./components/notificationPopUp";
 import DeletePostPopUp from "./components/deletePost";
 import { getNotification } from "./redux/features/notificationSlice";
-import VideoCall from "./pages/videoCall/VideoCall";
 import { io } from "socket.io-client";
-import { connectWithWebSocket } from "./utils/wssConnection/wssConnection";
 import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInParent";
 import Test from "./components/test";
 
@@ -27,9 +24,6 @@ function App() {
   const [onlineUser, setOnlineUsers] = useState([]);
   const [visibleDelPost, setVisibleDelPost] = useState(false);
   const { user } = useSelector((state) => ({ ...state.auth }));
-  const { callerUser, callState, connectedUserSocketId } = useSelector(
-    (state) => ({ ...state.call })
-  );
   const { darkTheme } = useSelector((state) => ({ ...state.theme }));
   const userId = user?.id;
   const [socketRef, setSocketRef] = useState(null);
@@ -44,17 +38,31 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-
   //  process.env.REACT_APP_BACKEND_URL
+  // "http://localhost:8900/"
   useEffect(() => {
-    const newSocket = io("http://localhost:8900/", {
+    const newSocket = io(process.env.REACT_APP_BACKEND_URL, {
       transports: ["polling"],
     });
-    // console.log(newSocket);
+    if (user) {
+      newSocket.emit("joinUser", user.id);
+    }
     setSocketRef(newSocket);
     handleWSSCallInParent(newSocket);
     return () => newSocket.close();
-  }, [setSocketRef]);
+  }, [setSocketRef, user]); //
+
+  useEffect(() => {
+    if (socketRef) {
+      socketRef?.emit("addUser", {
+        userId: user?.id,
+        userName: `${user?.first_name} ${user?.last_name}`,
+        picture: user?.picture,
+        timeJoin: new Date(),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socketRef]);
 
   return (
     <div className={darkTheme ? "dark" : "light"}>
@@ -63,7 +71,7 @@ function App() {
       {visibleDelPost && <DeletePostPopUp />}
 
       <Routes>
-        <Route element={<LoggedInRoutes />}>
+        <Route element={<LoggedInRoutes socketRef={socketRef} />}>
           <Route
             path="/profile"
             element={
@@ -115,8 +123,14 @@ function App() {
           />
           <Route path="/activate/:token" element={<Activate />} exact />
         </Route>
-        <Route element={<NotLoggedInRoutes />}>
-          <Route path="/login" element={<Login />} exact />
+
+        {/* Khi đã ở trong app và bị mất user thì mới vô component này */}
+        <Route element={<NotLoggedInRoutes socketRef={socketRef} />}>
+          <Route
+            path="/login"
+            element={<Login socketRef={socketRef} />}
+            exact
+          />
         </Route>
         <Route path="/reset" element={<Reset />} />
 

@@ -10,7 +10,7 @@ const loginInfos = {
   email: "",
   password: "",
 };
-export default function LoginForm({ setVisible }) {
+export default function LoginForm({ setVisible, socket}) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formValue, setFormValue] = useState(loginInfos);
@@ -29,7 +29,7 @@ export default function LoginForm({ setVisible }) {
   const { loading, error } = useSelector((state) => ({ ...state.auth }));
   const loginSubmit = () => {
     if (email && password) {
-      dispatch(login({ formValue, navigate }));
+      dispatch(login({ formValue, navigate, socket}));
     }
   };
   return (

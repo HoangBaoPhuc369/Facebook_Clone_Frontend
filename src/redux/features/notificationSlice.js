@@ -53,7 +53,11 @@ export const notificationSlice = createSlice({
   initialState,
   reducers: {
     getNewNotifications: (state, action) => {
-      state.newNotifications.push(action.payload.senderId);
+      if (action.payload.senderId) {
+        state.newNotifications.push(action.payload.senderId);
+      }else {
+        state.newNotifications.push(action.payload._id);
+      }
       Cookies.set("notification", JSON.stringify([...state.newNotifications]));
     },
     clearNewNotifications: (state, action) => {

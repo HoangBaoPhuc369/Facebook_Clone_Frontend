@@ -940,16 +940,17 @@ header {
   margin-right: 10px;
 }
 
-.Toastify__toast-container:has(> .notification_form) {
-  width: 17.5%;
-  padding: 0;
+/* start-ignore-tailwind */
+.Toastify__toast-container {
+  width: 340px !important;
+  /* padding: 0; */
 }
 
-.Toastify__toast-container:has(> .notification_form)
-  > .Toastify__toast-container--bottom-left {
+.Toastify__toast-container.notification-form > .Toastify__toast-container--bottom-left {
   bottom: 0.4em;
   left: 1em;
 }
+/* end-ignore-tailwind */
 
 .Toastify__toast-container > .notification_form {
   background: var(--bg-primary);
