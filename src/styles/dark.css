@@ -6,6 +6,7 @@
   --bg-fifth: #888888;
   --color-primary: #e4e6eb;
   --color-secondary: #b0b3b8;
+  --border-color: #2f3031;
 }
 .dark .blur-background {
   background: rgba(1, 1, 1, 0.53);
@@ -82,6 +83,7 @@
 }
 .dark .gray_btn {
   background: var(--bg-third);
+  color: var(--color-primary);
 }
 .dark .gray_btn:hover {
   background: #777;
@@ -105,4 +107,53 @@
 .dark .flex_p_t i {
   filter: invert(100%);
 }
+
+.dark .toolbox {
+  background-color: var(--bg-primary);
+}
+
+.dark .ChatBox_header {
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.dark .ChatBox_message_bottom {
+  background-color: var(--bg-primary);
+}
+
+.dark .ChatBox_message_bottom_input,
+.ChatBox_message_bottom_input input {
+  background-color: var(--bg-third) !important;
+}
+
+.dark .all_notification_header,
+.all_messenger_header {
+  color: var(--color-primary) !important;
+}
 /*----profile---*/
+.dark .negative-post-text {
+  color: var(--color-secondary);
+}
+
+.dark .negative-post-btn {
+  color: var(--color-secondary);
+}
+
+.dark .post_bg_text {
+  color: var(--color-primary);
+}
+
+/* ======Box Modal============ */
+.dark .box_header {
+  background-color: var(--bg-primary) !important;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.dark .box_container {
+  color: var(--color-primary);
+}
+
+.dark .box_cancel {
+  background: var(--bg-primary);
+}

@@ -21,6 +21,7 @@ import { HashLoader } from "react-spinners";
 import { getProfile } from "../../redux/features/profileSlice";
 import ProfilePictureInfos from "./ProfilePictureInfos";
 export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
+
   const [visible, setVisible] = useState(false);
   const { username } = useParams();
   const dispatch = useDispatch();
@@ -241,10 +242,7 @@ export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
                   </>
                 ) : (
                   <>
-                    <Intro
-                      detailss={profile.details}
-                      visitor={visitor}
-                    />
+                    <Intro detailss={profile.details} visitor={visitor} />
                     <Photos
                       username={userName}
                       token={user.token}

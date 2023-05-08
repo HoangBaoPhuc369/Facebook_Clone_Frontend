@@ -1,6 +1,11 @@
 import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import * as api from "../api";
-import { replaceComment, showNegativeComment } from "../helpers/handlePosts";
+import {
+  createComment,
+  replaceComment,
+  showNegativeComment,
+  showNegativePost,
+} from "../helpers/handlePosts";
 
 export const getProfile = createAsyncThunk(
   "profile/getProfile",
@@ -154,7 +159,19 @@ export const createCommentInProfilePost = createAsyncThunk(
         image,
         token
       );
-      return data;
+      return { data: data.comments, postId };
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const editCommentInProfilePost = createAsyncThunk(
+  "profile/createComment",
+  async ({ id, postId, comment, image, token }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.editComment(id, postId, comment, image, token);
+      return { data: data, postId };
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -178,6 +195,12 @@ export const profileSlice = createSlice({
         posts: state.profile?.posts,
         postId: action.payload.postId,
         commentId: action.payload.commentId,
+      });
+    },
+    viewNegativePostInProfile: (state, action) => {
+      showNegativePost({
+        posts: state.profile?.posts,
+        postId: action.payload,
       });
     },
     deleteCommentInProfile: (state, action) => {
@@ -310,17 +333,39 @@ export const profileSlice = createSlice({
     },
     [createCommentInProfilePost.fulfilled]: (state, action) => {
       state.loadingComment = false;
-      state.profile = action.payload.data;
+      createComment({
+        posts: state.profile?.posts,
+        postId: action.payload.postId,
+        comments: action.payload.data,
+      });
       state.error = "";
     },
     [createCommentInProfilePost.rejected]: (state, action) => {
+      state.error = action.payload?.message;
+    },
+    [editCommentInProfilePost.pending]: (state, action) => {
+      state.loadingComment = true;
+    },
+    [editCommentInProfilePost.fulfilled]: (state, action) => {
+      state.loadingComment = false;
+      createComment({
+        posts: state.profile?.posts,
+        postId: action.payload.postId,
+        comments: action.payload.data,
+      });
+      state.error = "";
+    },
+    [editCommentInProfilePost.rejected]: (state, action) => {
       state.error = action.payload?.message;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { viewNegativeCommentInProfile, deleteCommentInProfile } =
-  profileSlice.actions;
+export const {
+  viewNegativePostInProfile,
+  viewNegativeCommentInProfile,
+  deleteCommentInProfile,
+} = profileSlice.actions;
 
 export default profileSlice.reducer;

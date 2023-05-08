@@ -11,6 +11,7 @@ import DeletePostPopUp from "../deletePost";
 import { createNotifications } from "../../redux/features/notificationSlice";
 import { useDispatch } from "react-redux";
 import { formatTime, formatTimePost } from "../../functions/formatTime";
+import { viewNegativePostInProfile } from "../../redux/features/profileSlice";
 export default function Post({
   user,
   post,
@@ -60,6 +61,44 @@ export default function Post({
     setTotal(res.total);
     setCheckSaved(res.checkSaved);
   };
+
+  const data1 = [
+    {
+      comment: "you like a flower in the field",
+      hideComment: false,
+      image: "",
+
+      _id: "64587fab3d72e722bbc62b92",
+    },
+    {
+      comment: "pew pew",
+      hideComment: false,
+      image: "",
+      _id: "6458e7773d72e722bbc62d65",
+    },
+  ];
+
+  const data2 = [
+    {
+      comment: "you like a flower in the field",
+      hideComment: true,
+      image: "",
+
+      _id: "64587fab3d72e722bbc62b92",
+    },
+    // {
+    //   comment: "pew pew",
+    //   hideComment: true,
+    //   image: "",
+    //   _id: "6458e7773d72e722bbc62d65",
+    // },
+    // {
+    //   comment: "gaga",
+    //   hideComment: false,
+    //   image: "",
+    //   _id: "6458e7773d72e722bbc71234",
+    // },
+  ];
 
   const handleSendNotifications = (icon, type) => {
     if (user?.id !== post?.user._id) {
@@ -141,6 +180,12 @@ export default function Post({
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
 
+  const handleShowNegativePost = (id) => {
+    if (id) {
+      dispatch(viewNegativePostInProfile(id));
+    }
+  };
+
   return (
     <div
       className="post"
@@ -196,11 +241,20 @@ export default function Post({
           <div className="p-2">
             <div className="text-lg font-medium flex gap-0">
               <i className="m_warning"></i>
-              We remove something you posted
+              We hide something you posted
             </div>
-            <div className="text-sm text-gray-500">
-              We removed the post because it doesn't follow the Net Friend
-              Community Standard
+            <p className="text-sm text-gray-500 negative-post-text">
+              We covered the post because it doesn't follow the
+              <span className="ml-1 text-blue-500 hover:underline hover:cursor-pointer">
+                Net Friend Community Standard
+              </span>
+            </p>
+
+            <div
+              onClick={() => handleShowNegativePost(post._id)}
+              className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
+            >
+              Unhide
             </div>
           </div>
         </div>
@@ -368,6 +422,7 @@ export default function Post({
           user={user}
           postId={post._id}
           setCount={setCount}
+          postUserId={post.user._id}
           setComments={setComments}
           handleSendNotifications={handleSendNotifications}
         />

@@ -183,6 +183,7 @@ export default function Comment({
                 user={user}
                 postId={postId}
                 setCount={setCount}
+                postUserId={postUserId}
                 setComments={setComments}
                 initialText={comment.comment}
                 setActiveComment={setActiveComment}
@@ -296,6 +297,7 @@ export default function Comment({
             user={user}
             postId={postId}
             setCount={setCount}
+            postUserId={postUserId}
             createRelyFirstCm={true}
             setComments={setComments}
             handleTrigger={handleTrigger}
@@ -352,6 +354,7 @@ export default function Comment({
             user={user}
             postId={postId}
             setCount={setCount}
+            postUserId={postUserId}
             createRelyFirstCm={false}
             createRelySecondCm={true}
             handleTrigger={handleTrigger}

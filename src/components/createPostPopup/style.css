@@ -106,8 +106,9 @@
 }
 .comment_emoji_picker {
   position: absolute;
-  right: 0;
-  bottom: 2.5rem;
+  right: 19px;
+  bottom: -3.8rem;
+  z-index: 99;
 }
 .rlmove {
   right: -7rem;

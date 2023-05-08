@@ -10,18 +10,46 @@ export const showNegativeComment = (props) => {
   }
 };
 
-export const replaceComment = (props) => {
+export const showNegativePost = (props) => {
   const findPost = props.posts?.find((p) => p._id === props.postId);
   if (findPost) {
-    const result = findPost.comments
-      .map((element1) => {
-        const element2 = props.comments.find(
-          (element2) => element2._id === element1._id
+    findPost.hidePost = false;
+  }
+};
+
+export const createComment = (props) => {
+  const findPost = props.posts?.find((p) => p._id === props.postId);
+  if (findPost) {
+    const result = props.comments
+      .map((newComment) => {
+        const oldComment = findPost.comments.find(
+          (oldComment) => oldComment._id === newComment._id
         );
-        return element2 ? { ...element1, hide: element1.hide } : undefined;
+        if (oldComment) {
+          return { ...newComment, hideComment: oldComment.hideComment };
+        } else {
+          return newComment;
+        }
       })
       .filter(Boolean);
 
     findPost.comments = result;
+  }
+};
+
+export const replaceComment = (props) => {
+  const findPost = props.posts?.find((p) => p._id === props.postId);
+  if (findPost) {
+    // const result = findPost.comments
+    //   .map((oldComment) => {
+    //     const newComment = props.comments.find(
+    //       (newComment) => newComment._id === oldComment._id
+    //     );
+    //     return newComment
+    //       ? { ...newComment, hideComment: oldComment.hideComment }
+    //       : undefined;
+    //   })
+    //   .filter(Boolean);
+    findPost.comments = props.comments;
   }
 };

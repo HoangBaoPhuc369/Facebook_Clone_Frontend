@@ -3,11 +3,17 @@ import Picker from "emoji-picker-react";
 import { comment, editComment } from "../../functions/post";
 import { uploadImages } from "../../functions/uploadImages";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
-import { ClipLoader, MoonLoader, FadeLoader, PuffLoader} from "react-spinners";
+import { ClipLoader, MoonLoader, FadeLoader, PuffLoader } from "react-spinners";
+import {
+  createCommentInProfilePost,
+  editCommentInProfilePost,
+} from "../../redux/features/profileSlice";
+import { useDispatch, useSelector } from "react-redux";
 export default function CreateComment({
   user,
   postId,
   setCount,
+  postUserId,
   setComments,
   getParentId,
   handleTrigger,
@@ -27,6 +33,11 @@ export default function CreateComment({
   const [loading, setLoading] = useState(false);
   const textRef = useRef(null);
   const imgInput = useRef(null);
+
+  const { loadingComment } = useSelector((state) => ({ ...state.profile }));
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     textRef.current.selectionEnd = cursorPosition;
   }, [cursorPosition]);
@@ -70,7 +81,7 @@ export default function CreateComment({
     if (e.key === "Enter") {
       if (activeComment?.type === "editing") {
         if (commentImage !== "") {
-          setLoading(true);
+          // setLoading(true);
           const img = dataURItoBlob(commentImage);
           const path = `${user.username}/post_images/${postId}`;
           let formData = new FormData();
@@ -78,77 +89,138 @@ export default function CreateComment({
           formData.append("file", img);
           const imgComment = await uploadImages(formData, path, user.token);
 
-          const comments = await editComment(
-            activeComment.id,
-            postId,
-            text,
-            imgComment[0].url,
-            user.token
-          );
-          setComments(comments.comments);
-          setLoading(false);
+          // const comments = await editComment(
+          //   activeComment.id,
+          //   postId,
+          //   text,
+          //   imgComment[0].url,
+          //   user.token
+          // );
+
+          if (imgComment) {
+            if (postUserId === user.id) {
+              dispatch(
+                editCommentInProfilePost({
+                  id: activeComment.id,
+                  postId: postId,
+                  comment: text,
+                  image: imgComment[0].url,
+                  token: user.token,
+                })
+              );
+            }
+          }
+
+          // setComments(comments.comments);
+          // setLoading(false);
           setText("");
           setCommentImage("");
           setActiveComment(null);
-          // handleSendNotifications("comment");
         } else if (text !== "") {
-          setLoading(true);
+          // setLoading(true);
 
-          const comments = await editComment(
-            activeComment.id,
-            postId,
-            text,
-            "",
-            user.token
-          );
-          setComments(comments.comments);
-          setLoading(false);
+          // const comments = await editComment(
+          //   activeComment.id,
+          //   postId,
+          //   text,
+          //   "",
+          //   user.token
+          // );
+
+          // setComments(comments.comments);
+          // setLoading(false);
+
+          if (postUserId === user.id) {
+            dispatch(
+              editCommentInProfilePost({
+                id: activeComment.id,
+                postId: postId,
+                comment: text,
+                image: "",
+                token: user.token,
+              })
+            );
+          }
+
           setText("");
           setCommentImage("");
           setActiveComment(null);
         }
       } else {
         if (commentImage !== "") {
-          setLoading(true);
+          // setLoading(true);
           const img = dataURItoBlob(commentImage);
           const path = `${user.username}/post_images/${postId}`;
           let formData = new FormData();
           formData.append("path", path);
           formData.append("file", img);
-          const imgComment = await uploadImages(formData, path, user.token);
 
-          const comments = await comment(
-            postId,
-            getParentId,
-            text,
-            imgComment[0].url,
-            user.token
-          );
-          setComments(comments.comments);
+
+          const imgComment = await uploadImages(formData, user.token);
+
+          // const comments = await comment(
+          //   postId,
+          //   getParentId,
+          //   text,
+          //   imgComment[0].url,
+          //   user.token
+          // );
+
+          if (imgComment) {
+            if (postUserId === user.id) {
+              dispatch(
+                createCommentInProfilePost({
+                  postId,
+                  getParentId,
+                  comment: text,
+                  image: imgComment[0].url,
+                  token: user.token,
+                })
+              );
+            }
+          }
+
+          // setComments(comments.comments);
+          // setLoading(false);
           setCount((prev) => ++prev);
-          setLoading(false);
           setText("");
           setCommentImage("");
           handleSendNotifications("comment", "comment");
         } else if (text !== "") {
-          setLoading(true);
+          // setLoading(true);
 
-          const comments = await comment(
-            postId,
-            getParentId,
-            text,
-            "",
-            user.token
-          );
-          console.log(comments);
-          if (comments) {
-            setComments(comments.comments);
-            setCount((prev) => ++prev);
-            setLoading(false);
-            setText("");
-            setCommentImage("");
-            handleSendNotifications("comment", "comment");
+          // const comments = await comment(
+          //   postId,
+          //   getParentId,
+          //   text,
+          //   "",
+          //   user.token
+          // );
+          // if (comments) {
+          //   setComments(comments.comments);
+          //   setLoading(false);
+          //   setCount((prev) => ++prev);
+          //   setText("");
+          //   setCommentImage("");
+          //   handleSendNotifications("comment", "comment");
+          // }
+
+          if (postUserId === user.id) {
+            dispatch(
+              createCommentInProfilePost({
+                postId,
+                getParentId,
+                comment: text,
+                image: "",
+                token: user.token,
+              })
+            );
           }
+
+          setCount((prev) => ++prev);
+          setText("");
+          setCommentImage("");
+          handleSendNotifications("comment", "comment");
         }
       }
     }
@@ -208,7 +280,7 @@ export default function CreateComment({
           />
           {/* {getParentId ? getParentId : "Write a comment..."} */}
           <div className="comment_circle" style={{ marginTop: "5px" }}>
-            <ClipLoader size={20} color="#1876f2" loading={loading} />
+            <ClipLoader size={20} color="#1876f2" loading={loadingComment} />
           </div>
           <div
             className="comment_circle_icon hover2"

@@ -191,6 +191,23 @@ export const comment = (postId, getParentId = "", comment, image, token) =>
     }
   );
 
+export const editComment = (id, postId, comment, image, token) =>
+  axios.put(
+    `${process.env.REACT_APP_BACKEND_URL}/posts/update-comment`,
+    {
+      id,
+      postId,
+      comment,
+      image,
+    },
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
 // --------------------------CHAT API--------------------------------------
 export const getConversations = (userToken) =>
   axios.put(

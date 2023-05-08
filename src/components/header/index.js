@@ -186,7 +186,7 @@ export default function Header({
 
   useEffect(() => {
     socketRef?.on("getNotification", (data) => {
-      console.log(data);
+      // console.log(data);
       //Cho nay chi can day vo state khong can call api
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
@@ -214,10 +214,10 @@ export default function Header({
   }, []);
 
   useEffect(() => {
+    console.log(socketRef)
     socketRef?.on("toxicNotification", (data) => {
-
-      console.log(data);
-
+      console.log(data)
+      
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
 

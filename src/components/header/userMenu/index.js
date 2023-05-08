@@ -12,9 +12,9 @@ export default function UserMenu({ user, socket }) {
   const [visible, setVisible] = useState(0);
   const logout = () => {
     dispatch(setLogout());
-    socket.disconnect();
+    socket.emit("leaveUser", user.id);
     navigate("/login");
-  }
+  };
   return (
     <div className="mmenu">
       {visible === 0 && (
@@ -81,7 +81,7 @@ export default function UserMenu({ user, socket }) {
               <i className="right_icon"></i>
             </div>
           </div>
-          <div 
+          <div
             className="mmenu_item hover3"
             onClick={() => {
               logout();

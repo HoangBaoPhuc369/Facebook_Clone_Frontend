@@ -75,24 +75,28 @@ function App() {
           <Route
             path="/profile"
             element={
-              <Profile
-                socketRef={socketRef}
-                setVisible={setVisible}
-                onlineUser={onlineUser}
-                setOnlineUsers={setOnlineUsers}
-              />
+              socketRef ? (
+                <Profile
+                  socketRef={socketRef}
+                  setVisible={setVisible}
+                  onlineUser={onlineUser}
+                  setOnlineUsers={setOnlineUsers}
+                />
+              ) : null
             }
             exact
           />
           <Route
             path="/profile/:username"
             element={
-              <Profile
-                socketRef={socketRef}
-                setVisible={setVisible}
-                onlineUser={onlineUser}
-                setOnlineUsers={setOnlineUsers}
-              />
+              socketRef ? (
+                <Profile
+                  socketRef={socketRef}
+                  setVisible={setVisible}
+                  onlineUser={onlineUser}
+                  setOnlineUsers={setOnlineUsers}
+                />
+              ) : null
             }
             exact
           />
@@ -136,6 +140,8 @@ function App() {
 
         <Route path="/test-ui" element={<Test />} />
       </Routes>
+
+      <div id="modal" className="relative"></div>
     </div>
   );
 }
