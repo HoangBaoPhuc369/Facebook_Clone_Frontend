@@ -2,14 +2,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
 import useClickOutside from "../../helpers/clickOutside";
 import getCroppedImg from "../../helpers/getCroppedImg";
-import { uploadImages } from "../../functions/uploadImages";
-import { useSelector } from "react-redux";
-import { updateCover } from "../../functions/user";
-import { createPost } from "../../functions/post";
+import {
+  updateCoverPictureUser,
+  // updatePictureUser,
+  uploadImages,
+} from "../../functions/uploadImages";
+import { useDispatch, useSelector } from "react-redux";
+// import { updateCover } from "../../functions/user";
+// import { createPost } from "../../functions/post";
 import PulseLoader from "react-spinners/PulseLoader";
 import OldCovers from "./OldCovers";
+import { updateProfilePictureUser } from "../../redux/features/profileSlice";
 
-export default function Cover({ cover, visitor, photos,  dispatch, profilePost}) {
+export default function Cover({ cover, visitor, photos }) {
   const [showCoverMenu, setShowCoverMenu] = useState(false);
   const [coverPicture, setCoverPicture] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,6 +23,9 @@ export default function Cover({ cover, visitor, photos,  dispatch, profilePost})
   const menuRef = useRef(null);
   const refInput = useRef(null);
   const cRef = useRef(null);
+
+  const dispatch = useDispatch();
+
   useClickOutside(menuRef, () => setShowCoverMenu(false));
   const [error, setError] = useState("");
   const handleImage = (e) => {
@@ -82,34 +90,50 @@ export default function Cover({ cover, visitor, photos,  dispatch, profilePost})
       formData.append("file", blob);
       formData.append("path", path);
       const res = await uploadImages(formData, user.token);
-      const updated_picture = await updateCover(res[0].url, user.token);
-      if (updated_picture === "ok") {
-        const new_post = await createPost(
-          "coverPicture",
-          null,
-          null,
-          res,
-          user.id,
-          user.token
-        );
-        if (new_post.status === "ok") {
-          setLoading(false);
-          setCoverPicture("");
-          cRef.current.src = res[0].url;
+      const updated_picture = await updateCoverPictureUser(
+        res[0].url,
+        user.token
+      );
+      // if (updated_picture === "ok") {
+      //   const new_post = await createPost(
+      //     "coverPicture",
+      //     null,
+      //     null,
+      //     res,
+      //     user.id,
+      //     user.token
+      //   );
+      //   if (new_post.status === "ok") {
+      //     setLoading(false);
+      //     setCoverPicture("");
+      //     cRef.current.src = res[0].url;
 
-          dispatch({
-            type: "PROFILE_POSTS",
-            payload: [new_post.data, ...profilePost],
-          })
-        } else {
-          setLoading(false);
+      //     dispatch({
+      //       type: "PROFILE_POSTS",
+      //       payload: [new_post.data, ...profilePost],
+      //     })
+      //   } else {
+      //     setLoading(false);
 
-          setError(new_post);
-        }
-      } else {
-        setLoading(false);
-        setError(updated_picture);
-      }
+      //     setError(new_post);
+      //   }
+      // } else {
+      //   setLoading(false);
+      //   setError(updated_picture);
+      // }
+      dispatch(
+        updateProfilePictureUser({
+          image: [{ url: updated_picture }],
+          type: "coverPicture",
+          background: null,
+          text: null,
+          user: user.id,
+          token: user.token,
+        })
+      );
+      setLoading(false);
+      setCoverPicture("");
+      cRef.current.src = res[0].url;
     } catch (error) {
       setLoading(false);
       setError(error.response?.data?.message);

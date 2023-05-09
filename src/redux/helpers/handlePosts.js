@@ -20,20 +20,20 @@ export const showNegativePost = (props) => {
 export const createComment = (props) => {
   const findPost = props.posts?.find((p) => p._id === props.postId);
   if (findPost) {
-    const result = props.comments
-      .map((newComment) => {
-        const oldComment = findPost.comments.find(
-          (oldComment) => oldComment._id === newComment._id
-        );
-        if (oldComment) {
-          return { ...newComment, hideComment: oldComment.hideComment };
-        } else {
-          return newComment;
-        }
-      })
-      .filter(Boolean);
+    // const result = props.comments
+    //   .map((newComment) => {
+    //     const oldComment = findPost.comments.find(
+    //       (oldComment) => oldComment._id === newComment._id
+    //     );
+    //     if (oldComment) {
+    //       return { ...newComment, hideComment: oldComment.hideComment };
+    //     } else {
+    //       return newComment;
+    //     }
+    //   })
+    //   .filter(Boolean);
 
-    findPost.comments = result;
+    findPost.comments = props.comments;
   }
 };
 

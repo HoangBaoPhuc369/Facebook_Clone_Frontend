@@ -55,7 +55,7 @@ export default function Post({
   }, [post]);
 
   const getPostReacts = async () => {
-    const res = await getReacts(post._id, user.token);
+    const res = await getReacts(post?._id, user.token);
     setReacts(res.reacts);
     setCheck(res.check);
     setTotal(res.total);
@@ -104,11 +104,11 @@ export default function Post({
     if (user?.id !== post?.user._id) {
       const typeNotification =
         type === "react"
-          ? post.type === null
-            ? `reacted to your post: "${post.text}."`
+          ? post?.type === null
+            ? `reacted to your post: "${post?.text}."`
             : `reacted to your photo.`
           : type === "comment"
-          ? post.type === null
+          ? post?.type === null
             ? " commented on your post."
             : " commented on your photo."
           : null;
@@ -135,7 +135,7 @@ export default function Post({
   };
 
   const reactHandler = async (type) => {
-    reactPost(post._id, type, user.token);
+    reactPost(post?._id, type, user.token);
     if (check === type) {
       setCheck();
       let index = reacts?.findIndex((x) => x.react === check);
@@ -198,25 +198,25 @@ export default function Post({
           className="post_header_left"
         >
           <img
-            src={post.user?._id === user.id ? user.picture : post.user.picture}
+            src={post?.user?._id === user.id ? user.picture : post?.user.picture}
             alt=""
           />
           <div className="header_col">
             <div className="post_profile_name">
-              {post.user.first_name} {post.user.last_name}
+              {post?.user.first_name} {post?.user.last_name}
               <div className="updated_p">
-                {post.type === "profilePicture" &&
+                {post?.type === "profilePicture" &&
                   `updated ${
-                    post.user.gender === "male" ? "his" : "her"
+                    post?.user.gender === "male" ? "his" : "her"
                   } profile picture`}
-                {post.type === "coverPicture" &&
+                {post?.type === "coverPicture" &&
                   `updated ${
-                    post.user.gender === "male" ? "his" : "her"
+                    post?.user.gender === "male" ? "his" : "her"
                   } cover picture`}
               </div>
             </div>
             <div className="post_profile_privacy_date">
-              {formatTimePost(post.createdAt)}
+              {formatTimePost(post?.createdAt)}
               <div className="relative ml-1 mr-1">
                 <span
                   className="absolute top-1/2 left-1/2 transform -translate-x-1/2 
@@ -236,7 +236,7 @@ export default function Post({
           <Dots color="#828387" />
         </div>
       </div>
-      {post.hidePost ? (
+      {post?.hidePost ? (
         <div className="mx-4 border border-solid border-gray-500 shadow-sm">
           <div className="p-2">
             <div className="text-lg font-medium flex gap-0">
@@ -251,38 +251,38 @@ export default function Post({
             </p>
 
             <div
-              onClick={() => handleShowNegativePost(post._id)}
+              onClick={() => handleShowNegativePost(post?._id)}
               className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
             >
               Unhide
             </div>
           </div>
         </div>
-      ) : post.background ? (
+      ) : post?.background ? (
         <div
           className="post_bg"
-          style={{ backgroundImage: `url(${post.background})` }}
+          style={{ backgroundImage: `url(${post?.background})` }}
         >
           <div className="post_bg_text">{post.text}</div>
         </div>
-      ) : post.type === null ? (
+      ) : post?.type === null ? (
         <>
           <div className="post_text">{post.text}</div>
-          {post.images && post.images.length && (
+          {post?.images && post?.images.length && (
             <div
               className={
-                post.images.length === 1
+                post?.images.length === 1
                   ? "grid_1"
-                  : post.images.length === 2
+                  : post?.images.length === 2
                   ? "grid_2"
-                  : post.images.length === 3
+                  : post?.images.length === 3
                   ? "grid_3"
-                  : post.images.length === 4
+                  : post?.images.length === 4
                   ? "grid_4"
-                  : post.images.length >= 5 && "grid_5"
+                  : post?.images.length >= 5 && "grid_5"
               }
             >
-              {post.images.slice(0, 5).map((image, i) => (
+              {post?.images.slice(0, 5).map((image, i) => (
                 <img
                   src={image.url}
                   key={i + image.url}
@@ -290,28 +290,28 @@ export default function Post({
                   className={`img-${i}`}
                 />
               ))}
-              {post.images.length > 5 && (
+              {post?.images.length > 5 && (
                 <div className="more-pics-shadow">
-                  +{post.images.length - 5}
+                  +{post?.images.length - 5}
                 </div>
               )}
             </div>
           )}
         </>
-      ) : post.type === "profilePicture" ? (
+      ) : post?.type === "profilePicture" ? (
         <div className="post_profile_wrap">
           <div className="post_updated_bg">
             <img src={post.user.cover} alt="" />
           </div>
           <img
-            src={post.images[0]?.url}
+            src={post?.images[0]?.url}
             alt=""
             className="post_updated_picture"
           />
         </div>
       ) : (
         <div className="post_cover_wrap">
-          <img src={post.images[0]?.url} alt="" />
+          <img src={post?.images[0]?.url} alt="" />
         </div>
       )}
 
@@ -420,7 +420,7 @@ export default function Post({
 
         <CreateComment
           user={user}
-          postId={post._id}
+          postId={post?._id}
           setCount={setCount}
           postUserId={post.user._id}
           setComments={setComments}
@@ -440,7 +440,7 @@ export default function Post({
                   user={user}
                   first={true}
                   isOpen={isOpen}
-                  postId={post._id}
+                  postId={post?._id}
                   comment={comment}
                   setCount={setCount}
                   dispatch={dispatch}
@@ -476,9 +476,9 @@ export default function Post({
         <PostMenu
           userId={user.id}
           postRef={postRef}
-          postId={post._id}
+          postId={post?._id}
           token={user.token}
-          images={post.images}
+          images={post?.images}
           checkSaved={checkSaved}
           setShowMenu={setShowMenu}
           postUserId={post.user._id}
@@ -495,7 +495,7 @@ export default function Post({
         setComments={setComments}
         onClose={() => setIsOpen(false)}
         props={{
-          postId: post._id,
+          postId: post?._id,
           commentId:
             activeComment?.type === "deleteComment"
               ? activeComment?.id

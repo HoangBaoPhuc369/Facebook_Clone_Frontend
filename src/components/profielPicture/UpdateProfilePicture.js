@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
 import { useDispatch, useSelector } from "react-redux";
 import { createPost } from "../../functions/post";
-import { uploadImages } from "../../functions/uploadImages";
+import { updatePictureUser, uploadImages } from "../../functions/uploadImages";
 // import { updateProfilePictureUser } from "../../functions/user";
 import getCroppedImg from "../../helpers/getCroppedImg";
 import PulseLoader from "react-spinners/PulseLoader";
@@ -63,58 +63,23 @@ export default function UpdateProfilePicture({
       formData.append("file", blob);
       formData.append("path", path);
       const res = await uploadImages(formData, user.token);
-      // const updated_picture = await updateProfilePictureUser(
-      //   res[0].url,
-      //   user.token
-      // );
-
-      // if (updated_picture === "ok") {
-      //   const new_post = await createPost(
-      //     "profilePicture",
-      //     null,
-      //     description,
-      //     res,
-      //     user.id,
-      //     user.token
-      //   );
-
-      //   if (new_post.status === "ok") {
-      //     setLoading(false);
-      //     setImage("");
-      //     pRef.current.style.backgroundImage = `url(${res[0].url})`;
-
-      //     profileReducerDispatch({
-      //       type: "PROFILE_POSTS",
-      //       payload: [new_post.data, ...profilePost],
-      //     })
-      //     dispatch(updatePicture(res[0].url));
-      //     setShow(prev => !prev);
-      //   } else {
-      //     setLoading(false);
-
-      //     setError(new_post);
-      //   }
-      // } else {
-      //   setLoading(false);
-
-      //   setError(updated_picture);
-      // }
+      const updated_picture = await updatePictureUser(res[0].url, user.token);
       dispatch(
         updateProfilePictureUser({
-          url: res[0].url,
-          token: user.token,
+          image: [{ "url": updated_picture }],
           type: "profilePicture",
           background: null,
           text: description,
-          images: res,
           user: user.id,
+          token: user.token,
         })
       );
+
       setLoading(false);
       setImage("");
       pRef.current.style.backgroundImage = `url(${res[0].url})`;
       dispatch(updatePicture(res[0].url));
-      setShow(prev => !prev);
+      setShow((prev) => !prev);
     } catch (error) {
       setError(error?.response?.data?.message);
     }

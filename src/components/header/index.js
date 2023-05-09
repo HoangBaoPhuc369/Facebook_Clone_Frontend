@@ -214,10 +214,9 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    console.log(socketRef)
     socketRef?.on("toxicNotification", (data) => {
-      console.log(data)
-      
+      console.log(data);
+
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
 

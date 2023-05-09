@@ -57,7 +57,7 @@ export const updateProfilePictureUser = (url, token) =>
   axios.patch(
     `${process.env.REACT_APP_BACKEND_URL}/users/update-profile-picture`,
     {
-      url,
+      url: url,
     },
     {
       headers: {
@@ -157,7 +157,7 @@ export const getPosts = (userToken) =>
     },
   });
 
-export const createPost = (type, background, text, images, user, token) =>
+export const createPost = (type, background, text, images, user, token) => {
   axios.put(
     `${process.env.REACT_APP_BACKEND_URL}/posts/create-post`,
     {
@@ -165,6 +165,31 @@ export const createPost = (type, background, text, images, user, token) =>
       background,
       text,
       images,
+      user,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const createPostUpdateProfile = (
+  type,
+  background,
+  text,
+  image,
+  user,
+  token
+) =>
+  axios.put(
+    `${process.env.REACT_APP_BACKEND_URL}/posts/create-post`,
+    {
+      type,
+      background,
+      text,
+      images: image,
       user,
     },
     {

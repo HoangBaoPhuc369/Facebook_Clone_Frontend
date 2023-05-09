@@ -41,20 +41,22 @@ export const updateDetailsInfo = createAsyncThunk(
 export const updateProfilePictureUser = createAsyncThunk(
   "profile/updateProfilePictureUser",
   async (
-    { url, token, type, background, text, images, user },
+    { image, token, type, background, text, user },
     { rejectWithValue }
   ) => {
     try {
-      const { image } = await api.updateProfilePictureUser(url, token);
-      const { data } = await api.createPost(
+      const { data } = await api.createPostUpdateProfile(
         type,
         background,
         text,
-        (images = image),
+        image,
         user,
         token
       );
-      return data;
+      if (data) {
+        console.log(data);
+        return data;
+      }
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
