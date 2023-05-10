@@ -31,3 +31,15 @@ export function formatTimePost(time) {
     return timestamp.format("MMM D, YYYY");
   }
 }
+
+export function formatTimeOrPost(time) {
+  const now = moment();
+  const timestamp = moment(time);
+  const diff = now.diff(timestamp, "days");
+
+  if (diff <= 7) {
+    return formatTime(time);
+  } else {
+    return formatTimePost(time);
+  }
+}

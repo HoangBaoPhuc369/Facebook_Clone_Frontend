@@ -13,7 +13,6 @@ export default function DeletePostPopUp({
   profile,
   dispatch,
   children,
-  setComments,
 }) {
   if (!open) return null;
 
@@ -31,7 +30,6 @@ export default function DeletePostPopUp({
           comments: response.data
         }))
       }
-      setComments(response.data);
       onClose();
     } else {
       console.log("Something went wrong");

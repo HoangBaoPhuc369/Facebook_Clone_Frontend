@@ -2,14 +2,13 @@ import CreateComment from "./CreateComment";
 import { useState, useRef } from "react";
 import CommentOptions from "./CommentOptions";
 import useClickOutside from "./../../helpers/clickOutside";
-import { viewNegativeCommentInProfile } from "../../redux/features/profileSlice";
-import { viewNegativeCommentInPost } from "../../redux/features/postSlice";
 import { formatTime } from "../../functions/formatTime";
+import { VscReply } from "react-icons/vsc";
 
 export default function Comment({
   user,
   postId,
-  setComments,
+  profile,
   setCount,
   comment,
   first,
@@ -24,7 +23,7 @@ export default function Comment({
   getReplies,
   RelyId,
   setGetParentId,
-  setVisibleDelPost,
+  // setVisibleDelPost,
   setIsOpen,
   activeOptions,
   setActiveOptions,
@@ -33,8 +32,9 @@ export default function Comment({
   countRepliesThird,
   showMoreRepliesThird,
   handleSendNotifications,
+  setIsOpenUnhideComment,
 }) {
-  const [parentId, setParentId] = useState(null);
+  const [parentId, setParentId] = useState("");
   const [parentIdSecond, setParentIdSecond] = useState(null);
   const [showOptionComment, setShowOptionComment] = useState(false);
 
@@ -77,21 +77,26 @@ export default function Comment({
   };
 
   const handleViewNegativeComment = () => {
-    if (postUserId === user.id) {
-      dispatch(
-        viewNegativeCommentInProfile({
-          postId: postId,
-          commentId: comment?._id,
-        })
-      );
-    } else {
-      dispatch(
-        viewNegativeCommentInPost({
-          postId: postId,
-          commentId: comment?._id,
-        })
-      );
-    }
+    // if (profile) {
+    //   dispatch(
+    //     viewNegativeCommentInProfile({
+    //       postId: postId,
+    //       commentId: comment?._id,
+    //     })
+    //   );
+    // } else {
+    //   dispatch(
+    //     viewNegativeCommentInPost({
+    //       postId: postId,
+    //       commentId: comment?._id,
+    //     })
+    //   );
+    // }
+    setIsOpenUnhideComment(true);
+    setActiveComment({
+      id: comment?._id,
+      type: "unhideComment",
+    });
   };
 
   return (
@@ -182,9 +187,9 @@ export default function Comment({
               <CreateComment
                 user={user}
                 postId={postId}
+                profile={profile}
                 setCount={setCount}
                 postUserId={postUserId}
-                setComments={setComments}
                 initialText={comment.comment}
                 setActiveComment={setActiveComment}
                 handleTriggerEdit={handleTriggerEdit}
@@ -197,57 +202,62 @@ export default function Comment({
           {comment.image && (
             <img src={comment.image} alt="" className="comment_image" />
           )}
-          <div className="comment_actions">
-            {!isEditing && (
-              <>
-                {comment.hideComment ? (
-                  <div
-                    onClick={() => {
-                      handleViewNegativeComment();
-                    }}
-                  >
-                    Unhide
-                  </div>
-                ) : (
-                  <>
-                    <div>Like</div>
+
+          {comment.isFetching ? (
+            <div className="comment_loading ml-[10px] text-[12px] flashing-text">Posting...</div>
+          ) : (
+            <div className="comment_actions">
+              {!isEditing && (
+                <>
+                  {comment.hideComment ? (
                     <div
                       onClick={() => {
-                        setActiveComment({
-                          id: comment?._id,
-                          parentId: comment?.parentId,
-                          type: "replying",
-                        });
-
-                        if (first || second) {
-                          showReplyForm(comment?._id);
-                        } else if (third) {
-                          showReplyForm(RelyId);
-                        }
-
-                        first && setParentId(comment?._id);
-                        second && setParentIdSecond(comment?._id);
-                        third && setGetParentId(comment.parentId);
+                        handleViewNegativeComment();
                       }}
                     >
-                      Reply
+                      Unhide
                     </div>
-                  </>
-                )}
+                  ) : (
+                    <>
+                      <div>Like</div>
+                      <div
+                        onClick={() => {
+                          setActiveComment({
+                            id: comment?._id,
+                            parentId: comment?.parentId,
+                            type: "replying",
+                          });
 
-                <span>{formatTime(comment.commentAt)}</span>
-              </>
-            )}
+                          if (first || second) {
+                            showReplyForm(comment?._id);
+                          } else if (third) {
+                            showReplyForm(RelyId);
+                          }
 
-            {isEditing && (
-              <div
-                className="comment_actions-cancel"
-                onClick={() => setActiveComment(null)}
-              >
-                Cancel
-              </div>
-            )}
-          </div>
+                          first && setParentId(comment?._id);
+                          second && setParentIdSecond(comment?._id);
+                          third && setGetParentId(comment.parentId);
+                        }}
+                      >
+                        Reply
+                      </div>
+                    </>
+                  )}
+
+                  <span>{formatTime(comment.commentAt)}</span>
+                </>
+              )}
+
+              {isEditing && (
+                <div
+                  className="comment_actions-cancel"
+                  onClick={() => setActiveComment(null)}
+                >
+                  Cancel
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -264,12 +274,12 @@ export default function Comment({
               third={false}
               comment={reply}
               postId={postId}
+              profile={profile}
               setCount={setCount}
               dispatch={dispatch}
               postUserId={postUserId}
               setIsOpen={setIsOpen}
               getParentId={parentId}
-              setComments={setComments}
               countReplies={countReplies}
               setGetParentId={setParentId}
               activeComment={activeComment}
@@ -278,15 +288,16 @@ export default function Comment({
               setActiveOptions={setActiveOptions}
               setActiveComment={setActiveComment}
               repliesThird={getReplies(reply?._id)}
-              setVisibleDelPost={setVisibleDelPost}
               countRepliesThird={countRepliesThird}
               showMoreRepliesThird={showMoreRepliesThird}
+              setIsOpenUnhideComment={setIsOpenUnhideComment}
             />
           ))}
 
       {countReplies < repliesSecond.length && (
         <div className="view_replies" onClick={() => showMoreReplies()}>
-          <i className="show_replies_icon mg-right-5"></i>{" "}
+          <VscReply size={16} style={{ fontWeight: "bold", strokeWidth: 1 }} />
+          {/* <i className="show_replies_icon mg-right-5"></i> */}{" "}
           {`${repliesSecond.length} Replies`}
         </div>
       )}
@@ -296,12 +307,12 @@ export default function Comment({
           <CreateComment
             user={user}
             postId={postId}
+            profile={profile}
             setCount={setCount}
             postUserId={postUserId}
             createRelyFirstCm={true}
-            setComments={setComments}
             handleTrigger={handleTrigger}
-            getParentId={isReplying ? parentId : undefined}
+            getParentId={isReplying ? parentId : ""}
             handleSendNotifications={handleSendNotifications}
             activeComment={isReplying ? activeComment : undefined}
           />
@@ -319,22 +330,22 @@ export default function Comment({
               third={true}
               first={false}
               second={false}
-              postId={postId}
               comment={reply}
+              postId={postId}
+              profile={profile}
               dispatch={dispatch}
               setCount={setCount}
               setIsOpen={setIsOpen}
               RelyId={comment?._id}
               postUserId={postUserId}
-              setComments={setComments}
               activeComment={activeComment}
               activeOptions={activeOptions}
               setGetParentId={setParentIdSecond}
               setActiveOptions={setActiveOptions}
               setActiveComment={setActiveComment}
-              setVisibleDelPost={setVisibleDelPost}
               countRepliesThird={countRepliesThird}
               showMoreRepliesThird={showMoreRepliesThird}
+              setIsOpenUnhideComment={setIsOpenUnhideComment}
             />
           ))}
 
@@ -343,7 +354,7 @@ export default function Comment({
           className="view_replies_third"
           onClick={() => showMoreRepliesThird()}
         >
-          <i className="show_replies_icon mg-right-5"></i>{" "}
+          <VscReply size={16} style={{ fontWeight: "bold", strokeWidth: 1 }} />{" "}
           {`${repliesThird.length} Replies`}
         </div>
       )}
@@ -353,6 +364,7 @@ export default function Comment({
           <CreateComment
             user={user}
             postId={postId}
+            profile={profile}
             setCount={setCount}
             postUserId={postUserId}
             createRelyFirstCm={false}
@@ -363,7 +375,6 @@ export default function Comment({
                 ? parentIdSecond
                 : undefined
             }
-            setComments={setComments}
             handleSendNotifications={handleSendNotifications}
             activeComment={
               isReplying || comment?._id === activeComment?.parentId

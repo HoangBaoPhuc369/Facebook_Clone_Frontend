@@ -37,6 +37,13 @@ export const createComment = (props) => {
   }
 };
 
+export const createCommentLoading = (props) => {
+  const findPost = props.posts?.find((p) => p._id === props.postId);
+  if (findPost) {
+    findPost.comments = [props.comment, ...findPost.comments];
+  }
+};
+
 export const replaceComment = (props) => {
   const findPost = props.posts?.find((p) => p._id === props.postId);
   if (findPost) {

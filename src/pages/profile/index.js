@@ -21,7 +21,6 @@ import { HashLoader } from "react-spinners";
 import { getProfile } from "../../redux/features/profileSlice";
 import ProfilePictureInfos from "./ProfilePictureInfos";
 export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
-
   const [visible, setVisible] = useState(false);
   const { username } = useParams();
   const dispatch = useDispatch();
@@ -55,6 +54,8 @@ export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
     window.addEventListener("scroll", getScroll, { passive: true });
     return () => {
       window.addEventListener("scroll", getScroll, { passive: true });
+      setHeight();
+      setLeftHeight();
     };
   }, [loading, scrollHeight]);
   const check = useMediaQuery({
@@ -66,15 +67,7 @@ export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
 
   return (
     <div className="profile">
-      {visible && (
-        <CreatePostPopup
-          user={user}
-          setVisible={setVisible}
-          posts={profile?.posts}
-          dispatch={dispatch}
-          profile
-        />
-      )}
+      <CreatePostPopup visible={visible} setVisible={setVisible} profile />
       <Header
         page="profile"
         socketRef={socketRef}

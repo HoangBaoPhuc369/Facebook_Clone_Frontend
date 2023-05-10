@@ -10,16 +10,21 @@ import Comment from "./Comment";
 import DeletePostPopUp from "../deletePost";
 import { createNotifications } from "../../redux/features/notificationSlice";
 import { useDispatch } from "react-redux";
-import { formatTime, formatTimePost } from "../../functions/formatTime";
-import { viewNegativePostInProfile } from "../../redux/features/profileSlice";
-export default function Post({
-  user,
-  post,
-  profile,
-  setVisibleDelPost,
-  socketRef,
-}) {
-  // const [visible, setVisible] = useState(false);
+import {
+  formatTime,
+  formatTimeOrPost,
+  formatTimePost,
+} from "../../functions/formatTime";
+import {
+  viewNegativeCommentInProfile,
+  viewNegativePostInProfile,
+} from "../../redux/features/profileSlice";
+import ModalCustom from "../Modal";
+import {
+  viewNegativeCommentInPost,
+  viewNegativePost,
+} from "../../redux/features/postSlice";
+export default function Post({ user, post, profile, socketRef }) {
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
   const [check, setCheck] = useState();
@@ -27,21 +32,15 @@ export default function Post({
   const [count, setCount] = useState(1);
   const [checkSaved, setCheckSaved] = useState();
 
-  const postRef = useRef(null);
   const dispatch = useDispatch();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [comments, setComments] = useState([]);
+  const [isOpenUnhideComment, setIsOpenUnhideComment] = useState(false);
+  const [isOpenNegativePost, setIsOpenNegativePost] = useState(false);
   const [countReplies, setCountReplies] = useState(0);
   const [countRepliesThird, setCountRepliesThird] = useState(0);
   const [activeComment, setActiveComment] = useState(null);
   const [activeOptions, setActiveOptions] = useState(null);
-
-  useEffect(() => {
-    if (post) {
-      setComments(post?.comments);
-    }
-  }, [post]);
 
   useEffect(() => {
     getPostReacts();
@@ -62,43 +61,43 @@ export default function Post({
     setCheckSaved(res.checkSaved);
   };
 
-  const data1 = [
-    {
-      comment: "you like a flower in the field",
-      hideComment: false,
-      image: "",
+  // const data1 = [
+  //   {
+  //     comment: "you like a flower in the field",
+  //     hideComment: false,
+  //     image: "",
 
-      _id: "64587fab3d72e722bbc62b92",
-    },
-    {
-      comment: "pew pew",
-      hideComment: false,
-      image: "",
-      _id: "6458e7773d72e722bbc62d65",
-    },
-  ];
+  //     _id: "64587fab3d72e722bbc62b92",
+  //   },
+  //   {
+  //     comment: "pew pew",
+  //     hideComment: false,
+  //     image: "",
+  //     _id: "6458e7773d72e722bbc62d65",
+  //   },
+  // ];
 
-  const data2 = [
-    {
-      comment: "you like a flower in the field",
-      hideComment: true,
-      image: "",
+  // const data2 = [
+  //   // {
+  //   //   comment: "you like a flower in the field",
+  //   //   hideComment: true,
+  //   //   image: "",
 
-      _id: "64587fab3d72e722bbc62b92",
-    },
-    // {
-    //   comment: "pew pew",
-    //   hideComment: true,
-    //   image: "",
-    //   _id: "6458e7773d72e722bbc62d65",
-    // },
-    // {
-    //   comment: "gaga",
-    //   hideComment: false,
-    //   image: "",
-    //   _id: "6458e7773d72e722bbc71234",
-    // },
-  ];
+  //   //   _id: "64587fab3d72e722bbc62b92",
+  //   // },
+  //   // {
+  //   //   comment: "pew pew",
+  //   //   hideComment: true,
+  //   //   image: "",
+  //   //   _id: "6458e7773d72e722bbc62d65",
+  //   // },
+  //   // {
+  //   //   comment: "gaga",
+  //   //   hideComment: false,
+  //   //   image: "",
+  //   //   _id: "6458e7773d72e722bbc71234",
+  //   // },
+  // ];
 
   const handleSendNotifications = (icon, type) => {
     if (user?.id !== post?.user._id) {
@@ -173,7 +172,7 @@ export default function Post({
   };
 
   const getReplies = (commentId) =>
-    comments
+    post.comments
       .filter((comment) => comment.parentId === commentId)
       .sort(
         (a, b) =>
@@ -181,16 +180,42 @@ export default function Post({
       );
 
   const handleShowNegativePost = (id) => {
-    if (id) {
+    if (profile) {
       dispatch(viewNegativePostInProfile(id));
+    } else {
+      dispatch(viewNegativePost(id));
     }
+    setIsOpenNegativePost(false);
+  };
+
+  const handleUnhideNegativeComment = () => {
+    const commentId =
+      activeComment?.type === "unhideComment" ? activeComment?.id : undefined;
+
+    if (profile) {
+      dispatch(
+        viewNegativeCommentInProfile({
+          postId: post?._id,
+          commentId: commentId,
+        })
+      );
+    } else {
+      dispatch(
+        viewNegativeCommentInPost({
+          postId: post?._id,
+          commentId: commentId,
+        })
+      );
+    }
+
+    setIsOpenUnhideComment(false);
   };
 
   return (
     <div
       className="post"
       style={{ width: `${profile && "100%"}` }}
-      ref={postRef}
+      // ref={postRef}
     >
       <div className="post_header">
         <Link
@@ -198,7 +223,9 @@ export default function Post({
           className="post_header_left"
         >
           <img
-            src={post?.user?._id === user.id ? user.picture : post?.user.picture}
+            src={
+              post?.user?._id === user.id ? user.picture : post?.user.picture
+            }
             alt=""
           />
           <div className="header_col">
@@ -216,7 +243,7 @@ export default function Post({
               </div>
             </div>
             <div className="post_profile_privacy_date">
-              {formatTimePost(post?.createdAt)}
+              {formatTimeOrPost(post?.createdAt)}
               <div className="relative ml-1 mr-1">
                 <span
                   className="absolute top-1/2 left-1/2 transform -translate-x-1/2 
@@ -251,7 +278,7 @@ export default function Post({
             </p>
 
             <div
-              onClick={() => handleShowNegativePost(post?._id)}
+              onClick={() => setIsOpenNegativePost(true)}
               className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
             >
               Unhide
@@ -338,8 +365,10 @@ export default function Post({
           <div className="reacts_count_num">{total > 0 && total}</div>
         </div>
         <div className="to_right">
-          {comments?.length > 0 ? (
-            <div className="comments_count">{comments?.length} comments</div>
+          {post?.comments?.length > 0 ? (
+            <div className="comments_count">
+              {post?.comments?.length} comments
+            </div>
           ) : null}
 
           {/* <div className="share_count">0 share</div> */}
@@ -420,15 +449,15 @@ export default function Post({
 
         <CreateComment
           user={user}
+          profile={profile}
           postId={post?._id}
           setCount={setCount}
           postUserId={post.user._id}
-          setComments={setComments}
           handleSendNotifications={handleSendNotifications}
         />
 
-        {comments && comments.length > 0
-          ? comments
+        {post?.comments && post?.comments.length > 0
+          ? post?.comments
               ?.filter((backendComment) => backendComment.parentId === "")
               .sort((a, b) => {
                 return new Date(b.commentAt) - new Date(a.commentAt);
@@ -440,13 +469,13 @@ export default function Post({
                   user={user}
                   first={true}
                   isOpen={isOpen}
+                  profile={profile}
                   postId={post?._id}
                   comment={comment}
                   setCount={setCount}
                   dispatch={dispatch}
                   setIsOpen={setIsOpen}
                   getReplies={getReplies}
-                  setComments={setComments}
                   postUserId={post.user._id}
                   countReplies={countReplies}
                   activeOptions={activeOptions}
@@ -455,18 +484,19 @@ export default function Post({
                   showMoreReplies={showMoreReplies}
                   setActiveOptions={setActiveOptions}
                   setActiveComment={setActiveComment}
-                  setVisibleDelPost={setVisibleDelPost}
                   countRepliesThird={countRepliesThird}
                   repliesSecond={getReplies(comment?._id)}
                   showMoreRepliesThird={showMoreRepliesThird}
+                  setIsOpenUnhideComment={setIsOpenUnhideComment}
                   handleSendNotifications={handleSendNotifications}
                 />
               ))
           : null}
 
         {count <
-          comments?.filter((backendComment) => backendComment.parentId === "")
-            .length && (
+          post?.comments?.filter(
+            (backendComment) => backendComment.parentId === ""
+          ).length && (
           <div className="view_comments" onClick={() => showMore()}>
             View more comments
           </div>
@@ -475,7 +505,7 @@ export default function Post({
       {showMenu && (
         <PostMenu
           userId={user.id}
-          postRef={postRef}
+          profile={profile}
           postId={post?._id}
           token={user.token}
           images={post?.images}
@@ -492,8 +522,10 @@ export default function Post({
         profile={profile}
         postId={post?._id}
         dispatch={dispatch}
-        setComments={setComments}
-        onClose={() => setIsOpen(false)}
+        onClose={() => {
+          setIsOpen(false);
+          setActiveComment(null);
+        }}
         props={{
           postId: post?._id,
           commentId:
@@ -505,6 +537,70 @@ export default function Post({
       >
         Are you sure you want to delete this comment?
       </DeletePostPopUp>
+
+      <ModalCustom
+        open={isOpenUnhideComment}
+        title="Unhide this comment"
+        onClose={() => {
+          setIsOpenUnhideComment(false);
+          setActiveComment(null);
+        }}
+        footer={
+          <>
+            <button
+              className="modal_action"
+              onClick={() => {
+                handleUnhideNegativeComment();
+              }}
+            >
+              Continue
+            </button>
+            <button
+              className="modal_cancel"
+              onClick={() => {
+                setActiveComment(null);
+                setIsOpenUnhideComment(false);
+              }}
+            >
+              Cancel
+            </button>
+          </>
+        }
+      >
+        <p>
+          This comment may contain offensive or sensitive content. Are you sure
+          you want to continue?
+        </p>
+      </ModalCustom>
+
+      <ModalCustom
+        open={isOpenNegativePost}
+        title="Unhide this post"
+        onClose={() => setIsOpenNegativePost(false)}
+        footer={
+          <>
+            <button
+              className="modal_action"
+              onClick={() => {
+                handleShowNegativePost(post?._id);
+              }}
+            >
+              Continue
+            </button>
+            <button
+              className="modal_cancel"
+              onClick={() => setIsOpenNegativePost(false)}
+            >
+              Cancel
+            </button>
+          </>
+        }
+      >
+        <p>
+          This post may contain offensive or sensitive content. Are you sure you
+          want to continue?
+        </p>
+      </ModalCustom>
     </div>
   );
 }

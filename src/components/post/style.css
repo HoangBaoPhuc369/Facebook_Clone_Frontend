@@ -999,6 +999,17 @@
 }
 
 /*----Comment-----------*/
+
+.view_replies svg {
+  transform: rotate(180deg);
+  margin-right: 5px;
+}
+
+.view_replies_third svg {
+  transform: rotate(180deg);
+  margin-right: 5px;
+}
+
 /*------Post menu------*/
 @media (max-width: 700px) {
   .post .grid_2 img,

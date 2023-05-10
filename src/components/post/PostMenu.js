@@ -1,8 +1,11 @@
 import { useRef, useState } from "react";
 import MenuItem from "./MenuItem";
 import useOnClickOutside from "../../helpers/clickOutside";
-import { deletePost, savePost } from "../../functions/post";
+import { savePost } from "../../functions/post";
 import { saveAs } from "file-saver";
+import { useDispatch } from "react-redux";
+import { deletePost } from "../../redux/features/postSlice";
+import { deletePostProfile } from "../../redux/features/profileSlice";
 
 export default function PostMenu({
   postUserId,
@@ -14,10 +17,11 @@ export default function PostMenu({
   checkSaved,
   setCheckSaved,
   images,
-  postRef,
+  profile,
 }) {
   const [test, setTest] = useState(postUserId === userId ? true : false);
   const menu = useRef(null);
+  const dispatch = useDispatch();
   useOnClickOutside(menu, () => setShowMenu(false));
   const saveHandler = async () => {
     savePost(postId, token);
@@ -32,10 +36,21 @@ export default function PostMenu({
       saveAs(img.url, "image.jpg");
     });
   };
-  const deleteHandler = async () => {
-    const res = await deletePost(postId, token);
-    if (res.status === "ok") {
-      postRef.current.remove();
+  const deleteHandler = () => {
+    if (!profile) {
+      dispatch(
+        deletePost({
+          postId,
+          token,
+        })
+      );
+    } else {
+      dispatch(
+        deletePostProfile({
+          postId,
+          token,
+        })
+      );
     }
   };
   return (

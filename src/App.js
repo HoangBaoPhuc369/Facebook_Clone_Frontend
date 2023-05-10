@@ -13,16 +13,16 @@ import Friends from "./pages/friends";
 import { useEffect } from "react";
 import { getAllPosts } from "./redux/features/postSlice";
 import { getConversations } from "./redux/features/conversationSlice";
-import DeletePostPopUp from "./components/deletePost";
 import { getNotification } from "./redux/features/notificationSlice";
 import { io } from "socket.io-client";
 import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInParent";
 import Test from "./components/test";
+import { setActiveUsers } from "./redux/features/dashboardSlice";
 
 function App() {
   const [visible, setVisible] = useState(false);
   const [onlineUser, setOnlineUsers] = useState([]);
-  const [visibleDelPost, setVisibleDelPost] = useState(false);
+  // const [visibleDelPost, setVisibleDelPost] = useState(false);
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { darkTheme } = useSelector((state) => ({ ...state.theme }));
   const userId = user?.id;
@@ -46,29 +46,60 @@ function App() {
     });
     if (user) {
       newSocket.emit("joinUser", user.id);
+
+      // newSocket?.emit("addUser", {
+      //   userId: user?.id,
+      //   userName: `${user?.first_name} ${user?.last_name}`,
+      //   picture: user?.picture,
+      //   timeJoin: new Date(),
+      // });
     }
+
+    newSocket?.on("getUsers", (users) => {
+      const activeUsers = user.following.filter((f) =>
+        users.some((u) => u.userId === f._id)
+      );
+
+      const activeUsersSocket = users.filter(
+        (activeUser) =>
+          activeUser.socketId !== socketRef?.id &&
+          user.following.some((u) => u._id === activeUser.userId)
+      );
+      // console.log(activeUsers);
+      setOnlineUsers(activeUsers);
+      dispatch(setActiveUsers(activeUsersSocket));
+    });
+
     setSocketRef(newSocket);
     handleWSSCallInParent(newSocket);
     return () => newSocket.close();
+    
   }, [setSocketRef, user]); //
 
   useEffect(() => {
-    if (socketRef) {
-      socketRef?.emit("addUser", {
-        userId: user?.id,
-        userName: `${user?.first_name} ${user?.last_name}`,
-        picture: user?.picture,
-        timeJoin: new Date(),
-      });
-    }
+    // if (socketRef) {
+    //   socketRef?.emit("addUser", {
+    //     userId: user?.id,
+    //     userName: `${user?.first_name} ${user?.last_name}`,
+    //     picture: user?.picture,
+    //     timeJoin: new Date(),
+    //   });
+    // }
+    socketRef?.emit("addUser", {
+      userId: user?.id,
+      userName: `${user?.first_name} ${user?.last_name}`,
+      picture: user?.picture,
+      timeJoin: new Date(),
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, [socketRef, user]);
 
   return (
     <div className={darkTheme ? "dark" : "light"}>
-      {visible && <CreatePostPopup user={user} setVisible={setVisible} />}
+      {/* {visible && } */}
+      <CreatePostPopup visible={visible} setVisible={setVisible} />
 
-      {visibleDelPost && <DeletePostPopUp />}
+      {/* {visibleDelPost && <DeletePostPopUp />} */}
 
       <Routes>
         <Route element={<LoggedInRoutes socketRef={socketRef} />}>
@@ -119,7 +150,7 @@ function App() {
                   onlineUser={onlineUser}
                   setVisible={setVisible}
                   setOnlineUsers={setOnlineUsers}
-                  setVisibleDelPost={setVisibleDelPost}
+                  // setVisibleDelPost={setVisibleDelPost}
                 />
               ) : null
             }

@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import * as api from "../api";
-import { replaceComment, showNegativeComment } from "../helpers/handlePosts";
+import {
+  createComment,
+  createCommentLoading,
+  replaceComment,
+  showNegativeComment,
+  showNegativePost,
+} from "../helpers/handlePosts";
 
 export const getAllPosts = createAsyncThunk(
   "post/getAllPosts",
@@ -36,11 +42,60 @@ export const createPost = createAsyncThunk(
   }
 );
 
+export const deletePost = createAsyncThunk(
+  "post/deletePost",
+  async ({ postId, token }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.deletePost(postId, token);
+      return {
+        status: data.status,
+        postId,
+      };
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const createCommentPost = createAsyncThunk(
+  "post/createComment",
+  async (
+    { postId, getParentId, comment, image, token },
+    { rejectWithValue }
+  ) => {
+    try {
+      const { data } = await api.comment(
+        postId,
+        getParentId,
+        comment,
+        image,
+        token
+      );
+      return { data: data.comments, postId };
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const editCommentPost = createAsyncThunk(
+  "post/createComment",
+  async ({ id, postId, comment, image, token }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.editComment(id, postId, comment, image, token);
+      return { data: data, postId };
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 const initialState = {
   posts: [],
   error: "",
   loading: false,
   errorCreatePost: "",
+  loadingCommentPost: false,
   loadingCreatePost: false,
 };
 
@@ -51,11 +106,28 @@ export const postSlice = createSlice({
     setError: (state, action) => {
       state.errorCreatePost = action.payload;
     },
+    setPostLoading: (state, action) => {
+      state.loadingCreatePost = action.payload;
+    },
+    createCommentPostLoading: (state, action) => {
+      console.log(action.payload.comment);
+      createCommentLoading({
+        posts: state.posts,
+        postId: action.payload.postId,
+        comment: action.payload.comment,
+      })
+    },
     viewNegativeCommentInPost: (state, action) => {
       showNegativeComment({
         posts: state.posts,
         postId: action.payload.postId,
         commentId: action.payload.commentId,
+      });
+    },
+    viewNegativePost: (state, action) => {
+      showNegativePost({
+        posts: state.posts,
+        postId: action.payload,
       });
     },
     deleteCommentInFeed: (state, action) => {
@@ -92,11 +164,60 @@ export const postSlice = createSlice({
       state.loadingCreatePost = false;
       state.errorCreatePost = action.payload.message;
     },
+
+    [deletePost.fulfilled]: (state, action) => {
+      if (action.payload.status === "ok") {
+        state.posts = state.posts.filter(
+          (p) => p._id !== action.payload.postId
+        );
+      }
+      state.errorCreatePost = "";
+    },
+    [deletePost.rejected]: (state, action) => {
+      state.errorCreatePost = action.payload.message;
+    },
+    [createCommentPost.pending]: (state, action) => {
+      state.loadingCommentPost = true;
+    },
+    [createCommentPost.fulfilled]: (state, action) => {
+      state.loadingCommentPost = false;
+      createComment({
+        posts: state.posts,
+        postId: action.payload.postId,
+        comments: action.payload.data,
+      });
+      state.error = "";
+    },
+    [createCommentPost.rejected]: (state, action) => {
+      state.error = action.payload?.message;
+    },
+    [editCommentPost.pending]: (state, action) => {
+      state.loadingCommentPost = true;
+    },
+    [editCommentPost.fulfilled]: (state, action) => {
+      state.loadingCommentPost = false;
+      createComment({
+        posts: state.posts,
+        postId: action.payload.postId,
+        comments: action.payload.data,
+      });
+      state.error = "";
+    },
+    [editCommentPost.rejected]: (state, action) => {
+      state.loadingCommentPost = false;
+      state.error = action.payload?.message;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setError, viewNegativeCommentInPost, deleteCommentInFeed } =
-  postSlice.actions;
+export const {
+  setError,
+  setPostLoading,
+  viewNegativePost,
+  deleteCommentInFeed,
+  createCommentPostLoading,
+  viewNegativeCommentInPost,
+} = postSlice.actions;
 
 export default postSlice.reducer;

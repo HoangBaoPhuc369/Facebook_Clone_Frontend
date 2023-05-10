@@ -7,9 +7,14 @@ export const login = createAsyncThunk(
   async ({ formValue, navigate, socket }, { rejectWithValue }) => {
     try {
       const { data } = await api.userLogin(formValue);
-      // if (data) {
-      //   socket.emit("joinUser", data.id);
-      // }
+      if (data) {
+        socket?.emit("addUser", {
+          userId: data?.id,
+          userName: `${data?.first_name} ${data?.last_name}`,
+          picture: data?.picture,
+          timeJoin: new Date(),
+        });
+      }
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);

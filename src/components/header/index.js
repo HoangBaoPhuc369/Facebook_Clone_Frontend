@@ -256,21 +256,25 @@ export default function Header({
     //   picture: user?.picture,
     //   timeJoin: new Date(),
     // });
-    socketRef?.on("getUsers", (users) => {
-      const activeUsers = user.following.filter((f) =>
-        users.some((u) => u.userId === f._id)
-      );
+    if (user) {
+      socketRef?.on("getUsers", (users) => {
+        const activeUsers = user.following.filter((f) =>
+          users.some((u) => u.userId === f._id)
+        );
 
-      const activeUsersSocket = users.filter(
-        (activeUser) =>
-          activeUser.socketId !== socketRef?.id &&
-          user.following.some((u) => u._id === activeUser.userId)
-      );
-      setOnlineUsers(activeUsers);
-      dispatch(setActiveUsers(activeUsersSocket));
-    });
+        const activeUsersSocket = users.filter(
+          (activeUser) =>
+            activeUser.socketId !== socketRef?.id &&
+            user.following.some((u) => u._id === activeUser.userId)
+        );
+        setOnlineUsers(activeUsers);
+        dispatch(setActiveUsers(activeUsersSocket));
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user.id]);
+  }, [user]);
+
+  
 
   const getFiendChat = (current) => {
     return current.members.find((m) => m._id !== user.id);
@@ -317,7 +321,7 @@ export default function Header({
           <Search color={color} />
           <input
             type="text"
-            placeholder="Search Facebook"
+            placeholder="Search Net Friend"
             className="hide_input"
           />
         </div>
@@ -345,7 +349,7 @@ export default function Header({
         </Link>
         <Link to="/" className="middle_icon hover1">
           <Watch color={color} />
-          <div className="middle_notification">9+</div>
+          {/* <div className="middle_notification">9+</div> */}
         </Link>
         <Link to="/" className="middle_icon hover1">
           <Market color={color} />

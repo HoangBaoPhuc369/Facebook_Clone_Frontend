@@ -112,6 +112,15 @@
   background-color: var(--bg-primary);
 }
 
+.dark .css-1jt58b5,
+.css-i1b41b {
+  border: thick solid var(--color-primary) !important;
+}
+
+.dark .post_input {
+  color: var(--color-primary);
+}
+
 .dark .ChatBox_header {
   background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color) !important;
@@ -156,4 +165,24 @@
 
 .dark .box_cancel {
   background: var(--bg-primary);
+}
+
+.dark .create-post-text {
+  color: var(--color-primary);
+}
+
+.dark .modal_header span {
+  color: var(--color-primary);
+}
+
+.dark .modal_container p {
+  color: var(--color-primary);
+}
+
+.dark .view_replies_third svg {
+  color: var(--bg-fifth) !important;
+}
+
+.dark .view_replies svg {
+  color: var(--bg-fifth) !important;
 }

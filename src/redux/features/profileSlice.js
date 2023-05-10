@@ -54,7 +54,6 @@ export const updateProfilePictureUser = createAsyncThunk(
         token
       );
       if (data) {
-        console.log(data);
         return data;
       }
     } catch (err) {
@@ -180,18 +179,59 @@ export const editCommentInProfilePost = createAsyncThunk(
   }
 );
 
+export const createPostProfile = createAsyncThunk(
+  "profile/createPost",
+  async (
+    { type, background, text, images, user, token },
+    { rejectWithValue }
+  ) => {
+    try {
+      const { data } = await api.createPost(
+        type,
+        background,
+        text,
+        images,
+        user,
+        token
+      );
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const deletePostProfile = createAsyncThunk(
+  "profile/deletePost",
+  async ({ postId, token }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.deletePost(postId, token);
+      return {
+        status: data.status,
+        postId,
+      };
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 const initialState = {
   profile: {},
   photos: {},
   error: "",
   loading: false,
   loadingComment: false,
+  loadingPosts: false,
 };
 
 export const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
+    setPostProfileLoading: (state, action) => {
+      state.loadingPosts = action.payload;
+    },
     viewNegativeCommentInProfile: (state, action) => {
       showNegativeComment({
         posts: state.profile?.posts,
@@ -358,6 +398,31 @@ export const profileSlice = createSlice({
       state.error = "";
     },
     [editCommentInProfilePost.rejected]: (state, action) => {
+      state.loadingComment = false;
+      state.error = action.payload?.message;
+    },
+    [createPostProfile.pending]: (state, action) => {
+      state.loadingPosts = true;
+    },
+    [createPostProfile.fulfilled]: (state, action) => {
+      state.loadingPosts = false;
+      state.profile.posts = [action.payload, ...state.profile.posts];
+      state.error = "";
+    },
+    [createPostProfile.rejected]: (state, action) => {
+      state.loadingPosts = false;
+      state.error = action.payload?.message;
+    },
+    [deletePostProfile.fulfilled]: (state, action) => {
+      if (action.payload.status === "ok") {
+        state.profile.posts = state.profile.posts.filter(
+          (p) => p._id !== action.payload.postId
+        );
+      }
+
+      state.error = "";
+    },
+    [deletePostProfile.rejected]: (state, action) => {
       state.error = action.payload?.message;
     },
   },
@@ -365,6 +430,7 @@ export const profileSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  setPostProfileLoading,
   viewNegativePostInProfile,
   viewNegativeCommentInProfile,
   deleteCommentInProfile,

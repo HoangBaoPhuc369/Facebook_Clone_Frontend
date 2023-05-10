@@ -1,20 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import Picker from "emoji-picker-react";
-import { comment, editComment } from "../../functions/post";
 import { uploadImages } from "../../functions/uploadImages";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
-import { ClipLoader, MoonLoader, FadeLoader, PuffLoader } from "react-spinners";
+import { ClipLoader } from "react-spinners";
 import {
   createCommentInProfilePost,
   editCommentInProfilePost,
 } from "../../redux/features/profileSlice";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  createCommentPost,
+  createCommentPostLoading,
+  editCommentPost,
+} from "../../redux/features/postSlice";
+import { v4 as uuidv4 } from "uuid";
+
 export default function CreateComment({
   user,
   postId,
+  profile,
   setCount,
-  postUserId,
-  setComments,
   getParentId,
   handleTrigger,
   activeComment,
@@ -30,11 +35,11 @@ export default function CreateComment({
   const [error, setError] = useState("");
   const [commentImage, setCommentImage] = useState("");
   const [cursorPosition, setCursorPosition] = useState();
-  const [loading, setLoading] = useState(false);
   const textRef = useRef(null);
   const imgInput = useRef(null);
 
   const { loadingComment } = useSelector((state) => ({ ...state.profile }));
+  const { loadingCommentPost } = useSelector((state) => ({ ...state.newFeed }));
 
   const dispatch = useDispatch();
 
@@ -81,7 +86,6 @@ export default function CreateComment({
     if (e.key === "Enter") {
       if (activeComment?.type === "editing") {
         if (commentImage !== "") {
-          // setLoading(true);
           const img = dataURItoBlob(commentImage);
           const path = `${user.username}/post_images/${postId}`;
           let formData = new FormData();
@@ -89,16 +93,8 @@ export default function CreateComment({
           formData.append("file", img);
           const imgComment = await uploadImages(formData, path, user.token);
 
-          // const comments = await editComment(
-          //   activeComment.id,
-          //   postId,
-          //   text,
-          //   imgComment[0].url,
-          //   user.token
-          // );
-
           if (imgComment) {
-            if (postUserId === user.id) {
+            if (profile) {
               dispatch(
                 editCommentInProfilePost({
                   id: activeComment.id,
@@ -108,31 +104,35 @@ export default function CreateComment({
                   token: user.token,
                 })
               );
+            } else {
+              dispatch(
+                editCommentPost({
+                  id: activeComment.id,
+                  postId: postId,
+                  comment: text,
+                  image: imgComment[0].url,
+                  token: user.token,
+                })
+              );
             }
           }
-
-          // setComments(comments.comments);
-          // setLoading(false);
           setText("");
           setCommentImage("");
           setActiveComment(null);
         } else if (text !== "") {
-          // setLoading(true);
-
-          // const comments = await editComment(
-          //   activeComment.id,
-          //   postId,
-          //   text,
-          //   "",
-          //   user.token
-          // );
-
-          // setComments(comments.comments);
-          // setLoading(false);
-
-          if (postUserId === user.id) {
+          if (profile) {
             dispatch(
               editCommentInProfilePost({
+                id: activeComment.id,
+                postId: postId,
+                comment: text,
+                image: "",
+                token: user.token,
+              })
+            );
+          } else {
+            dispatch(
+              editCommentPost({
                 id: activeComment.id,
                 postId: postId,
                 comment: text,
@@ -148,26 +148,15 @@ export default function CreateComment({
         }
       } else {
         if (commentImage !== "") {
-          // setLoading(true);
           const img = dataURItoBlob(commentImage);
           const path = `${user.username}/post_images/${postId}`;
           let formData = new FormData();
           formData.append("path", path);
           formData.append("file", img);
-
-
           const imgComment = await uploadImages(formData, user.token);
 
-          // const comments = await comment(
-          //   postId,
-          //   getParentId,
-          //   text,
-          //   imgComment[0].url,
-          //   user.token
-          // );
-
           if (imgComment) {
-            if (postUserId === user.id) {
+            if (profile) {
               dispatch(
                 createCommentInProfilePost({
                   postId,
@@ -177,37 +166,58 @@ export default function CreateComment({
                   token: user.token,
                 })
               );
+            } else {
+              dispatch(
+                createCommentPost({
+                  postId,
+                  getParentId,
+                  comment: text,
+                  image: imgComment[0].url,
+                  token: user.token,
+                })
+              );
             }
           }
-
-          // setComments(comments.comments);
-          // setLoading(false);
           setCount((prev) => ++prev);
           setText("");
           setCommentImage("");
           handleSendNotifications("comment", "comment");
         } else if (text !== "") {
-          // setLoading(true);
-
-          // const comments = await comment(
-          //   postId,
-          //   getParentId,
-          //   text,
-          //   "",
-          //   user.token
-          // );
-          // if (comments) {
-          //   setComments(comments.comments);
-          //   setLoading(false);
-          //   setCount((prev) => ++prev);
-          //   setText("");
-          //   setCommentImage("");
-          //   handleSendNotifications("comment", "comment");
-          // }
-
-          if (postUserId === user.id) {
+          if (profile) {
             dispatch(
               createCommentInProfilePost({
+                postId,
+                getParentId,
+                comment: text,
+                image: "",
+                token: user.token,
+              })
+            );
+          } else {
+            dispatch(
+              createCommentPostLoading({
+                postId,
+                comment: {
+                  comment: text,
+                  image: "",
+                  parentId: getParentId === undefined ? "" : getParentId,
+                  isFetching: true,
+                  commentBy: {
+                    _id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    username: user.username,
+                    picture: user.picture,
+                  },
+                  hideComment: false,
+                  commentAt: new Date().toISOString(),
+                  _id: uuidv4(),
+                },
+              })
+            );
+
+            dispatch(
+              createCommentPost({
                 postId,
                 getParentId,
                 comment: text,
@@ -280,7 +290,11 @@ export default function CreateComment({
           />
           {/* {getParentId ? getParentId : "Write a comment..."} */}
           <div className="comment_circle" style={{ marginTop: "5px" }}>
-            <ClipLoader size={20} color="#1876f2" loading={loadingComment} />
+            <ClipLoader
+              size={20}
+              color="#1876f2"
+              loading={loadingComment || loadingCommentPost}
+            />
           </div>
           <div
             className="comment_circle_icon hover2"

@@ -10,7 +10,7 @@ const loginInfos = {
   email: "",
   password: "",
 };
-export default function LoginForm({ setVisible, socket}) {
+export default function LoginForm({ setVisible, socket }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formValue, setFormValue] = useState(loginInfos);
@@ -29,15 +29,15 @@ export default function LoginForm({ setVisible, socket}) {
   const { loading, error } = useSelector((state) => ({ ...state.auth }));
   const loginSubmit = () => {
     if (email && password) {
-      dispatch(login({ formValue, navigate, socket}));
+      dispatch(login({ formValue, navigate, socket }));
     }
   };
   return (
     <div className="login_wrap">
       <div className="login_1">
-        <img src="../../icons/facebook.svg" alt="" />
+        <img src="../../icons/netfriend.svg" alt="" />
         <span>
-          Facebook helps you connect and share with the people in your life.
+          Net Friend helps you connect and share with the people in your life.
         </span>
       </div>
       <div className="login_2">

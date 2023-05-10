@@ -17,9 +17,9 @@ export default function Home({
   socketRef,
   setVisible,
   onlineUser,
-  conversations,
+  // conversations,
   setOnlineUsers,
-  setVisibleDelPost,
+  // setVisibleDelPost,
 }) {
   const { posts, loading, error } = useSelector((state) => ({
     ...state.newFeed,
@@ -65,7 +65,7 @@ export default function Home({
                   user={user}
                   key={post?._id}
                   socketRef={socketRef}
-                  setVisibleDelPost={setVisibleDelPost}
+                  // setVisibleDelPost={setVisibleDelPost}
                 />
               ))}
             </div>

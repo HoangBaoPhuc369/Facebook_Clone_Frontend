@@ -157,7 +157,7 @@ export const getPosts = (userToken) =>
     },
   });
 
-export const createPost = (type, background, text, images, user, token) => {
+export const createPost = (type, background, text, images, user, token) =>
   axios.put(
     `${process.env.REACT_APP_BACKEND_URL}/posts/create-post`,
     {
@@ -173,8 +173,6 @@ export const createPost = (type, background, text, images, user, token) => {
       },
     }
   );
-};
-
 export const createPostUpdateProfile = (
   type,
   background,
@@ -192,6 +190,17 @@ export const createPostUpdateProfile = (
       images: image,
       user,
     },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const deletePost = async (postId, token) =>
+  axios.delete(
+    `${process.env.REACT_APP_BACKEND_URL}/posts/delete-post/${postId}`,
+
     {
       headers: {
         Authorization: `Bearer ${token}`,
