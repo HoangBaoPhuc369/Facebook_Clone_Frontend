@@ -1,6 +1,6 @@
-function SentIcon({ color }) {
+function SentIcon({ color, className }) {
   return (
-    <svg width="20px" height="20px" viewBox="0 0 24 24" fill={color} className="">
+    <svg width="20px" height="20px" viewBox="0 0 24 24" fill={color} className={className}>
       <path
         d="M16.6915026,12.4744748 L3.50612381,13.2599618 C3.19218622,13.2599618 3.03521743,13.4170592 3.03521743,13.5741566 
         L1.15159189,20.0151496 C0.8376543,20.8006365 0.99,21.89 1.77946707,22.52 C2.41,22.99 3.50612381,23.1 4.13399899,22.8429026 

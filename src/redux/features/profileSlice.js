@@ -3,6 +3,7 @@ import * as api from "../api";
 import {
   createComment,
   createCommentLoading,
+  editCommentLoading,
   replaceComment,
   showNegativeComment,
   showNegativePost,
@@ -240,6 +241,14 @@ export const profileSlice = createSlice({
         comment: action.payload.comment,
       })
     },
+    editCommentPostProfileLoading: (state, action) => {
+      editCommentLoading({
+        posts: state.profile.posts,
+        postId: action.payload.postId,
+        comment: action.payload.comment,
+        commentId: action.payload.commentId,
+      })
+    },
     viewNegativeCommentInProfile: (state, action) => {
       showNegativeComment({
         posts: state.profile?.posts,
@@ -442,6 +451,7 @@ export const {
   deleteCommentInProfile,
   viewNegativePostInProfile,
   viewNegativeCommentInProfile,
+  editCommentPostProfileLoading,
   createCommentPostProfileLoading,
 } = profileSlice.actions;
 

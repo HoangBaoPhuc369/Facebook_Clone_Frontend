@@ -34,6 +34,10 @@
 .dark input[type="text"] {
   color: var(--color-primary);
 }
+
+.dark textarea {
+  color: var(--color-primary);
+}
 .dark .small_circle i,
 .dark .small_circle svg,
 .dark .white_circle svg,
@@ -48,6 +52,10 @@
   background: #333;
 }
 .dark .post_action i {
+  filter: invert(90%);
+}
+
+.dark .post-popup_action i {
   filter: invert(90%);
 }
 .dark .post_menu i,
@@ -175,7 +183,15 @@
   color: var(--color-primary);
 }
 
+.dark .modal_post_header span {
+  color: var(--color-primary);
+}
+
 .dark .modal_container p {
+  color: var(--color-primary);
+}
+
+.dark .modal_post_container p {
   color: var(--color-primary);
 }
 
@@ -193,4 +209,8 @@
 
 .dark .message-sent-text {
   color: var(--color-primary);
+}
+
+.dark .comment-input_popup {
+  background: var(--bg-primary);
 }

@@ -2,11 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import Picker from "emoji-picker-react";
 import { uploadImages } from "../../functions/uploadImages";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
-import { ClipLoader } from "react-spinners";
+// import { ClipLoader } from "react-spinners";
 import {
   createCommentInProfilePost,
   createCommentPostProfileLoading,
   editCommentInProfilePost,
+  editCommentPostProfileLoading,
 } from "../../redux/features/profileSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -16,6 +17,7 @@ import {
   editCommentPostLoading,
 } from "../../redux/features/postSlice";
 import { v4 as uuidv4 } from "uuid";
+import SentIcon from "./../../svg/sentIcon";
 
 export default function CreateComment({
   user,
@@ -37,11 +39,12 @@ export default function CreateComment({
   const [error, setError] = useState("");
   const [commentImage, setCommentImage] = useState("");
   const [cursorPosition, setCursorPosition] = useState();
+
   const textRef = useRef(null);
   const imgInput = useRef(null);
 
-  const { loadingComment } = useSelector((state) => ({ ...state.profile }));
-  const { loadingCommentPost } = useSelector((state) => ({ ...state.newFeed }));
+  // const { loadingComment } = useSelector((state) => ({ ...state.profile }));
+  // const { loadingCommentPost } = useSelector((state) => ({ ...state.newFeed }));
 
   const dispatch = useDispatch();
 
@@ -50,10 +53,30 @@ export default function CreateComment({
   }, [cursorPosition]);
 
   useEffect(() => {
+    adjustTextareaHeight();
+  }, [text]);
+
+  useEffect(() => {
     if (getParentId) {
       textRef.current.focus();
     }
   }, [getParentId, activeComment]);
+
+  // const handleInput = (event) => {
+  //   const textarea = textRef.current;
+
+  //   if (textarea.scrollHeight > parseInt(35)) {
+  //     textarea.style.height = `${textarea.scrollHeight}px`;
+  //   }
+  // };
+
+  const adjustTextareaHeight = () => {
+    if (textRef.current) {
+      textRef.current.style.height = 'auto';
+      textRef.current.style.height = `${textRef.current.scrollHeight}px`;
+    }
+  };
+
   const handleEmoji = (e, { emoji }) => {
     const ref = textRef.current;
     ref.focus();
@@ -85,7 +108,7 @@ export default function CreateComment({
     };
   };
   const handleComment = async (e) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" || e.type === "click") {
       if (activeComment?.type === "editing") {
         if (commentImage !== "") {
           const img = dataURItoBlob(commentImage);
@@ -93,7 +116,37 @@ export default function CreateComment({
           let formData = new FormData();
           formData.append("path", path);
           formData.append("file", img);
-          const imgComment = await uploadImages(formData, path, user.token);
+
+          setText("");
+          setCommentImage("");
+
+          if (profile) {
+            dispatch(
+              editCommentPostProfileLoading({
+                postId: postId,
+                comment: {
+                  comment: text,
+                  image: commentImage,
+                  isFetching: true,
+                },
+                commentId: activeComment.id,
+              })
+            );
+          } else {
+            dispatch(
+              editCommentPostLoading({
+                postId: postId,
+                comment: {
+                  comment: text,
+                  image: commentImage,
+                  isFetching: true,
+                },
+                commentId: activeComment.id,
+              })
+            );
+          }
+
+          const imgComment = await uploadImages(formData, user.token);
 
           if (imgComment) {
             if (profile) {
@@ -118,11 +171,22 @@ export default function CreateComment({
               );
             }
           }
-          setText("");
-          setCommentImage("");
+
           setActiveComment(null);
         } else if (text !== "") {
           if (profile) {
+            dispatch(
+              editCommentPostProfileLoading({
+                postId: postId,
+                comment: {
+                  comment: text,
+                  image: "",
+                  isFetching: true,
+                },
+                commentId: activeComment.id,
+              })
+            );
+
             dispatch(
               editCommentInProfilePost({
                 id: activeComment.id,
@@ -320,6 +384,16 @@ export default function CreateComment({
       }
     }
   };
+
+  // const handleWriteComment = (e) => {
+  //   setText(e.target.value);
+  //   if (e.target.value === "") {
+  //     setIsComment(false);
+  //   } else {
+  //     setIsComment(true);
+  //   }
+  // };
+
   return (
     <div
       className={
@@ -334,7 +408,7 @@ export default function CreateComment({
         {activeComment?.type === "editing" ? (
           ""
         ) : (
-          <img src={user?.picture} className="rely-comment-img" alt="" />
+          <img src={user?.picture} className="mt-[3px]" alt="" />
         )}
 
         <div className="comment_input_wrap">
@@ -358,10 +432,12 @@ export default function CreateComment({
               </button>
             </div>
           )}
-          <input
+          <textarea
             type="text"
             value={text}
             ref={textRef}
+            rows="1"
+            className="textarea-comment"
             onClick={() =>
               handleTriggerEdit
                 ? handleTriggerEdit()
@@ -369,37 +445,58 @@ export default function CreateComment({
                 ? handleTrigger()
                 : null
             }
+            // onInput={handleInput}
             onKeyUp={handleComment}
             onChange={(e) => setText(e.target.value)}
             placeholder="Write a comment..."
           />
-          {/* {getParentId ? getParentId : "Write a comment..."} */}
-          <div className="comment_circle" style={{ marginTop: "5px" }}>
+          {/* <div className="comment_circle" style={{ marginTop: "5px" }}>
             <ClipLoader
               size={20}
               color="#1876f2"
               loading={loadingComment || loadingCommentPost}
             />
-          </div>
-          <div
-            className="comment_circle_icon hover2"
-            onClick={() => {
-              setPicker((prev) => !prev);
-            }}
-          >
-            <i className="emoji_icon"></i>
-          </div>
-          <div
-            className="comment_circle_icon hover2"
-            onClick={() => imgInput.current.click()}
-          >
-            <i className="camera_icon"></i>
-          </div>
-          <div className="comment_circle_icon hover2">
-            <i className="gif_icon"></i>
-          </div>
-          <div className="comment_circle_icon hover2">
-            <i className="sticker_icon"></i>
+          </div> */}
+          <div className="flex gap-0 px-[9px] py-[5px] ">
+            <div
+              className="comment_circle_icon cursor-pointer hover2"
+              onClick={() => {
+                setPicker((prev) => !prev);
+              }}
+            >
+              <i className="emoji_icon"></i>
+            </div>
+            <div
+              className="comment_circle_icon cursor-pointer hover2"
+              onClick={() => imgInput.current.click()}
+            >
+              <i className="camera_icon"></i>
+            </div>
+            <div className="comment_circle_icon cursor-pointer hover2">
+              <i className="gif_icon"></i>
+            </div>
+            <div className="comment_circle_icon cursor-pointer hover2">
+              <i className="sticker_icon"></i>
+            </div>
+            <div className="flex-1 flex justify-end">
+              <div
+                className={`${
+                  text !== ""
+                    ? "comment_circle_icon hover2 "
+                    : "h-[30px] w-[30px] grid place-items-center cursor-not-allowed"
+                }`}
+                onClick={(e) => {
+                  if (text !== "") {
+                    handleComment(e);
+                  }
+                }}
+              >
+                <SentIcon
+                  color={`${text !== "" ? "#1876f2" : "#bec3c9"}`}
+                  className="w-4 h-4"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

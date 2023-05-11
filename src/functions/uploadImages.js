@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export const uploadImages = async (formData, token) => {
+  console.log(formData, token);
   try {
     const { data } = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/uploads/upload-images`,
@@ -12,6 +13,7 @@ export const uploadImages = async (formData, token) => {
         },
       }
     );
+    console.log(data);
     return data;
   } catch (error) {
     return error.response.data.message;

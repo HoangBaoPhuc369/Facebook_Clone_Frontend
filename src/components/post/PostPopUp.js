@@ -10,11 +10,7 @@ import Comment from "./Comment";
 import DeletePostPopUp from "../deletePost";
 import { createNotifications } from "../../redux/features/notificationSlice";
 import { useDispatch } from "react-redux";
-import {
-  formatTime,
-  formatTimeOrPost,
-  formatTimePost,
-} from "../../functions/formatTime";
+import { formatTimeOrPost } from "../../functions/formatTime";
 import {
   viewNegativeCommentInProfile,
   viewNegativePostInProfile,
@@ -24,8 +20,8 @@ import {
   viewNegativeCommentInPost,
   viewNegativePost,
 } from "../../redux/features/postSlice";
-import ModalPostPopUp from "./ModalPostPopUp";
-export default function Post({ user, post, profile, socketRef }) {
+
+export default function PostPopUp({ user, post, profile, socketRef }) {
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
   const [check, setCheck] = useState();
@@ -38,7 +34,6 @@ export default function Post({ user, post, profile, socketRef }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenUnhideComment, setIsOpenUnhideComment] = useState(false);
   const [isOpenNegativePost, setIsOpenNegativePost] = useState(false);
-  const [openModalPost, setOpenModalPost] = useState(false);
   const [countReplies, setCountReplies] = useState(0);
   const [countRepliesThird, setCountRepliesThird] = useState(0);
   const [activeComment, setActiveComment] = useState(null);
@@ -46,12 +41,6 @@ export default function Post({ user, post, profile, socketRef }) {
 
   useEffect(() => {
     getPostReacts();
-    // return () => {
-    //   setReacts();
-    //   setCheck();
-    //   setTotal(0);
-    //   setCheckSaved();
-    // };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post]);
 
@@ -62,44 +51,6 @@ export default function Post({ user, post, profile, socketRef }) {
     setTotal(res.total);
     setCheckSaved(res.checkSaved);
   };
-
-  // const data1 = [
-  //   {
-  //     comment: "you like a flower in the field",
-  //     hideComment: false,
-  //     image: "",
-
-  //     _id: "64587fab3d72e722bbc62b92",
-  //   },
-  //   {
-  //     comment: "pew pew",
-  //     hideComment: false,
-  //     image: "",
-  //     _id: "6458e7773d72e722bbc62d65",
-  //   },
-  // ];
-
-  // const data2 = [
-  //   // {
-  //   //   comment: "you like a flower in the field",
-  //   //   hideComment: true,
-  //   //   image: "",
-
-  //   //   _id: "64587fab3d72e722bbc62b92",
-  //   // },
-  //   // {
-  //   //   comment: "pew pew",
-  //   //   hideComment: true,
-  //   //   image: "",
-  //   //   _id: "6458e7773d72e722bbc62d65",
-  //   // },
-  //   // {
-  //   //   comment: "gaga",
-  //   //   hideComment: false,
-  //   //   image: "",
-  //   //   _id: "6458e7773d72e722bbc71234",
-  //   // },
-  // ];
 
   const handleSendNotifications = (icon, type) => {
     if (user?.id !== post?.user._id) {
@@ -213,17 +164,8 @@ export default function Post({ user, post, profile, socketRef }) {
     setIsOpenUnhideComment(false);
   };
 
-  const handleOpenModalPost = () => {
-    document.documentElement.style.overflow = "hidden";
-    setOpenModalPost(true);
-  };
-
   return (
-    <div
-      className="post"
-      style={{ width: `${profile && "100%"}` }}
-      // ref={postRef}
-    >
+    <div className="post-popup" style={{ width: `${profile && "100%"}` }}>
       <div className="post_header">
         <Link
           to={`/profile/${post?.user.username}`}
@@ -440,39 +382,26 @@ export default function Post({ user, post, profile, socketRef }) {
             </span>
           </div>
         </div>
-        <div
-          className="post_action hover1"
-          onClick={() => handleOpenModalPost()}
-        >
+        <div className="post-popup_action hover1">
           <i className="comment_icon"></i>
           <span>Comment</span>
         </div>
         {user.following.length > 0 && (
-          <div className="post_action hover1">
+          <div className="post-popup_action hover1">
             <i className="share_icon"></i>
             <span>Share</span>
           </div>
         )}
       </div>
-      {/* <div className="comments_wrap">
+      <div className="comments_wrap">
         <div className="comments_order"></div>
-
-        <CreateComment
-          user={user}
-          profile={profile}
-          postId={post?._id}
-          setCount={setCount}
-          postUserId={post.user._id}
-          handleSendNotifications={handleSendNotifications}
-        />
 
         {post?.comments && post?.comments.length > 0
           ? post?.comments
               ?.filter((backendComment) => backendComment.parentId === "")
               .sort((a, b) => {
-                return new Date(b.commentAt) - new Date(a.commentAt);
+                return new Date(a.commentAt) - new Date(b.commentAt);
               })
-              .slice(0, count)
               .map((comment, i) => (
                 <Comment
                   key={i}
@@ -503,15 +432,26 @@ export default function Post({ user, post, profile, socketRef }) {
               ))
           : null}
 
-        {count <
+        {/* {count <
           post?.comments?.filter(
             (backendComment) => backendComment.parentId === ""
           ).length && (
           <div className="view_comments" onClick={() => showMore()}>
             View more comments
           </div>
-        )}
-      </div> */}
+        )} */}
+      </div>
+
+      <div className="comment-input_popup scrollbar">
+        <CreateComment
+          user={user}
+          profile={profile}
+          postId={post?._id}
+          setCount={setCount}
+          postUserId={post.user._id}
+          handleSendNotifications={handleSendNotifications}
+        />
+      </div>
       {showMenu && (
         <PostMenu
           userId={user.id}
@@ -611,17 +551,6 @@ export default function Post({ user, post, profile, socketRef }) {
           want to continue?
         </p>
       </ModalCustom>
-
-      <ModalPostPopUp
-        open={openModalPost}
-        post={post}
-        user={user}
-        socketRef={socketRef}
-        onClose={() => {
-          document.documentElement.style.overflow = "auto";
-          setOpenModalPost(false);
-        }}
-      />
     </div>
   );
 }
