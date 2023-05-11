@@ -641,6 +641,7 @@
   background: var(--bg-forth);
   border-radius: 50px;
   padding-right: 10px;
+  position: relative;
 }
 .comment_input_wrap input {
   outline: none;

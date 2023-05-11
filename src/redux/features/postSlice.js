@@ -3,6 +3,7 @@ import * as api from "../api";
 import {
   createComment,
   createCommentLoading,
+  editCommentLoading,
   replaceComment,
   showNegativeComment,
   showNegativePost,
@@ -110,11 +111,18 @@ export const postSlice = createSlice({
       state.loadingCreatePost = action.payload;
     },
     createCommentPostLoading: (state, action) => {
-      console.log(action.payload.comment);
       createCommentLoading({
         posts: state.posts,
         postId: action.payload.postId,
         comment: action.payload.comment,
+      })
+    },
+    editCommentPostLoading: (state, action) => {
+      editCommentLoading({
+        posts: state.posts,
+        postId: action.payload.postId,
+        comment: action.payload.comment,
+        commentId: action.payload.commentId,
       })
     },
     viewNegativeCommentInPost: (state, action) => {
@@ -216,6 +224,7 @@ export const {
   setPostLoading,
   viewNegativePost,
   deleteCommentInFeed,
+  editCommentPostLoading,
   createCommentPostLoading,
   viewNegativeCommentInPost,
 } = postSlice.actions;

@@ -1,13 +1,13 @@
 .right_home {
   position: fixed;
-  left: 80.7vw;
+  left: 77.7vw;
   top: 4rem;
-  width: 17vw;
+  width: 20vw;
 }
 .splitter1 {
   height: 1.3px;
   background: var(--divider);
-  width: 17vw;
+  width: 20vw;
   margin: 6px 2px 0 12px;
 }
 .contacts_header {

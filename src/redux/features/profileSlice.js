@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, current } from "@reduxjs/toolkit";
 import * as api from "../api";
 import {
   createComment,
+  createCommentLoading,
   replaceComment,
   showNegativeComment,
   showNegativePost,
@@ -232,6 +233,13 @@ export const profileSlice = createSlice({
     setPostProfileLoading: (state, action) => {
       state.loadingPosts = action.payload;
     },
+    createCommentPostProfileLoading: (state, action) => {
+      createCommentLoading({
+        posts: state.profile.posts,
+        postId: action.payload.postId,
+        comment: action.payload.comment,
+      })
+    },
     viewNegativeCommentInProfile: (state, action) => {
       showNegativeComment({
         posts: state.profile?.posts,
@@ -431,9 +439,10 @@ export const profileSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
   setPostProfileLoading,
+  deleteCommentInProfile,
   viewNegativePostInProfile,
   viewNegativeCommentInProfile,
-  deleteCommentInProfile,
+  createCommentPostProfileLoading,
 } = profileSlice.actions;
 
 export default profileSlice.reducer;

@@ -186,3 +186,11 @@
 .dark .view_replies svg {
   color: var(--bg-fifth) !important;
 }
+
+.dark .chatBox_display {
+  background-color: transparent;
+}
+
+.dark .message-sent-text {
+  color: var(--color-primary);
+}

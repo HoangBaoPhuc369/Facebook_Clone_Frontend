@@ -5,6 +5,7 @@ import dataURItoBlob from "../../helpers/dataURItoBlob";
 import { ClipLoader } from "react-spinners";
 import {
   createCommentInProfilePost,
+  createCommentPostProfileLoading,
   editCommentInProfilePost,
 } from "../../redux/features/profileSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +13,7 @@ import {
   createCommentPost,
   createCommentPostLoading,
   editCommentPost,
+  editCommentPostLoading,
 } from "../../redux/features/postSlice";
 import { v4 as uuidv4 } from "uuid";
 
@@ -132,6 +134,17 @@ export default function CreateComment({
             );
           } else {
             dispatch(
+              editCommentPostLoading({
+                postId: postId,
+                comment: {
+                  comment: text,
+                  image: "",
+                  isFetching: true,
+                },
+                commentId: activeComment.id,
+              })
+            );
+            dispatch(
               editCommentPost({
                 id: activeComment.id,
                 postId: postId,
@@ -153,6 +166,56 @@ export default function CreateComment({
           let formData = new FormData();
           formData.append("path", path);
           formData.append("file", img);
+
+          setText("");
+          setCommentImage("");
+
+          if (profile) {
+            dispatch(
+              createCommentPostProfileLoading({
+                postId,
+                comment: {
+                  comment: text,
+                  image: commentImage,
+                  parentId: getParentId === undefined ? "" : getParentId,
+                  isFetching: true,
+                  commentBy: {
+                    _id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    username: user.username,
+                    picture: user.picture,
+                  },
+                  hideComment: false,
+                  commentAt: new Date().toISOString(),
+                  _id: uuidv4(),
+                },
+              })
+            );
+          } else {
+            dispatch(
+              createCommentPostLoading({
+                postId,
+                comment: {
+                  comment: text,
+                  image: commentImage,
+                  parentId: getParentId === undefined ? "" : getParentId,
+                  isFetching: true,
+                  commentBy: {
+                    _id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    username: user.username,
+                    picture: user.picture,
+                  },
+                  hideComment: false,
+                  commentAt: new Date().toISOString(),
+                  _id: uuidv4(),
+                },
+              })
+            );
+          }
+
           const imgComment = await uploadImages(formData, user.token);
 
           if (imgComment) {
@@ -179,11 +242,33 @@ export default function CreateComment({
             }
           }
           setCount((prev) => ++prev);
-          setText("");
-          setCommentImage("");
+          // setText("");
+          // setCommentImage("");
           handleSendNotifications("comment", "comment");
         } else if (text !== "") {
           if (profile) {
+            dispatch(
+              createCommentPostProfileLoading({
+                postId,
+                comment: {
+                  comment: text,
+                  image: "",
+                  parentId: getParentId === undefined ? "" : getParentId,
+                  isFetching: true,
+                  commentBy: {
+                    _id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    username: user.username,
+                    picture: user.picture,
+                  },
+                  hideComment: false,
+                  commentAt: new Date().toISOString(),
+                  _id: uuidv4(),
+                },
+              })
+            );
+
             dispatch(
               createCommentInProfilePost({
                 postId,

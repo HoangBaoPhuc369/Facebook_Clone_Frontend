@@ -44,6 +44,20 @@ export const createCommentLoading = (props) => {
   }
 };
 
+export const editCommentLoading = (props) => {
+  const findPost = props.posts?.find((p) => p._id === props.postId);
+  if (findPost) {
+    const findCommnent = findPost.comments.find(
+      (c) => c._id === props.commentId
+    );
+    if (findCommnent) {
+      findCommnent.comment = props.comment.comment;
+      findCommnent.image = props.comment.image;
+      findCommnent.isFetching = props.comment.isFetching;
+    }
+  }
+};
+
 export const replaceComment = (props) => {
   const findPost = props.posts?.find((p) => p._id === props.postId);
   if (findPost) {
