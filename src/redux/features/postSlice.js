@@ -93,6 +93,7 @@ export const editCommentPost = createAsyncThunk(
 
 const initialState = {
   posts: [],
+  userTypingPosts: [],
   error: "",
   loading: false,
   errorCreatePost: "",
@@ -115,7 +116,7 @@ export const postSlice = createSlice({
         posts: state.posts,
         postId: action.payload.postId,
         comment: action.payload.comment,
-      })
+      });
     },
     editCommentPostLoading: (state, action) => {
       editCommentLoading({
@@ -123,7 +124,7 @@ export const postSlice = createSlice({
         postId: action.payload.postId,
         comment: action.payload.comment,
         commentId: action.payload.commentId,
-      })
+      });
     },
     viewNegativeCommentInPost: (state, action) => {
       showNegativeComment({
@@ -144,6 +145,14 @@ export const postSlice = createSlice({
         postId: action.payload.postId,
         comments: action.payload.comments,
       });
+    },
+    handleAddUserTypingPost: (state, action) => {
+      state.userTypingPosts = [action.payload, ...state.userTypingPosts];
+    },
+    handleRemoveUserTypingPost: (state, action) => {
+      state.userTypingPosts = state.userTypingPosts.filter(
+        (p) => p !== action.payload
+      );
     },
   },
   extraReducers: {
@@ -225,8 +234,10 @@ export const {
   viewNegativePost,
   deleteCommentInFeed,
   editCommentPostLoading,
+  handleAddUserTypingPost,
   createCommentPostLoading,
   viewNegativeCommentInPost,
+  handleRemoveUserTypingPost,
 } = postSlice.actions;
 
 export default postSlice.reducer;

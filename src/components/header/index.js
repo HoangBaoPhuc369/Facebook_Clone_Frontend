@@ -42,7 +42,7 @@ import NotificationPopUp from "../notificationPopUp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 
-const Msg = ({ picture, text, icon, name }) => (
+const Msg = ({ picture, text, icon, name, type }) => (
   <>
     <div className="notification-box_header">
       <span>New notification</span>
@@ -50,11 +50,17 @@ const Msg = ({ picture, text, icon, name }) => (
     <div className="notification-box_container">
       <div className="notification-picture mr-[10px]">
         <img className="noftification-avatar" src={picture} alt="" />
-        <img
-          className="absolute bottom-2 right-0 w-5 h-5"
-          src={`../../../reacts/${icon}.svg`}
-          alt=""
-        />
+        {type === "comment" ? (
+          <div className="absolute bottom-2 right-0 w-5 h-5">
+            <i class="notification_comment_icon"></i>
+          </div>
+        ) : (
+          <img
+            className="absolute bottom-2 right-0 w-5 h-5"
+            src={`../../../reacts/${icon}.svg`}
+            alt=""
+          />
+        )}
       </div>
       <div className="notification-information">
         <div className="notification-text">
@@ -74,7 +80,7 @@ const ReportNoftication = ({ text, icon }) => (
     <div className="notification-box_container">
       <div className="notification-picture mr-[10px]">
         <div
-          className="w-14 h-14 flex justify-center content-center bg-yellow-400
+          className="w-14 h-14 flex flex-wrap justify-center content-center bg-yellow-400
             rounded-full mr-2.5 text-white text-2xl"
         >
           <FontAwesomeIcon icon={faTriangleExclamation} />
@@ -186,7 +192,7 @@ export default function Header({
 
   useEffect(() => {
     socketRef?.on("getNotification", (data) => {
-      // console.log(data);
+      console.log(data);
       //Cho nay chi can day vo state khong can call api
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
@@ -197,6 +203,7 @@ export default function Header({
           text={data?.text}
           icon={data?.icon}
           name={data?.name}
+          type={data?.type}
         />,
         {
           className: "notification_form",
@@ -274,8 +281,6 @@ export default function Header({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  
-
   const getFiendChat = (current) => {
     return current.members.find((m) => m._id !== user.id);
   };
@@ -313,7 +318,7 @@ export default function Header({
           </div>
         </Link>
         <div
-          className="search search1"
+          className="search search1  "
           onClick={() => {
             setShowSearchMenu(true);
           }}
@@ -322,7 +327,7 @@ export default function Header({
           <input
             type="text"
             placeholder="Search Net Friend"
-            className="hide_input"
+            className="hide_input focus:outline-none appearance-none focus:ring-0"
           />
         </div>
       </div>

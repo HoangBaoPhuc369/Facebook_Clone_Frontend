@@ -11,7 +11,12 @@ import CreatePostPopup from "./components/createPostPopup";
 import { useState } from "react";
 import Friends from "./pages/friends";
 import { useEffect } from "react";
-import { getAllPosts } from "./redux/features/postSlice";
+import {
+  getAllPosts,
+  handleAddUserTypingPost,
+  handleRemoveUserTypingPost,
+  handleUserTypingPost,
+} from "./redux/features/postSlice";
 import { getConversations } from "./redux/features/conversationSlice";
 import { getNotification } from "./redux/features/notificationSlice";
 import { io } from "socket.io-client";
@@ -47,12 +52,12 @@ function App() {
     if (user) {
       newSocket.emit("joinUser", user.id);
 
-      // newSocket?.emit("addUser", {
-      //   userId: user?.id,
-      //   userName: `${user?.first_name} ${user?.last_name}`,
-      //   picture: user?.picture,
-      //   timeJoin: new Date(),
-      // });
+      newSocket?.emit("addUser", {
+        userId: user?.id,
+        userName: `${user?.first_name} ${user?.last_name}`,
+        picture: user?.picture,
+        timeJoin: new Date(),
+      });
     }
 
     newSocket?.on("getUsers", (users) => {
@@ -73,26 +78,56 @@ function App() {
     setSocketRef(newSocket);
     handleWSSCallInParent(newSocket);
     return () => newSocket.close();
-    
   }, [setSocketRef, user]); //
 
   useEffect(() => {
-    // if (socketRef) {
-    //   socketRef?.emit("addUser", {
-    //     userId: user?.id,
-    //     userName: `${user?.first_name} ${user?.last_name}`,
-    //     picture: user?.picture,
-    //     timeJoin: new Date(),
-    //   });
-    // }
-    socketRef?.emit("addUser", {
-      userId: user?.id,
-      userName: `${user?.first_name} ${user?.last_name}`,
-      picture: user?.picture,
-      timeJoin: new Date(),
-    });
+    if (socketRef) {
+      socketRef.on("getUsers", (users) => {
+        const activeUsers = user.following.filter((f) =>
+          users.some((u) => u.userId === f._id)
+        );
+
+        const activeUsersSocket = users.filter(
+          (activeUser) =>
+            activeUser.socketId !== socketRef?.id &&
+            user.following.some((u) => u._id === activeUser.userId)
+        );
+        setOnlineUsers(activeUsers);
+        dispatch(setActiveUsers(activeUsersSocket));
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef, user]);
+  }, [socketRef]);
+
+  useEffect(() => {
+    if (socketRef) {
+      socketRef.on("startPostCommentTyping", (data) => {
+        console.log(data);
+        dispatch(handleAddUserTypingPost(data));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socketRef]);
+
+  useEffect(() => {
+    if (socketRef) {
+      socketRef.on("stopPostCommentTyping", (data) => {
+        console.log(data);
+        dispatch(handleRemoveUserTypingPost(data));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socketRef]);
+
+  // useEffect(() => {
+  //   socketRef?.emit("addUser", {
+  //     userId: user?.id,
+  //     userName: `${user?.first_name} ${user?.last_name}`,
+  //     picture: user?.picture,
+  //     timeJoin: new Date(),
+  //   });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [socketRef, user]);
 
   return (
     <div className={darkTheme ? "dark" : "light"}>
@@ -160,13 +195,13 @@ function App() {
         </Route>
 
         {/* Khi đã ở trong app và bị mất user thì mới vô component này */}
-        <Route element={<NotLoggedInRoutes socketRef={socketRef} />}>
+        {/* <Route element={<NotLoggedInRoutes socketRef={socketRef} />}>
           <Route
             path="/login"
             element={<Login socketRef={socketRef} />}
             exact
           />
-        </Route>
+        </Route> */}
         <Route path="/reset" element={<Reset />} />
 
         <Route path="/test-ui" element={<Test />} />

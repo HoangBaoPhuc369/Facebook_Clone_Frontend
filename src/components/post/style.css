@@ -1054,6 +1054,29 @@
   border-radius: 5px;
 }
 
+.comment-is-typing {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  height: 32px;
+  margin: 10px 0px 20px 16px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.icon-audient {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.comment-is-typing p {
+  color: var(--color-secondary);
+}
+
 /*------Post menu------*/
 @media (max-width: 700px) {
   .post .grid_2 img,

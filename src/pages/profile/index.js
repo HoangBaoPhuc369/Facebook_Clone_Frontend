@@ -274,7 +274,13 @@ export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
                   <div className="posts">
                     {profile.posts && profile.posts.length ? (
                       profile.posts.map((post) => (
-                        <Post post={post} user={user} key={post?._id} profile />
+                        <Post
+                          post={post}
+                          socketRef={socketRef}
+                          user={user}
+                          key={post?._id}
+                          profile
+                        />
                       ))
                     ) : (
                       <div className="no_posts">No posts available</div>

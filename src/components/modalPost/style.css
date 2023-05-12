@@ -33,6 +33,7 @@
   overflow-x: hidden;
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
+  transition: transform 0.3s ease-in-out;
 }
 
 .modal_post_footer {

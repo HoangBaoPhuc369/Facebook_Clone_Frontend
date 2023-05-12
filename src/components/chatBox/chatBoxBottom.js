@@ -40,6 +40,7 @@ export default function ChatBoxBottom({
               onChange={(e) => setNewMessage(e.target.value)}
               value={newMessage}
               onKeyPress={startTyping}
+              className="focus:ring-0 appearance-none p-0 bg-transparent"
               onKeyUp={(e) => {
                 stopTyping();
                 if (e.key === "Enter" && e.target.value !== "") {

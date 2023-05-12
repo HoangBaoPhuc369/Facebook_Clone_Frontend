@@ -2,19 +2,15 @@ import { Link } from "react-router-dom";
 import "./style.css";
 import { Dots, Public } from "../../svg";
 import ReactsPopup from "./ReactsPopup";
-import { useEffect, useRef, useState } from "react";
-import CreateComment from "./CreateComment";
+import { useEffect, useState } from "react";
+
 import PostMenu from "./PostMenu";
 import { getReacts, reactPost } from "../../functions/post";
-import Comment from "./Comment";
+
 import DeletePostPopUp from "../deletePost";
 import { createNotifications } from "../../redux/features/notificationSlice";
 import { useDispatch } from "react-redux";
-import {
-  formatTime,
-  formatTimeOrPost,
-  formatTimePost,
-} from "../../functions/formatTime";
+import { formatTimeOrPost } from "../../functions/formatTime";
 import {
   viewNegativeCommentInProfile,
   viewNegativePostInProfile,
@@ -25,12 +21,15 @@ import {
   viewNegativePost,
 } from "../../redux/features/postSlice";
 import ModalPostPopUp from "./ModalPostPopUp";
+import { FaUserFriends } from "react-icons/fa";
+// HiLockClosed
+import { HiLockClosed } from "react-icons/hi";
+
 export default function Post({ user, post, profile, socketRef }) {
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
   const [check, setCheck] = useState();
   const [total, setTotal] = useState(0);
-  const [count, setCount] = useState(1);
   const [checkSaved, setCheckSaved] = useState();
 
   const dispatch = useDispatch();
@@ -39,10 +38,13 @@ export default function Post({ user, post, profile, socketRef }) {
   const [isOpenUnhideComment, setIsOpenUnhideComment] = useState(false);
   const [isOpenNegativePost, setIsOpenNegativePost] = useState(false);
   const [openModalPost, setOpenModalPost] = useState(false);
-  const [countReplies, setCountReplies] = useState(0);
-  const [countRepliesThird, setCountRepliesThird] = useState(0);
   const [activeComment, setActiveComment] = useState(null);
-  const [activeOptions, setActiveOptions] = useState(null);
+
+  const [selected, setSelected] = useState(null);
+
+  const handleChange = (value) => {
+    setSelected(value);
+  };
 
   useEffect(() => {
     getPostReacts();
@@ -63,43 +65,17 @@ export default function Post({ user, post, profile, socketRef }) {
     setCheckSaved(res.checkSaved);
   };
 
-  // const data1 = [
-  //   {
-  //     comment: "you like a flower in the field",
-  //     hideComment: false,
-  //     image: "",
+  const options = [
+    { value: "public", label: "Public" },
+    { value: "friends", label: "Friends" },
+    { value: "only-me", label: "Only me" },
+  ];
 
-  //     _id: "64587fab3d72e722bbc62b92",
-  //   },
-  //   {
-  //     comment: "pew pew",
-  //     hideComment: false,
-  //     image: "",
-  //     _id: "6458e7773d72e722bbc62d65",
-  //   },
-  // ];
+  const [selectedOption, setSelectedOption] = useState(options[0].value);
 
-  // const data2 = [
-  //   // {
-  //   //   comment: "you like a flower in the field",
-  //   //   hideComment: true,
-  //   //   image: "",
-
-  //   //   _id: "64587fab3d72e722bbc62b92",
-  //   // },
-  //   // {
-  //   //   comment: "pew pew",
-  //   //   hideComment: true,
-  //   //   image: "",
-  //   //   _id: "6458e7773d72e722bbc62d65",
-  //   // },
-  //   // {
-  //   //   comment: "gaga",
-  //   //   hideComment: false,
-  //   //   image: "",
-  //   //   _id: "6458e7773d72e722bbc71234",
-  //   // },
-  // ];
+  const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
 
   const handleSendNotifications = (icon, type) => {
     if (user?.id !== post?.user._id) {
@@ -125,6 +101,7 @@ export default function Post({ user, post, profile, socketRef }) {
         receiverId: post?.user._id,
         icon: icon,
         text: typeNotification,
+        type: type,
         picture: user?.picture,
         name: user?.first_name + " " + user?.last_name,
       };
@@ -160,26 +137,6 @@ export default function Post({ user, post, profile, socketRef }) {
       handleSendNotifications(type, "react");
     }
   };
-
-  const showMore = () => {
-    setCount((prev) => prev + 3);
-  };
-
-  const showMoreReplies = () => {
-    setCountReplies((prev) => prev + 3);
-  };
-
-  const showMoreRepliesThird = () => {
-    setCountRepliesThird((prev) => prev + 3);
-  };
-
-  const getReplies = (commentId) =>
-    post?.comments
-      .filter((comment) => comment.parentId === commentId)
-      .sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      );
 
   const handleShowNegativePost = (id) => {
     if (profile) {
@@ -225,18 +182,20 @@ export default function Post({ user, post, profile, socketRef }) {
       // ref={postRef}
     >
       <div className="post_header">
-        <Link
-          to={`/profile/${post?.user.username}`}
-          className="post_header_left"
-        >
-          <img
-            src={
-              post?.user?._id === user.id ? user.picture : post?.user.picture
-            }
-            alt=""
-          />
+        <div className="post_header_left">
+          <Link to={`/profile/${post?.user.username}`}>
+            <img
+              src={
+                post?.user?._id === user.id ? user.picture : post?.user.picture
+              }
+              alt=""
+            />
+          </Link>
           <div className="header_col">
-            <div className="post_profile_name">
+            <Link
+              to={`/profile/${post?.user.username}`}
+              className="post_profile_name"
+            >
               {post?.user.first_name} {post?.user.last_name}
               <div className="updated_p">
                 {post?.type === "profilePicture" &&
@@ -248,7 +207,7 @@ export default function Post({ user, post, profile, socketRef }) {
                     post?.user.gender === "male" ? "his" : "her"
                   } cover picture`}
               </div>
-            </div>
+            </Link>
             <div className="post_profile_privacy_date">
               {formatTimeOrPost(post?.createdAt)}
               <div className="relative ml-1 mr-1">
@@ -259,10 +218,12 @@ export default function Post({ user, post, profile, socketRef }) {
                   .
                 </span>
               </div>
-              <Public color="#828387" />
+              <div className="icon-audient hover1">
+                <Public color="#828387" />
+              </div>
             </div>
           </div>
-        </Link>
+        </div>
         <div
           className="post_header_right hover1"
           onClick={() => setShowMenu((prev) => !prev)}
@@ -271,8 +232,8 @@ export default function Post({ user, post, profile, socketRef }) {
         </div>
       </div>
       {post?.hidePost ? (
-        <div className="mx-4 border border-solid border-gray-500 shadow-sm">
-          <div className="p-2">
+        <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
+          <div className="px-3 py-4">
             <div className="text-lg font-medium flex gap-2">
               <i className="m_warning mt-1"></i>
               We hide something you posted
@@ -622,6 +583,96 @@ export default function Post({ user, post, profile, socketRef }) {
           setOpenModalPost(false);
         }}
       />
+
+      {/* <ModalCustom
+        open={true}
+        title="Select audience"
+        // onClose={() => setIsOpenNegativePost(false)}
+        footer={
+          <>
+            <button
+              className="modal_action"
+              // onClick={() => {
+              //   handleShowNegativePost(post?._id);
+              // }}
+            >
+              Done
+            </button>
+            <button
+              className="modal_cancel"
+              // onClick={() => setIsOpenNegativePost(false)}
+            >
+              Cancel
+            </button>
+          </>
+        }
+      >
+        <div
+          onClick={() => handleChange("public")}
+          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+        >
+          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <Public color="#000" className="w-6 h-6" />
+          </div>
+          <div className="flex-1 py-3">
+            <p className="text-[17px] leading-4 font-medium">Public</p>
+            <p className="text-[15px] text-[#65676b]">
+              Anyone on or off Net Friend
+            </p>
+          </div>
+          <label class="inline-flex items-center">
+            <input
+              type="checkbox"
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0"
+              checked={selected === "public"}
+              onChange={() => handleChange("public")}
+            />
+          </label>
+        </div>
+
+        <div
+          onClick={() => handleChange("friends")}
+          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+        >
+          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <FaUserFriends className="w-6 h-6" />
+          </div>
+          <div className="flex-1 py-3">
+            <p className="text-[17px] leading-4 font-medium">Friends</p>
+            <p className="text-[15px] text-[#65676b]">
+              Your friends on Net Friend
+            </p>
+          </div>
+          <label class="inline-flex items-center">
+            <input
+              type="checkbox"
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0"
+              checked={selected === "friends"}
+              onChange={() => handleChange("friends")}
+            />
+          </label>
+        </div>
+
+        <div
+          onClick={() => handleChange("onlyMe")}
+          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+        >
+          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <HiLockClosed className="w-6 h-6" />
+          </div>
+          <div className="flex-1 py-3 flex flex-wrap content-center">
+            <p className="text-[17px] font-medium">Only me</p>
+          </div>
+          <label class="inline-flex items-center">
+            <input
+              type="checkbox"
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0 cursor-pointer"
+              checked={selected === "onlyMe"}
+              onChange={() => handleChange("onlyMe")}
+            />
+          </label>
+        </div>
+      </ModalCustom> */}
     </div>
   );
 }

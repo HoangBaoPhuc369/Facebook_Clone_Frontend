@@ -33,6 +33,10 @@ export default function Comment({
   showMoreRepliesThird,
   handleSendNotifications,
   setIsOpenUnhideComment,
+  socketRef,
+  startTyping,
+  stopTyping,
+  cancelTyping,
 }) {
   const [parentId, setParentId] = useState("");
   const [parentIdSecond, setParentIdSecond] = useState(null);
@@ -204,7 +208,9 @@ export default function Comment({
           )}
 
           {comment.isFetching ? (
-            <div className="comment_loading ml-[10px] text-[12px] flashing-text">Posting...</div>
+            <div className="comment_loading ml-[10px] text-[12px] flashing-text">
+              Posting...
+            </div>
           ) : (
             <div className="comment_actions">
               {!isEditing && (
@@ -274,12 +280,16 @@ export default function Comment({
               third={false}
               comment={reply}
               postId={postId}
+              startTyping={startTyping}
+              stopTyping={stopTyping}
+              cancelTyping={cancelTyping}
               profile={profile}
               setCount={setCount}
               dispatch={dispatch}
-              postUserId={postUserId}
+              socketRef={socketRef}
               setIsOpen={setIsOpen}
               getParentId={parentId}
+              postUserId={postUserId}
               countReplies={countReplies}
               setGetParentId={setParentId}
               activeComment={activeComment}
@@ -307,7 +317,11 @@ export default function Comment({
           <CreateComment
             user={user}
             postId={postId}
+            socketRef={socketRef}
             profile={profile}
+            startTyping={startTyping}
+            stopTyping={stopTyping}
+            cancelTyping={cancelTyping}
             setCount={setCount}
             postUserId={postUserId}
             createRelyFirstCm={true}
@@ -332,9 +346,13 @@ export default function Comment({
               second={false}
               comment={reply}
               postId={postId}
+              startTyping={startTyping}
+              stopTyping={stopTyping}
+              cancelTyping={cancelTyping}
               profile={profile}
               dispatch={dispatch}
               setCount={setCount}
+              socketRef={socketRef}
               setIsOpen={setIsOpen}
               RelyId={comment?._id}
               postUserId={postUserId}
@@ -366,6 +384,10 @@ export default function Comment({
             postId={postId}
             profile={profile}
             setCount={setCount}
+            socketRef={socketRef}
+            startTyping={startTyping}
+            stopTyping={stopTyping}
+            cancelTyping={cancelTyping}
             postUserId={postUserId}
             createRelyFirstCm={false}
             createRelySecondCm={true}

@@ -25,7 +25,7 @@ export default function AllMessenger({
           <div className="all_messenger_content">
             <div className="all_messenger_search">
               <i className="amm_s_ic"></i>
-              <input type="text" placeholder="Search Messenger" />
+              <input className="focus:ring-0" type="text" placeholder="Search Messenger" />
             </div>
             <div className="all_messenger_group">
               <div className="all_messenger_group_header">Inbox</div>

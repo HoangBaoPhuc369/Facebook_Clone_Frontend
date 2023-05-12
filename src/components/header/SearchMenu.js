@@ -71,6 +71,7 @@ export default function SearchMenu({ color, setShowSearchMenu, token }) {
           <input
             type="text"
             placeholder="Search Net Friend"
+            className="focus:outline-none appearance-none focus:ring-0"
             ref={input}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

@@ -18,12 +18,14 @@ import {
 } from "../../redux/features/postSlice";
 import { v4 as uuidv4 } from "uuid";
 import SentIcon from "./../../svg/sentIcon";
+import useTypingComment from "../../hooks/useTypingComment";
 
 export default function CreateComment({
   user,
   postId,
   profile,
   setCount,
+  socketRef,
   getParentId,
   handleTrigger,
   activeComment,
@@ -33,12 +35,17 @@ export default function CreateComment({
   createRelySecondCm,
   setActiveComment = null,
   handleSendNotifications,
+  startTyping,
+  stopTyping,
+  cancelTyping,
 }) {
   const [picker, setPicker] = useState(false);
   const [text, setText] = useState(initialText);
   const [error, setError] = useState("");
   const [commentImage, setCommentImage] = useState("");
   const [cursorPosition, setCursorPosition] = useState();
+
+  // const { startTyping, stopTyping, cancelTyping } = useTypingComment();
 
   const textRef = useRef(null);
   const imgInput = useRef(null);
@@ -72,7 +79,7 @@ export default function CreateComment({
 
   const adjustTextareaHeight = () => {
     if (textRef.current) {
-      textRef.current.style.height = 'auto';
+      textRef.current.style.height = "auto";
       textRef.current.style.height = `${textRef.current.scrollHeight}px`;
     }
   };
@@ -108,6 +115,7 @@ export default function CreateComment({
     };
   };
   const handleComment = async (e) => {
+    cancelTyping();
     if (e.key === "Enter" || e.type === "click") {
       if (activeComment?.type === "editing") {
         if (commentImage !== "") {
@@ -385,15 +393,6 @@ export default function CreateComment({
     }
   };
 
-  // const handleWriteComment = (e) => {
-  //   setText(e.target.value);
-  //   if (e.target.value === "") {
-  //     setIsComment(false);
-  //   } else {
-  //     setIsComment(true);
-  //   }
-  // };
-
   return (
     <div
       className={
@@ -437,7 +436,7 @@ export default function CreateComment({
             value={text}
             ref={textRef}
             rows="1"
-            className="textarea-comment"
+            className="textarea-comment focus:outline-none focus:ring-0"
             onClick={() =>
               handleTriggerEdit
                 ? handleTriggerEdit()
@@ -446,7 +445,13 @@ export default function CreateComment({
                 : null
             }
             // onInput={handleInput}
-            onKeyUp={handleComment}
+            onKeyPress={startTyping}
+            onKeyUp={(e) => {
+              stopTyping();
+              if (e.key === "Enter" && e.target.value !== "") {
+                handleComment(e);
+              }
+            }}
             onChange={(e) => setText(e.target.value)}
             placeholder="Write a comment..."
           />

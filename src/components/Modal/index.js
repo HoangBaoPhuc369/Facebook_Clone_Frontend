@@ -1,8 +1,5 @@
 import React from "react";
 import ReactDom from "react-dom";
-import { deleteComment } from "../../functions/post";
-import { deleteCommentInProfile } from "../../redux/features/profileSlice";
-import { deleteCommentInFeed } from "../../redux/features/postSlice";
 import "./style.css";
 
 export default function ModalCustom({
@@ -26,7 +23,7 @@ export default function ModalCustom({
               <span>{title}</span>
             </div>
             <div className="modal_container">{children}</div>
-  
+
             {footer && <div className="modal_footer">{footer}</div>}
           </div>
         </div>

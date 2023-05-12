@@ -9,7 +9,7 @@ import { getReacts, reactPost } from "../../functions/post";
 import Comment from "./Comment";
 import DeletePostPopUp from "../deletePost";
 import { createNotifications } from "../../redux/features/notificationSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatTimeOrPost } from "../../functions/formatTime";
 import {
   viewNegativeCommentInProfile,
@@ -20,8 +20,14 @@ import {
   viewNegativeCommentInPost,
   viewNegativePost,
 } from "../../redux/features/postSlice";
+import ThreeDotLoaderFlashing from "../threeDotLoader";
+import useTypingComment from "../../hooks/useTypingComment";
 
 export default function PostPopUp({ user, post, profile, socketRef }) {
+  const { userTypingPosts } = useSelector((state) => state.newFeed);
+
+  const isPostHaveTyping = userTypingPosts.some((p) => p === post?._id);
+
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
   const [check, setCheck] = useState();
@@ -38,6 +44,26 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
   const [countRepliesThird, setCountRepliesThird] = useState(0);
   const [activeComment, setActiveComment] = useState(null);
   const [activeOptions, setActiveOptions] = useState(null);
+
+  const { isTyping, startTyping, stopTyping, cancelTyping } =
+    useTypingComment();
+
+  const startTypingComment = (e) => {
+    if (!socketRef) return;
+    socketRef.emit("joinPostCommentTyping", post?._id);
+  };
+
+  const stopTypingComment = () => {
+    if (!socketRef) return;
+    socketRef?.emit("leavePostCommentTyping", post?._id);
+  };
+
+  useEffect(() => {
+    console.log(isTyping);
+    if (isTyping) startTypingComment();
+    else stopTypingComment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTyping]);
 
   useEffect(() => {
     getPostReacts();
@@ -76,6 +102,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
         receiverId: post?.user._id,
         icon: icon,
         text: typeNotification,
+        type: type,
         picture: user?.picture,
         name: user?.first_name + " " + user?.last_name,
       };
@@ -167,18 +194,20 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
   return (
     <div className="post-popup" style={{ width: `${profile && "100%"}` }}>
       <div className="post_header">
-        <Link
-          to={`/profile/${post?.user.username}`}
-          className="post_header_left"
-        >
-          <img
-            src={
-              post?.user?._id === user.id ? user.picture : post?.user.picture
-            }
-            alt=""
-          />
+        <div className="post_header_left">
+          <Link to={`/profile/${post?.user.username}`}>
+            <img
+              src={
+                post?.user?._id === user.id ? user.picture : post?.user.picture
+              }
+              alt=""
+            />
+          </Link>
           <div className="header_col">
-            <div className="post_profile_name">
+            <Link
+              to={`/profile/${post?.user.username}`}
+              className="post_profile_name"
+            >
               {post?.user.first_name} {post?.user.last_name}
               <div className="updated_p">
                 {post?.type === "profilePicture" &&
@@ -190,7 +219,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
                     post?.user.gender === "male" ? "his" : "her"
                   } cover picture`}
               </div>
-            </div>
+            </Link>
             <div className="post_profile_privacy_date">
               {formatTimeOrPost(post?.createdAt)}
               <div className="relative ml-1 mr-1">
@@ -201,10 +230,12 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
                   .
                 </span>
               </div>
-              <Public color="#828387" />
+              <div className="icon-audient hover1">
+                <Public color="#828387" />
+              </div>
             </div>
           </div>
-        </Link>
+        </div>
         <div
           className="post_header_right hover1"
           onClick={() => setShowMenu((prev) => !prev)}
@@ -408,14 +439,18 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
                   user={user}
                   first={true}
                   isOpen={isOpen}
+                  comment={comment}
                   profile={profile}
                   postId={post?._id}
-                  comment={comment}
                   setCount={setCount}
                   dispatch={dispatch}
+                  socketRef={socketRef}
                   setIsOpen={setIsOpen}
+                  stopTyping={stopTyping}
                   getReplies={getReplies}
+                  startTyping={startTyping}
                   postUserId={post.user._id}
+                  cancelTyping={cancelTyping}
                   countReplies={countReplies}
                   activeOptions={activeOptions}
                   activeComment={activeComment}
@@ -432,22 +467,24 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
               ))
           : null}
 
-        {/* {count <
-          post?.comments?.filter(
-            (backendComment) => backendComment.parentId === ""
-          ).length && (
-          <div className="view_comments" onClick={() => showMore()}>
-            View more comments
+        {isPostHaveTyping ? (
+          <div className="comment-is-typing">
+            <ThreeDotLoaderFlashing />
+            <p className="text-sm font-medium">Some one is typing</p>
           </div>
-        )} */}
+        ) : null}
       </div>
 
       <div className="comment-input_popup scrollbar">
         <CreateComment
           user={user}
+          startTyping={startTyping}
+          stopTyping={stopTyping}
+          cancelTyping={cancelTyping}
           profile={profile}
           postId={post?._id}
           setCount={setCount}
+          socketRef={socketRef}
           postUserId={post.user._id}
           handleSendNotifications={handleSendNotifications}
         />
@@ -551,6 +588,35 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
           want to continue?
         </p>
       </ModalCustom>
+
+      {/* <ModalCustom
+        open={true}
+        title="Select audience"
+        onClose={() => setIsOpenNegativePost(false)}
+        footer={
+          <>
+            <button
+              className="modal_action"
+              onClick={() => {
+                handleShowNegativePost(post?._id);
+              }}
+            >
+              Done
+            </button>
+            <button
+              className="modal_cancel"
+              onClick={() => setIsOpenNegativePost(false)}
+            >
+              Cancel
+            </button>
+          </>
+        }
+      >
+        <p>
+          This post may contain offensive or sensitive content. Are you sure you
+          want to continue?
+        </p>
+      </ModalCustom> */}
     </div>
   );
 }

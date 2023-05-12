@@ -26,7 +26,7 @@ export default function AllNotificationItem({
         <div className="all_notification_item_img_wrap">
           {notification.isSystem ? (
             <div
-              className="w-14 h-14 flex justify-center content-center bg-yellow-400
+              className="w-14 h-14 flex flex-wrap justify-center content-center bg-yellow-400
             rounded-full mr-2.5 text-white text-2xl"
             >
               <FontAwesomeIcon icon={faTriangleExclamation} />

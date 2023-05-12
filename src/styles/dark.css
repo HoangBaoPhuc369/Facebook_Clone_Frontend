@@ -138,8 +138,11 @@
   background-color: var(--bg-primary);
 }
 
-.dark .ChatBox_message_bottom_input,
-.ChatBox_message_bottom_input input {
+.dark .ChatBox_message_bottom_input input {
+  background-color: var(--bg-third) !important;
+}
+
+.dark .ChatBox_message_bottom_input input {
   background-color: var(--bg-third) !important;
 }
 
