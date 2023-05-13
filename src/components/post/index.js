@@ -40,7 +40,9 @@ export default function Post({ user, post, profile, socketRef }) {
   const [openModalPost, setOpenModalPost] = useState(false);
   const [activeComment, setActiveComment] = useState(null);
 
+
   const [selected, setSelected] = useState(null);
+  const [openselectAudience, setOpenselectAudience] = useState(false);
 
   const handleChange = (value) => {
     setSelected(value);
@@ -218,7 +220,10 @@ export default function Post({ user, post, profile, socketRef }) {
                   .
                 </span>
               </div>
-              <div className="icon-audient hover1">
+              <div
+                className="icon-audient hover1"
+                onClick={() => setOpenselectAudience(true)}
+              >
                 <Public color="#828387" />
               </div>
             </div>
@@ -577,6 +582,7 @@ export default function Post({ user, post, profile, socketRef }) {
         open={openModalPost}
         post={post}
         user={user}
+        profile={profile}
         socketRef={socketRef}
         onClose={() => {
           document.documentElement.style.overflow = "auto";
@@ -584,10 +590,10 @@ export default function Post({ user, post, profile, socketRef }) {
         }}
       />
 
-      {/* <ModalCustom
-        open={true}
+      <ModalCustom
+        open={openselectAudience}
         title="Select audience"
-        // onClose={() => setIsOpenNegativePost(false)}
+        onClose={() => setOpenselectAudience(false)}
         footer={
           <>
             <button
@@ -600,7 +606,7 @@ export default function Post({ user, post, profile, socketRef }) {
             </button>
             <button
               className="modal_cancel"
-              // onClick={() => setIsOpenNegativePost(false)}
+              onClick={() => setOpenselectAudience(false)}
             >
               Cancel
             </button>
@@ -672,7 +678,7 @@ export default function Post({ user, post, profile, socketRef }) {
             />
           </label>
         </div>
-      </ModalCustom> */}
+      </ModalCustom>
     </div>
   );
 }

@@ -22,6 +22,8 @@ import {
 } from "../../redux/features/postSlice";
 import ThreeDotLoaderFlashing from "../threeDotLoader";
 import useTypingComment from "../../hooks/useTypingComment";
+import { FaUserFriends } from "react-icons/fa";
+import { HiLockClosed } from "react-icons/hi";
 
 export default function PostPopUp({ user, post, profile, socketRef }) {
   const { userTypingPosts } = useSelector((state) => state.newFeed);
@@ -45,6 +47,13 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
   const [activeComment, setActiveComment] = useState(null);
   const [activeOptions, setActiveOptions] = useState(null);
 
+  const [selected, setSelected] = useState(null);
+  const [openselectAudience, setOpenselectAudience] = useState(false);
+
+  const handleChange = (value) => {
+    setSelected(value);
+  };
+
   const { isTyping, startTyping, stopTyping, cancelTyping } =
     useTypingComment();
 
@@ -59,7 +68,6 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
   };
 
   useEffect(() => {
-    console.log(isTyping);
     if (isTyping) startTypingComment();
     else stopTypingComment();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,6 +117,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
       dispatch(
         createNotifications({ props: notification, token: user?.token })
       );
+
       socketRef?.emit("sendNotification", notificationSocket);
     }
   };
@@ -230,7 +239,10 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
                   .
                 </span>
               </div>
-              <div className="icon-audient hover1">
+              <div
+                className="icon-audient hover1"
+                onClick={() => setOpenselectAudience(true)}
+              >
                 <Public color="#828387" />
               </div>
             </div>
@@ -467,7 +479,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
               ))
           : null}
 
-        {isPostHaveTyping ? (
+        {isPostHaveTyping && !isTyping ? (
           <div className="comment-is-typing">
             <ThreeDotLoaderFlashing />
             <p className="text-sm font-medium">Some one is typing</p>
@@ -475,6 +487,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
         ) : null}
       </div>
 
+      <div className="min-h-[20vh]"></div>
       <div className="comment-input_popup scrollbar">
         <CreateComment
           user={user}
@@ -486,6 +499,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
           setCount={setCount}
           socketRef={socketRef}
           postUserId={post.user._id}
+          stopTypingComment={stopTypingComment}
           handleSendNotifications={handleSendNotifications}
         />
       </div>
@@ -589,34 +603,95 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
         </p>
       </ModalCustom>
 
-      {/* <ModalCustom
-        open={true}
+      <ModalCustom
+        open={openselectAudience}
         title="Select audience"
-        onClose={() => setIsOpenNegativePost(false)}
+        onClose={() => setOpenselectAudience(false)}
         footer={
           <>
             <button
               className="modal_action"
-              onClick={() => {
-                handleShowNegativePost(post?._id);
-              }}
+              // onClick={() => {
+              //   handleShowNegativePost(post?._id);
+              // }}
             >
               Done
             </button>
             <button
               className="modal_cancel"
-              onClick={() => setIsOpenNegativePost(false)}
+              onClick={() => setOpenselectAudience(false)}
             >
               Cancel
             </button>
           </>
         }
       >
-        <p>
-          This post may contain offensive or sensitive content. Are you sure you
-          want to continue?
-        </p>
-      </ModalCustom> */}
+        <div
+          onClick={() => handleChange("public")}
+          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+        >
+          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <Public color="#000" className="w-6 h-6" />
+          </div>
+          <div className="flex-1 py-3">
+            <p className="text-[17px] leading-4 font-medium">Public</p>
+            <p className="text-[15px] text-[#65676b]">
+              Anyone on or off Net Friend
+            </p>
+          </div>
+          <label class="inline-flex items-center">
+            <input
+              type="checkbox"
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0"
+              checked={selected === "public"}
+              onChange={() => handleChange("public")}
+            />
+          </label>
+        </div>
+
+        <div
+          onClick={() => handleChange("friends")}
+          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+        >
+          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <FaUserFriends className="w-6 h-6" />
+          </div>
+          <div className="flex-1 py-3">
+            <p className="text-[17px] leading-4 font-medium">Friends</p>
+            <p className="text-[15px] text-[#65676b]">
+              Your friends on Net Friend
+            </p>
+          </div>
+          <label class="inline-flex items-center">
+            <input
+              type="checkbox"
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0"
+              checked={selected === "friends"}
+              onChange={() => handleChange("friends")}
+            />
+          </label>
+        </div>
+
+        <div
+          onClick={() => handleChange("onlyMe")}
+          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+        >
+          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <HiLockClosed className="w-6 h-6" />
+          </div>
+          <div className="flex-1 py-3 flex flex-wrap content-center">
+            <p className="text-[17px] font-medium">Only me</p>
+          </div>
+          <label class="inline-flex items-center">
+            <input
+              type="checkbox"
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0 cursor-pointer"
+              checked={selected === "onlyMe"}
+              onChange={() => handleChange("onlyMe")}
+            />
+          </label>
+        </div>
+      </ModalCustom>
     </div>
   );
 }

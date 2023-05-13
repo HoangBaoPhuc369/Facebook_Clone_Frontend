@@ -63,10 +63,10 @@
 .box_privacy {
   display: flex;
   align-items: center;
-  width: 81px;
+  min-width: 81px;
   gap: 4px;
   font-size: 12px;
-  padding: 3px 8px 4px 8px;
+  padding: 0px 8px 0px 8px;
   border-radius: 7px;
   background: var(--bg-third);
   cursor: pointer;

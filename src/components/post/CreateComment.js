@@ -38,6 +38,7 @@ export default function CreateComment({
   startTyping,
   stopTyping,
   cancelTyping,
+  stopTypingComment,
 }) {
   const [picker, setPicker] = useState(false);
   const [text, setText] = useState(initialText);
@@ -115,7 +116,6 @@ export default function CreateComment({
     };
   };
   const handleComment = async (e) => {
-    cancelTyping();
     if (e.key === "Enter" || e.type === "click") {
       if (activeComment?.type === "editing") {
         if (commentImage !== "") {
@@ -316,7 +316,7 @@ export default function CreateComment({
           setCount((prev) => ++prev);
           // setText("");
           // setCommentImage("");
-          handleSendNotifications("comment", "comment");
+          1("comment", "comment");
         } else if (text !== "") {
           if (profile) {
             dispatch(
@@ -390,6 +390,8 @@ export default function CreateComment({
           handleSendNotifications("comment", "comment");
         }
       }
+
+      cancelTyping();
     }
   };
 
@@ -449,6 +451,7 @@ export default function CreateComment({
             onKeyUp={(e) => {
               stopTyping();
               if (e.key === "Enter" && e.target.value !== "") {
+                stopTypingComment();
                 handleComment(e);
               }
             }}

@@ -23,6 +23,18 @@ import { io } from "socket.io-client";
 import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInParent";
 import Test from "./components/test";
 import { setActiveUsers } from "./redux/features/dashboardSlice";
+import { ToastContainer, cssTransition } from "react-toastify";
+
+const bounce = cssTransition({
+  enter: "animate__animated animate__bounceInUp",
+  exit: "animate__animated animate__bounceOutDown",
+});
+
+const CloseButton = ({ closeToast }) => (
+  <div className="small_circle" onClick={closeToast}>
+    <i className="exit_icon"></i>
+  </div>
+);
 
 function App() {
   const [visible, setVisible] = useState(false);
@@ -102,7 +114,6 @@ function App() {
   useEffect(() => {
     if (socketRef) {
       socketRef.on("startPostCommentTyping", (data) => {
-        console.log(data);
         dispatch(handleAddUserTypingPost(data));
       });
     }
@@ -112,7 +123,6 @@ function App() {
   useEffect(() => {
     if (socketRef) {
       socketRef.on("stopPostCommentTyping", (data) => {
-        console.log(data);
         dispatch(handleRemoveUserTypingPost(data));
       });
     }
@@ -130,7 +140,7 @@ function App() {
   // }, [socketRef, user]);
 
   return (
-    <div className={darkTheme ? "dark" : "light"}>
+    <div className={`relative ${darkTheme ? "dark" : "light"}`}>
       {/* {visible && } */}
       <CreatePostPopup visible={visible} setVisible={setVisible} />
 
@@ -195,19 +205,26 @@ function App() {
         </Route>
 
         {/* Khi đã ở trong app và bị mất user thì mới vô component này */}
-        {/* <Route element={<NotLoggedInRoutes socketRef={socketRef} />}>
+        <Route element={<NotLoggedInRoutes socketRef={socketRef} />}>
           <Route
             path="/login"
             element={<Login socketRef={socketRef} />}
             exact
           />
-        </Route> */}
+        </Route>
         <Route path="/reset" element={<Reset />} />
 
         <Route path="/test-ui" element={<Test />} />
       </Routes>
 
       <div id="modal" className="relative"></div>
+      <div className="absolute z-[99999999999999]">
+        <ToastContainer
+          transition={bounce}
+          closeButton={CloseButton}
+          limit={5}
+        />
+      </div>
     </div>
   );
 }

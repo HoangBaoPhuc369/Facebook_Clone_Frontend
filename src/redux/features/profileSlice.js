@@ -184,7 +184,7 @@ export const editCommentInProfilePost = createAsyncThunk(
 export const createPostProfile = createAsyncThunk(
   "profile/createPost",
   async (
-    { type, background, text, images, user, token },
+    { type, background, text, images, user, token, whoCanSee },
     { rejectWithValue }
   ) => {
     try {
@@ -193,6 +193,7 @@ export const createPostProfile = createAsyncThunk(
         background,
         text,
         images,
+        whoCanSee,
         user,
         token
       );
@@ -239,7 +240,7 @@ export const profileSlice = createSlice({
         posts: state.profile.posts,
         postId: action.payload.postId,
         comment: action.payload.comment,
-      })
+      });
     },
     editCommentPostProfileLoading: (state, action) => {
       editCommentLoading({
@@ -247,7 +248,7 @@ export const profileSlice = createSlice({
         postId: action.payload.postId,
         comment: action.payload.comment,
         commentId: action.payload.commentId,
-      })
+      });
     },
     viewNegativeCommentInProfile: (state, action) => {
       showNegativeComment({
@@ -268,6 +269,15 @@ export const profileSlice = createSlice({
         postId: action.payload.postId,
         comments: action.payload.comments,
       });
+    },
+    getNewCommentPostProfile: (state, action) => {
+      const post = state.profile.posts.find(
+        (p) => p._id === action.payload.postId
+      );
+      post.comments = [action.payload.comment, ...post.comments];
+    },
+    getNewPostProfile: (state, action) => {
+      state.profile.posts = [action.payload, ...state.profile.posts];
     },
   },
   extraReducers: {
@@ -447,8 +457,10 @@ export const profileSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  getNewPostProfile,
   setPostProfileLoading,
   deleteCommentInProfile,
+  getNewCommentPostProfile,
   viewNegativePostInProfile,
   viewNegativeCommentInProfile,
   editCommentPostProfileLoading,

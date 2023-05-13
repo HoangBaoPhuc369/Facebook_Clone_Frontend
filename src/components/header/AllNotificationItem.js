@@ -11,7 +11,7 @@ export default function AllNotificationItem({
   setShowAllNotification,
 }) {
   const dispatch = useDispatch();
-
+  // console.log(notification);
   return (
     <div
       className="all_notification_item hover1"
@@ -47,7 +47,7 @@ export default function AllNotificationItem({
             />
           ) : notification.isSystem ? (
             <img
-              src='../../../icons/logo_fake.png'
+              src="../../../icons/logo_fake.png"
               alt=""
               className="all_notification_react"
             />

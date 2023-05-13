@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { HashLoader } from "react-spinners";
@@ -10,7 +9,7 @@ import SendVerification from "../../components/home/sendVerification";
 import Stories from "../../components/home/stories";
 import Post from "../../components/post";
 import { getConversations } from "../../redux/features/conversationSlice";
-import { getAllPosts } from "../../redux/features/postSlice";
+import { getAllPosts, getNewCommentPost, getNewPost } from "../../redux/features/postSlice";
 import "./style.css";
 
 export default function Home({
@@ -25,6 +24,25 @@ export default function Home({
     ...state.newFeed,
   }));
 
+  useEffect(() => {
+    if (socketRef) {
+      socketRef.on("newComment", (data) => {
+        // console.log(data);
+        dispatch(getNewCommentPost(data));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socketRef]);
+
+  useEffect(() => {
+    if (socketRef) {
+      socketRef.on("newPost", (data) => {
+        dispatch(getNewPost(data));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socketRef]);
+
   const { user } = useSelector((state) => ({ ...state.auth }));
   const userId = user?.id;
   const dispatch = useDispatch();
@@ -36,7 +54,6 @@ export default function Home({
   }, [userId]);
 
   return (
-
     <div className="background-secondary">
       <Header
         page="home"

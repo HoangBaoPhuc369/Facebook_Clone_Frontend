@@ -18,7 +18,11 @@ import CreatePostPopup from "../../components/createPostPopup";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { HashLoader } from "react-spinners";
-import { getProfile } from "../../redux/features/profileSlice";
+import {
+  getNewCommentPostProfile,
+  getNewPostProfile,
+  getProfile,
+} from "../../redux/features/profileSlice";
 import ProfilePictureInfos from "./ProfilePictureInfos";
 export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
   const [visible, setVisible] = useState(false);
@@ -42,6 +46,24 @@ export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userName]);
+
+  useEffect(() => {
+    if (socketRef) {
+      socketRef.on("newComment", (data) => {
+        dispatch(getNewCommentPostProfile(data));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (socketRef) {
+      socketRef.on("newPost", (data) => {
+        dispatch(getNewPostProfile(data));
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socketRef]);
 
   const profileTop = useRef(null);
   const leftSide = useRef(null);

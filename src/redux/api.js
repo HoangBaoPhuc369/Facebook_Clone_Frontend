@@ -157,7 +157,7 @@ export const getPosts = (userToken) =>
     },
   });
 
-export const createPost = (type, background, text, images, user, token) =>
+export const createPost = (type, background, text, images, whoCanSee, user, token) =>
   axios.put(
     `${process.env.REACT_APP_BACKEND_URL}/posts/create-post`,
     {
@@ -165,6 +165,7 @@ export const createPost = (type, background, text, images, user, token) =>
       background,
       text,
       images,
+      whoCanSee,
       user,
     },
     {

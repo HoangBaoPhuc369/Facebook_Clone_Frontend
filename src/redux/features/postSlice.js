@@ -24,7 +24,7 @@ export const getAllPosts = createAsyncThunk(
 export const createPost = createAsyncThunk(
   "post/createPost",
   async (
-    { type, background, text, images, user, token },
+    { type, background, text, images, whoCanSee, user, token },
     { rejectWithValue }
   ) => {
     try {
@@ -33,6 +33,7 @@ export const createPost = createAsyncThunk(
         background,
         text,
         images,
+        whoCanSee,
         user,
         token
       );
@@ -154,6 +155,13 @@ export const postSlice = createSlice({
         (p) => p !== action.payload
       );
     },
+    getNewCommentPost: (state, action) => {
+      const post = state.posts.find(p => p._id === action.payload.postId);
+      post.comments = [action.payload.comment,...post.comments]
+    },
+    getNewPost: (state, action) => {
+      state.posts = [action.payload, ...state.posts];
+    },
   },
   extraReducers: {
     [getAllPosts.pending]: (state, action) => {
@@ -230,8 +238,10 @@ export const postSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const {
   setError,
+  getNewPost,
   setPostLoading,
   viewNegativePost,
+  getNewCommentPost,
   deleteCommentInFeed,
   editCommentPostLoading,
   handleAddUserTypingPost,

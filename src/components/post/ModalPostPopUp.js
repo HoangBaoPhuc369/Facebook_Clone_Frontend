@@ -3,7 +3,14 @@ import ModalPost from "../modalPost";
 import Post from "../../components/post";
 import PostPopUp from "./PostPopUp";
 
-const ModalPostPopUp = ({ open, post, user, socketRef, onClose }) => {
+const ModalPostPopUp = ({
+  open,
+  post,
+  profile,
+  user,
+  socketRef,
+  onClose,
+}) => {
   return (
     <>
       <ModalPost
@@ -12,7 +19,13 @@ const ModalPostPopUp = ({ open, post, user, socketRef, onClose }) => {
         onClose={onClose}
         footer={<></>}
       >
-        <PostPopUp post={post}  key={post?._id} user={user} socketRef={socketRef} />
+        <PostPopUp
+          post={post}
+          profile={profile}
+          key={post?._id}
+          user={user}
+          socketRef={socketRef}
+        />
       </ModalPost>
     </>
   );

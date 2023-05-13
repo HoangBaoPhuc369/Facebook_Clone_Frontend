@@ -50,9 +50,9 @@ const Msg = ({ picture, text, icon, name, type }) => (
     <div className="notification-box_container">
       <div className="notification-picture mr-[10px]">
         <img className="noftification-avatar" src={picture} alt="" />
-        {type === "comment" ? (
+        {type !== "react" ? (
           <div className="absolute bottom-2 right-0 w-5 h-5">
-            <i class="notification_comment_icon"></i>
+            <i className={`notification_${type}_icon`}></i>
           </div>
         ) : (
           <img
@@ -104,11 +104,11 @@ const bounce = cssTransition({
   exit: "animate__animated animate__bounceOutDown",
 });
 
-const CloseButton = ({ closeToast }) => (
-  <div className="small_circle" onClick={closeToast}>
-    <i className="exit_icon"></i>
-  </div>
-);
+// const CloseButton = ({ closeToast }) => (
+//   <div className="small_circle" onClick={closeToast}>
+//     <i className="exit_icon"></i>
+//   </div>
+// );
 
 export default function Header({
   page,
@@ -192,7 +192,6 @@ export default function Header({
 
   useEffect(() => {
     socketRef?.on("getNotification", (data) => {
-      console.log(data);
       //Cho nay chi can day vo state khong can call api
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
@@ -202,8 +201,37 @@ export default function Header({
           picture={data?.picture}
           text={data?.text}
           icon={data?.icon}
-          name={data?.name}
+          name={data?.first_name + " " + data?.last_name}
           type={data?.type}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socketRef?.on("postNotification", (data) => {
+      //Cho nay chi can day vo state khong can call api
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+
+      toast(
+        <Msg
+          picture={data?.from.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.name}
+          type="post"
         />,
         {
           className: "notification_form",
@@ -466,7 +494,7 @@ export default function Header({
         ))}
       </div>
 
-      <ToastContainer transition={bounce} closeButton={CloseButton} limit={5} />
+      {/* <ToastContainer transition={bounce} closeButton={CloseButton} limit={5} /> */}
 
       {callState === "CALL_REQUESTED" && (
         <NotificationPopUp
