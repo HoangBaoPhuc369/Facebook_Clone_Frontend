@@ -1,5 +1,19 @@
 import axios from "axios";
 
+// --------------------------THEME API--------------------------------------
+export const changeTheme = (data, userToken) =>
+  axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/users/update-theme`,
+    {
+      theme: data,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    }
+  );
+
 // --------------------------AUTH API--------------------------------------
 export const userLogin = (formValue) =>
   axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, formValue);
@@ -157,7 +171,16 @@ export const getPosts = (userToken) =>
     },
   });
 
-export const createPost = (type, background, text, images, whoCanSee, user, token) =>
+export const createPost = (
+  type,
+  background,
+  text,
+  images,
+  whoCanSee,
+  user,
+  token,
+  postRef
+) =>
   axios.put(
     `${process.env.REACT_APP_BACKEND_URL}/posts/create-post`,
     {
@@ -167,6 +190,7 @@ export const createPost = (type, background, text, images, whoCanSee, user, toke
       images,
       whoCanSee,
       user,
+      postRef,
     },
     {
       headers: {
@@ -209,13 +233,21 @@ export const deletePost = async (postId, token) =>
     }
   );
 
-export const comment = (postId, getParentId = "", comment, image, token) =>
+export const comment = (
+  postId,
+  getParentId = "",
+  comment,
+  image,
+  socketId,
+  token
+) =>
   axios.put(
     `${process.env.REACT_APP_BACKEND_URL}/posts/comment`,
     {
       postId,
       comment,
       parentId: getParentId,
+      socketId,
       image,
     },
 

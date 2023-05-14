@@ -1,13 +1,10 @@
-import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setLightTheme,
-  setDarkTheme,
-} from "../../../redux/features/themeSlice";
+import { changeTheme } from "../../../redux/features/themeSlice";
 
 export default function DisplayAccessibility({ setVisible }) {
   const dispatch = useDispatch();
   const { darkTheme } = useSelector((state) => ({ ...state.theme }));
+  const { user } = useSelector((state) => ({ ...state.auth }));
 
   return (
     <div className="absolute_wrap">
@@ -38,8 +35,12 @@ export default function DisplayAccessibility({ setVisible }) {
         htmlFor="darkOff"
         className="hover1"
         onClick={() => {
-          Cookies.set("darkTheme", false);
-          dispatch(setLightTheme(false));
+          dispatch(
+            changeTheme({
+              theme: "light",
+              userToken: user.token,
+            })
+          );
         }}
       >
         <span>Off</span>
@@ -47,7 +48,7 @@ export default function DisplayAccessibility({ setVisible }) {
           type="radio"
           name="dark"
           id="darkOff"
-          checked={darkTheme ? false : true}
+          checked={darkTheme === "dark" ? false : true}
           onChange={() => {}}
         />
       </label>
@@ -55,8 +56,12 @@ export default function DisplayAccessibility({ setVisible }) {
         htmlFor="darkOn"
         className="hover1"
         onClick={() => {
-          Cookies.set("darkTheme", true);
-          dispatch(setDarkTheme(true));
+          dispatch(
+            changeTheme({
+              theme: "dark",
+              userToken: user.token,
+            })
+          );
         }}
       >
         <span>On</span>
@@ -64,7 +69,7 @@ export default function DisplayAccessibility({ setVisible }) {
           type="radio"
           name="dark"
           id="darkOn"
-          checked={darkTheme ? true : false}
+          checked={darkTheme === "dark" ? true : false}
           onChange={() => {}}
         />
       </label>

@@ -151,7 +151,7 @@ export const deleteRequest = createAsyncThunk(
 export const createCommentInProfilePost = createAsyncThunk(
   "profile/createComment",
   async (
-    { postId, getParentId, comment, image, token },
+    { postId, getParentId, comment, image, socketId, token },
     { rejectWithValue }
   ) => {
     try {
@@ -160,6 +160,7 @@ export const createCommentInProfilePost = createAsyncThunk(
         getParentId,
         comment,
         image,
+        socketId,
         token
       );
       return { data: data.comments, postId };

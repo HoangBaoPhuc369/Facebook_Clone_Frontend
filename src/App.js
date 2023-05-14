@@ -24,6 +24,7 @@ import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInPare
 import Test from "./components/test";
 import { setActiveUsers } from "./redux/features/dashboardSlice";
 import { ToastContainer, cssTransition } from "react-toastify";
+import CreatePostSharePopup from "./components/createPostSharePopup";
 
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
@@ -44,6 +45,9 @@ function App() {
   const { darkTheme } = useSelector((state) => ({ ...state.theme }));
   const userId = user?.id;
   const [socketRef, setSocketRef] = useState(null);
+  const [sharePostPopUp, setsharePostPopUp] = useState(false);
+  const [isProfile, setIsProfile] = useState(false);
+  const [postShare, setPostShare] = useState({});
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -140,11 +144,16 @@ function App() {
   // }, [socketRef, user]);
 
   return (
-    <div className={`relative ${darkTheme ? "dark" : "light"}`}>
+    <div className={`relative ${darkTheme === "dark" ? "dark" : "light"}`}>
       {/* {visible && } */}
       <CreatePostPopup visible={visible} setVisible={setVisible} />
 
-      {/* {visibleDelPost && <DeletePostPopUp />} */}
+      <CreatePostSharePopup
+        post={postShare}
+        profile={isProfile}
+        openSharePost={sharePostPopUp}
+        setOpenSharePost={setsharePostPopUp}
+      />
 
       <Routes>
         <Route element={<LoggedInRoutes socketRef={socketRef} />}>
@@ -153,6 +162,9 @@ function App() {
             element={
               socketRef ? (
                 <Profile
+                  setPostShare={setPostShare}
+                  setsharePostPopUp={setsharePostPopUp}
+                  setIsProfile={setIsProfile}
                   socketRef={socketRef}
                   setVisible={setVisible}
                   onlineUser={onlineUser}
@@ -167,6 +179,9 @@ function App() {
             element={
               socketRef ? (
                 <Profile
+                  setPostShare={setPostShare}
+                  setsharePostPopUp={setsharePostPopUp}
+                  setIsProfile={setIsProfile}
                   socketRef={socketRef}
                   setVisible={setVisible}
                   onlineUser={onlineUser}
@@ -192,6 +207,9 @@ function App() {
               socketRef ? (
                 <Home
                   socketRef={socketRef}
+                  setPostShare={setPostShare}
+                  setIsProfile={setIsProfile}
+                  setsharePostPopUp={setsharePostPopUp}
                   onlineUser={onlineUser}
                   setVisible={setVisible}
                   setOnlineUsers={setOnlineUsers}

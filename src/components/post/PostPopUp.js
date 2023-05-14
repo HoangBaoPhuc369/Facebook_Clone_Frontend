@@ -24,6 +24,8 @@ import ThreeDotLoaderFlashing from "../threeDotLoader";
 import useTypingComment from "../../hooks/useTypingComment";
 import { FaUserFriends } from "react-icons/fa";
 import { HiLockClosed } from "react-icons/hi";
+import PostShare from "./PostShare";
+import CreatePostSharePopup from "../createPostSharePopup";
 
 export default function PostPopUp({ user, post, profile, socketRef }) {
   const { userTypingPosts } = useSelector((state) => state.newFeed);
@@ -46,6 +48,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
   const [countRepliesThird, setCountRepliesThird] = useState(0);
   const [activeComment, setActiveComment] = useState(null);
   const [activeOptions, setActiveOptions] = useState(null);
+  const [openSharePost, setOpenSharePost] = useState(false);
 
   const [selected, setSelected] = useState(null);
   const [openselectAudience, setOpenselectAudience] = useState(false);
@@ -328,6 +331,18 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
             className="post_updated_picture"
           />
         </div>
+      ) : post.type === "share" ? (
+        <>
+          <div className="post_text">{post?.text}</div>
+          <div className="px-[17px] w-full">
+            <div
+              className=" rounded-lg 
+              border-[1px] border-solid border-[#CED0D4]"
+            >
+              <PostShare user={user} post={post?.postRef} />
+            </div>
+          </div>
+        </>
       ) : (
         <div className="post_cover_wrap">
           <img src={post?.images ? post.images[0]?.url : ""} alt="" />
@@ -366,7 +381,11 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
           {/* <div className="share_count">0 share</div> */}
         </div>
       </div>
-      <div className="post_actions">
+      <div
+        className={
+          post?.type === "share" ? "post-share-action" : "post_actions"
+        }
+      >
         <div
           className="post_action hover1 box"
           onClick={() => reactHandler(check ? check : "like")}
@@ -429,12 +448,15 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
           <i className="comment_icon"></i>
           <span>Comment</span>
         </div>
-        {user.following.length > 0 && (
-          <div className="post-popup_action hover1">
+        {post?.type !== "share" ? (
+          <div
+            className="post_action hover1"
+            onClick={() => setOpenSharePost(true)}
+          >
             <i className="share_icon"></i>
             <span>Share</span>
           </div>
-        )}
+        ) : null}
       </div>
       <div className="comments_wrap">
         <div className="comments_order"></div>
@@ -517,6 +539,13 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
           imagesLength={post?.images?.length}
         />
       )}
+
+      <CreatePostSharePopup
+        post={post}
+        profile={profile}
+        openSharePost={openSharePost}
+        setOpenSharePost={setOpenSharePost}
+      />
 
       <DeletePostPopUp
         open={isOpen}
@@ -628,10 +657,10 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
       >
         <div
           onClick={() => handleChange("public")}
-          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
         >
-          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
-            <Public color="#000" className="w-6 h-6" />
+          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <Public color="#000" className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3">
             <p className="text-[17px] leading-4 font-medium">Public</p>
@@ -651,10 +680,10 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
 
         <div
           onClick={() => handleChange("friends")}
-          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
         >
-          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
-            <FaUserFriends className="w-6 h-6" />
+          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <FaUserFriends className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3">
             <p className="text-[17px] leading-4 font-medium">Friends</p>
@@ -674,10 +703,10 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
 
         <div
           onClick={() => handleChange("onlyMe")}
-          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
         >
-          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
-            <HiLockClosed className="w-6 h-6" />
+          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <HiLockClosed className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3 flex flex-wrap content-center">
             <p className="text-[17px] font-medium">Only me</p>

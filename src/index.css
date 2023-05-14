@@ -23,7 +23,7 @@ a {
   --bg-secondary: #f0f2f5;
   --bg-third: #e4e6eb;
   --bg-forth: #f0f2f5;
-  --bg-fifth: #BCC0C4;
+  --bg-fifth: #bcc0c4;
   --color-primary: #050505;
   --color-secondary: #65676b;
   --divider: #ced0d4;
@@ -34,6 +34,7 @@ a {
   --dark-color-secondary: #b0b3b8;
   --blue-color: #1876f2;
   --blue-color-secondary: rgb(0, 132, 255);
+  --blue-color-third: #252f3c;
   --green-color: #42b72a;
   --light-blue-color: #e7f3ff;
   --border-color: #ccced2;
@@ -95,7 +96,6 @@ a {
   cursor: pointer;
 }
 
-.blue_btn,
 .gray_btn span {
   transform: translateY(-1px);
 }
@@ -106,6 +106,16 @@ a {
   left: 0;
   right: 0;
   background: rgba(255, 255, 255, 0.768);
+  bottom: 0;
+  z-index: 9999999999;
+}
+
+.blur-background-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
   bottom: 0;
   z-index: 9999999999;
 }
@@ -180,5 +190,5 @@ a {
     opacity: 0.2;
   }
 }
-
+/* ========================= */
 

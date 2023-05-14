@@ -181,7 +181,7 @@ export default function Friendship({ friendshipp, profileId }) {
           </div>
         )
       )}
-      <div className="flex">
+      <div className="flex flex-wrap content-center gap-2">
         {profile.friendship?.following ? (
           <button className="gray_btn" onClick={() => unFollowHandler()}>
             <img src="../../../icons/follow.png" alt="" />

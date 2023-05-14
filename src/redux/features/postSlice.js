@@ -24,7 +24,7 @@ export const getAllPosts = createAsyncThunk(
 export const createPost = createAsyncThunk(
   "post/createPost",
   async (
-    { type, background, text, images, whoCanSee, user, token },
+    { type, background, text, images, whoCanSee, user, token, postRef },
     { rejectWithValue }
   ) => {
     try {
@@ -35,7 +35,8 @@ export const createPost = createAsyncThunk(
         images,
         whoCanSee,
         user,
-        token
+        token,
+        postRef,
       );
       return data;
     } catch (err) {
@@ -62,7 +63,7 @@ export const deletePost = createAsyncThunk(
 export const createCommentPost = createAsyncThunk(
   "post/createComment",
   async (
-    { postId, getParentId, comment, image, token },
+    { postId, getParentId, comment, image, socketId, token },
     { rejectWithValue }
   ) => {
     try {
@@ -71,6 +72,7 @@ export const createCommentPost = createAsyncThunk(
         getParentId,
         comment,
         image,
+        socketId,
         token
       );
       return { data: data.comments, postId };
@@ -156,8 +158,8 @@ export const postSlice = createSlice({
       );
     },
     getNewCommentPost: (state, action) => {
-      const post = state.posts.find(p => p._id === action.payload.postId);
-      post.comments = [action.payload.comment,...post.comments]
+      const post = state.posts.find((p) => p._id === action.payload.postId);
+      post.comments = [action.payload.comment, ...post.comments];
     },
     getNewPost: (state, action) => {
       state.posts = [action.payload, ...state.posts];

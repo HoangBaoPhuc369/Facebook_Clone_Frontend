@@ -24,7 +24,14 @@ import {
   getProfile,
 } from "../../redux/features/profileSlice";
 import ProfilePictureInfos from "./ProfilePictureInfos";
-export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
+export default function Profile({
+  socketRef,
+  onlineUser,
+  setOnlineUsers,
+  setPostShare,
+  setIsProfile,
+  setsharePostPopUp,
+}) {
   const [visible, setVisible] = useState(false);
   const { username } = useParams();
   const dispatch = useDispatch();
@@ -300,6 +307,9 @@ export default function Profile({ socketRef, onlineUser, setOnlineUsers }) {
                           post={post}
                           socketRef={socketRef}
                           user={user}
+                          setIsProfile={setIsProfile}
+                          setPostShare={setPostShare}
+                          setsharePostPopUp={setsharePostPopUp}
                           key={post?._id}
                           profile
                         />

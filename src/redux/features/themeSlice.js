@@ -1,11 +1,21 @@
-import { createSlice } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import * as api from "../api";
 
 const initialState = {
-  darkTheme: Cookies.get("darkTheme")
-    ? JSON.parse(Cookies.get("darkTheme"))
-    : false,
+  darkTheme: "",
 };
+
+export const changeTheme = createAsyncThunk(
+  "theme/changeTheme",
+  async ({ theme, userToken }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.changeTheme(theme, userToken);
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
 
 export const themeSlice = createSlice({
   name: "theme",
@@ -15,6 +25,11 @@ export const themeSlice = createSlice({
       state.darkTheme = action.payload;
     },
     setLightTheme: (state, action) => {
+      state.darkTheme = action.payload;
+    },
+  },
+  extraReducers: {
+    [changeTheme.fulfilled]: (state, action) => {
       state.darkTheme = action.payload;
     },
   },

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import Picker from "emoji-picker-react";
 import { uploadImages } from "../../functions/uploadImages";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
-// import { ClipLoader } from "react-spinners";
 import {
   createCommentInProfilePost,
   createCommentPostProfileLoading,
@@ -18,7 +17,6 @@ import {
 } from "../../redux/features/postSlice";
 import { v4 as uuidv4 } from "uuid";
 import SentIcon from "./../../svg/sentIcon";
-import useTypingComment from "../../hooks/useTypingComment";
 
 export default function CreateComment({
   user,
@@ -298,6 +296,7 @@ export default function CreateComment({
                   getParentId,
                   comment: text,
                   image: imgComment[0].url,
+                  socketId: socketRef?.id,
                   token: user.token,
                 })
               );
@@ -308,6 +307,7 @@ export default function CreateComment({
                   getParentId,
                   comment: text,
                   image: imgComment[0].url,
+                  socketId: socketRef?.id,
                   token: user.token,
                 })
               );
@@ -347,6 +347,7 @@ export default function CreateComment({
                 getParentId,
                 comment: text,
                 image: "",
+                socketId: socketRef?.id,
                 token: user.token,
               })
             );
@@ -379,6 +380,7 @@ export default function CreateComment({
                 getParentId,
                 comment: text,
                 image: "",
+                socketId: socketRef?.id,
                 token: user.token,
               })
             );

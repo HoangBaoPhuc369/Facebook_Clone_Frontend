@@ -7,6 +7,7 @@
   --color-primary: #e4e6eb;
   --color-secondary: #b0b3b8;
   --border-color: #2f3031;
+  --select-option: #2f3131;
 }
 .dark .blur-background {
   background: rgba(1, 1, 1, 0.53);
@@ -216,4 +217,33 @@
 
 .dark .comment-input_popup {
   background: var(--bg-primary);
+}
+
+.dark .audience-select:hover {
+  background: var(--select-option);
+}
+
+.dark .audience-select .audience-icon-bg {
+  background: var(--bg-forth);
+}
+
+.dark .audience-select .audience-icon-bg .audience-icon{
+  color: var(--color-primary);
+  fill: var(--color-primary);
+}
+
+.dark .audience-selected-public svg {
+  fill: var(--color-primary);
+}
+
+.dark .icon-audient {
+  fill: var(--color-primary) !important;
+}
+
+.dark .audience-select-default {
+  background: var(--blue-color-third);
+}
+
+.dark .audience-select-default:hover {
+  background: var(--blue-color-third) !important;
 }

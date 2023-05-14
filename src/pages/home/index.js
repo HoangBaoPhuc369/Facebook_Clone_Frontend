@@ -9,16 +9,21 @@ import SendVerification from "../../components/home/sendVerification";
 import Stories from "../../components/home/stories";
 import Post from "../../components/post";
 import { getConversations } from "../../redux/features/conversationSlice";
-import { getAllPosts, getNewCommentPost, getNewPost } from "../../redux/features/postSlice";
+import {
+  getAllPosts,
+  getNewCommentPost,
+  getNewPost,
+} from "../../redux/features/postSlice";
 import "./style.css";
 
 export default function Home({
   socketRef,
   setVisible,
   onlineUser,
-  // conversations,
   setOnlineUsers,
-  // setVisibleDelPost,
+  setPostShare,
+  setIsProfile,
+  setsharePostPopUp,
 }) {
   const { posts, loading, error } = useSelector((state) => ({
     ...state.newFeed,
@@ -82,7 +87,9 @@ export default function Home({
                   user={user}
                   key={post?._id}
                   socketRef={socketRef}
-                  // setVisibleDelPost={setVisibleDelPost}
+                  setIsProfile={setIsProfile}
+                  setPostShare={setPostShare}
+                  setsharePostPopUp={setsharePostPopUp}
                 />
               ))}
             </div>

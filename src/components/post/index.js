@@ -24,8 +24,18 @@ import ModalPostPopUp from "./ModalPostPopUp";
 import { FaUserFriends } from "react-icons/fa";
 // HiLockClosed
 import { HiLockClosed } from "react-icons/hi";
+import CreatePostSharePopup from "../createPostSharePopup";
+import PostShare from "./PostShare";
 
-export default function Post({ user, post, profile, socketRef }) {
+export default function Post({
+  user,
+  post,
+  profile,
+  socketRef,
+  setPostShare,
+  setIsProfile,
+  setsharePostPopUp,
+}) {
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
   const [check, setCheck] = useState();
@@ -39,7 +49,6 @@ export default function Post({ user, post, profile, socketRef }) {
   const [isOpenNegativePost, setIsOpenNegativePost] = useState(false);
   const [openModalPost, setOpenModalPost] = useState(false);
   const [activeComment, setActiveComment] = useState(null);
-
 
   const [selected, setSelected] = useState(null);
   const [openselectAudience, setOpenselectAudience] = useState(false);
@@ -65,18 +74,6 @@ export default function Post({ user, post, profile, socketRef }) {
     setCheck(res.check);
     setTotal(res.total);
     setCheckSaved(res.checkSaved);
-  };
-
-  const options = [
-    { value: "public", label: "Public" },
-    { value: "friends", label: "Friends" },
-    { value: "only-me", label: "Only me" },
-  ];
-
-  const [selectedOption, setSelectedOption] = useState(options[0].value);
-
-  const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value);
   };
 
   const handleSendNotifications = (icon, type) => {
@@ -178,11 +175,7 @@ export default function Post({ user, post, profile, socketRef }) {
   };
 
   return (
-    <div
-      className="post"
-      style={{ width: `${profile && "100%"}` }}
-      // ref={postRef}
-    >
+    <div className="post" style={{ width: `${profile && "100%"}` }}>
       <div className="post_header">
         <div className="post_header_left">
           <Link to={`/profile/${post?.user.username}`}>
@@ -222,9 +215,19 @@ export default function Post({ user, post, profile, socketRef }) {
               </div>
               <div
                 className="icon-audient hover1"
-                onClick={() => setOpenselectAudience(true)}
+                onClick={() => {
+                  if (post?.user?._id === user?.id) {
+                    setOpenselectAudience(true);
+                  }
+                }}
               >
-                <Public color="#828387" />
+                {post.whoCanSee === "public" ? (
+                  <Public color="#828387" />
+                ) : post.whoCanSee === "friends" ? (
+                  <FaUserFriends />
+                ) : (
+                  <HiLockClosed />
+                )}
               </div>
             </div>
           </div>
@@ -309,6 +312,22 @@ export default function Post({ user, post, profile, socketRef }) {
             className="post_updated_picture"
           />
         </div>
+      ) : post?.type === "share" ? (
+        <>
+          {post?.postRef ? (
+            <>
+              <div className="post_text">{post?.text}</div>
+              <div className="px-[17px] w-full">
+                <div
+                  className=" rounded-lg 
+                 border-[1px] border-solid border-[#CED0D4]"
+                >
+                  <PostShare user={user} post={post?.postRef} />
+                </div>
+              </div>
+            </>
+          ) : null}
+        </>
       ) : (
         <div className="post_cover_wrap">
           <img src={post?.images ? post.images[0]?.url : ""} alt="" />
@@ -344,10 +363,16 @@ export default function Post({ user, post, profile, socketRef }) {
             </div>
           ) : null}
 
-          {/* <div className="share_count">0 share</div> */}
+          {post?.shareCount ? (
+            <div className="share_count">{post?.shareCount} share</div>
+          ) : null}
         </div>
       </div>
-      <div className="post_actions">
+      <div
+        className={
+          post?.type === "share" ? "post-share-action" : "post_actions"
+        }
+      >
         <div
           className="post_action hover1 box"
           onClick={() => reactHandler(check ? check : "like")}
@@ -413,71 +438,21 @@ export default function Post({ user, post, profile, socketRef }) {
           <i className="comment_icon"></i>
           <span>Comment</span>
         </div>
-        {user.following.length > 0 && (
-          <div className="post_action hover1">
+        {post?.type !== "share" ? (
+          <div
+            className="post_action hover1"
+            onClick={() => {
+              setIsProfile(profile);
+              setPostShare(post);
+              setsharePostPopUp(true);
+            }}
+          >
             <i className="share_icon"></i>
             <span>Share</span>
           </div>
-        )}
+        ) : null}
       </div>
-      {/* <div className="comments_wrap">
-        <div className="comments_order"></div>
 
-        <CreateComment
-          user={user}
-          profile={profile}
-          postId={post?._id}
-          setCount={setCount}
-          postUserId={post.user._id}
-          handleSendNotifications={handleSendNotifications}
-        />
-
-        {post?.comments && post?.comments.length > 0
-          ? post?.comments
-              ?.filter((backendComment) => backendComment.parentId === "")
-              .sort((a, b) => {
-                return new Date(b.commentAt) - new Date(a.commentAt);
-              })
-              .slice(0, count)
-              .map((comment, i) => (
-                <Comment
-                  key={i}
-                  user={user}
-                  first={true}
-                  isOpen={isOpen}
-                  profile={profile}
-                  postId={post?._id}
-                  comment={comment}
-                  setCount={setCount}
-                  dispatch={dispatch}
-                  setIsOpen={setIsOpen}
-                  getReplies={getReplies}
-                  postUserId={post.user._id}
-                  countReplies={countReplies}
-                  activeOptions={activeOptions}
-                  activeComment={activeComment}
-                  setCountReplies={setCountReplies}
-                  showMoreReplies={showMoreReplies}
-                  setActiveOptions={setActiveOptions}
-                  setActiveComment={setActiveComment}
-                  countRepliesThird={countRepliesThird}
-                  repliesSecond={getReplies(comment?._id)}
-                  showMoreRepliesThird={showMoreRepliesThird}
-                  setIsOpenUnhideComment={setIsOpenUnhideComment}
-                  handleSendNotifications={handleSendNotifications}
-                />
-              ))
-          : null}
-
-        {count <
-          post?.comments?.filter(
-            (backendComment) => backendComment.parentId === ""
-          ).length && (
-          <div className="view_comments" onClick={() => showMore()}>
-            View more comments
-          </div>
-        )}
-      </div> */}
       {showMenu && (
         <PostMenu
           userId={user.id}
@@ -598,9 +573,7 @@ export default function Post({ user, post, profile, socketRef }) {
           <>
             <button
               className="modal_action"
-              // onClick={() => {
-              //   handleShowNegativePost(post?._id);
-              // }}
+              onClick={() => setOpenselectAudience(false)}
             >
               Done
             </button>
@@ -615,14 +588,14 @@ export default function Post({ user, post, profile, socketRef }) {
       >
         <div
           onClick={() => handleChange("public")}
-          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
         >
-          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
-            <Public color="#000" className="w-6 h-6" />
+          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <Public color="#000" className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3">
             <p className="text-[17px] leading-4 font-medium">Public</p>
-            <p className="text-[15px] text-[#65676b]">
+            <p className="text-[14px] text-[#65676b]">
               Anyone on or off Net Friend
             </p>
           </div>
@@ -638,14 +611,14 @@ export default function Post({ user, post, profile, socketRef }) {
 
         <div
           onClick={() => handleChange("friends")}
-          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
         >
-          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
-            <FaUserFriends className="w-6 h-6" />
+          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <FaUserFriends className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3">
             <p className="text-[17px] leading-4 font-medium">Friends</p>
-            <p className="text-[15px] text-[#65676b]">
+            <p className="text-[14px] text-[#65676b]">
               Your friends on Net Friend
             </p>
           </div>
@@ -661,10 +634,10 @@ export default function Post({ user, post, profile, socketRef }) {
 
         <div
           onClick={() => handleChange("onlyMe")}
-          className="hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
         >
-          <div className="w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
-            <HiLockClosed className="w-6 h-6" />
+          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+            <HiLockClosed className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3 flex flex-wrap content-center">
             <p className="text-[17px] font-medium">Only me</p>

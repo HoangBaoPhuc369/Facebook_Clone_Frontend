@@ -201,7 +201,7 @@ export default function Header({
           picture={data?.picture}
           text={data?.text}
           icon={data?.icon}
-          name={data?.first_name + " " + data?.last_name}
+          name={data?.name}
           type={data?.type}
         />,
         {
@@ -221,6 +221,7 @@ export default function Header({
 
   useEffect(() => {
     socketRef?.on("postNotification", (data) => {
+      console.log(data);
       //Cho nay chi can day vo state khong can call api
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
@@ -230,7 +231,7 @@ export default function Header({
           picture={data?.from.picture}
           text={data?.text}
           icon={data?.icon}
-          name={data?.name}
+          name={data?.from?.first_name + " " + data?.from?.last_name}
           type="post"
         />,
         {
