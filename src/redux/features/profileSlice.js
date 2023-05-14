@@ -171,7 +171,7 @@ export const createCommentInProfilePost = createAsyncThunk(
 );
 
 export const editCommentInProfilePost = createAsyncThunk(
-  "profile/createComment",
+  "profile/editComment",
   async ({ id, postId, comment, image, token }, { rejectWithValue }) => {
     try {
       const { data } = await api.editComment(id, postId, comment, image, token);
@@ -185,7 +185,7 @@ export const editCommentInProfilePost = createAsyncThunk(
 export const createPostProfile = createAsyncThunk(
   "profile/createPost",
   async (
-    { type, background, text, images, user, token, whoCanSee },
+    { type, background, text, images, user, postRef, token, whoCanSee },
     { rejectWithValue }
   ) => {
     try {
@@ -196,7 +196,8 @@ export const createPostProfile = createAsyncThunk(
         images,
         whoCanSee,
         user,
-        token
+        token,
+        postRef
       );
       return data;
     } catch (err) {

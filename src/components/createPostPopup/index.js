@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import {useRef, useState } from "react";
 import "./style.css";
 import EmojiPickerBackgrounds from "./EmojiPickerBackgrounds";
 import AddToYourPost from "./AddToYourPost";
 import ImagePreview from "./ImagePreview";
-import useClickOutside from "../../helpers/clickOutside";
 import PostError from "./PostError";
 import dataURItoBlob from "../../helpers/dataURItoBlob";
 import { uploadImages } from "../../functions/uploadImages";
@@ -18,11 +17,16 @@ import ModalCustom from "../Modal";
 import { Public } from "../../svg";
 import { FaUserFriends } from "react-icons/fa";
 import { HiLockClosed } from "react-icons/hi";
+import { setSelectedAudience } from "../../redux/features/selectedSlice";
+
+
 export default function CreatePostPopup({ visible, setVisible, profile }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { errorCreatePost, loadingCreatePost } = useSelector((state) => ({
     ...state.newFeed,
   }));
+
+  const { selectAudience } = useSelector((state) => ({ ...state.selected }));
   const { loadingPosts } = useSelector((state) => ({
     ...state.profile,
   }));
@@ -32,18 +36,15 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
   const [showPrev, setShowPrev] = useState(false);
   const [images, setImages] = useState([]);
   const [background, setBackground] = useState("");
-
-  const [selected, setSelected] = useState("public");
-  const [selectedDefault, setSelectedDefault] = useState("");
   const [openselectAudience, setOpenselectAudience] = useState(false);
 
   const handleChange = (value) => {
-    setSelected(value);
+    dispatch(setSelectedAudience(value));
   };
 
-  useEffect(() => {
-    setSelectedDefault(selected);
-  }, []);
+  // useEffect(() => {
+  //   setSelectedDefault(selected);
+  // }, []);
 
   // useClickOutside(popup, () => {
   //   setVisible(false);
@@ -58,7 +59,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             text: text,
             images: null,
             user: user.id,
-            whoCanSee: selected,
+            whoCanSee: selectAudience,
             token: user.token,
           })
         );
@@ -70,7 +71,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             text: text,
             images: null,
             user: user.id,
-            whoCanSee: selected,
+            whoCanSee: selectAudience,
             token: user.token,
           })
         );
@@ -109,7 +110,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             images: response,
             user: user.id,
             token: user.token,
-            whoCanSee: selected,
+            whoCanSee: selectAudience,
           })
         );
       } else {
@@ -121,7 +122,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             images: response,
             user: user.id,
             token: user.token,
-            whoCanSee: selected,
+            whoCanSee: selectAudience,
           })
         );
       }
@@ -135,7 +136,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             images: null,
             user: user.id,
             token: user.token,
-            whoCanSee: selected,
+            whoCanSee: selectAudience,
           })
         );
       } else {
@@ -147,7 +148,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             images: null,
             user: user.id,
             token: user.token,
-            whoCanSee: selected,
+            whoCanSee: selectAudience,
           })
         );
       }
@@ -186,14 +187,14 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
                   className="box_privacy"
                   onClick={() => setOpenselectAudience(true)}
                 >
-                  {selected === "public" ? (
+                  {selectAudience === "public" ? (
                     <>
                       <div className="audience-selected-public h-6 flex flex-wrap content-center py-0">
                         <Public color="#000" />
                       </div>
                       <span>Public</span>
                     </>
-                  ) : selected === "friends" ? (
+                  ) : selectAudience === "friends" ? (
                     <>
                       <div className="h-6 flex flex-wrap content-center py-0">
                         <FaUserFriends />
@@ -286,7 +287,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
         <div
           onClick={() => handleChange("public")}
           className={`${
-            selectedDefault === "public" ? "audience-select-default" : ""
+            selectAudience === "public" ? "audience-select-default" : ""
           } audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] 
           rounded-lg flex content-center py-[8px] gap-3`}
         >
@@ -303,7 +304,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             <input
               type="checkbox"
               className="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0"
-              checked={selected === "public"}
+              checked={selectAudience === "public"}
               onChange={() => handleChange("public")}
             />
           </label>
@@ -312,7 +313,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
         <div
           onClick={() => handleChange("friends")}
           className={`${
-            selectedDefault === "friends" ? "audience-select-default" : ""
+            selectAudience === "friends" ? "audience-select-default" : ""
           } audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] 
           rounded-lg flex content-center py-[8px] gap-3`}
         >
@@ -332,7 +333,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             <input
               type="checkbox"
               className="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0"
-              checked={selected === "friends"}
+              checked={selectAudience === "friends"}
               onChange={() => handleChange("friends")}
             />
           </label>
@@ -341,7 +342,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
         <div
           onClick={() => handleChange("private")}
           className={`${
-            selectedDefault === "private" ? "audience-select-default" : ""
+            selectAudience === "private" ? "audience-select-default" : ""
           } audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] 
           rounded-lg flex content-center py-[8px] gap-3`}
         >
@@ -355,7 +356,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             <input
               type="checkbox"
               className="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0 cursor-pointer"
-              checked={selected === "private"}
+              checked={selectAudience === "private"}
               onChange={() => handleChange("private")}
             />
           </label>

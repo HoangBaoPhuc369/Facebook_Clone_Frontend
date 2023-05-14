@@ -36,7 +36,7 @@ export const createPost = createAsyncThunk(
         whoCanSee,
         user,
         token,
-        postRef,
+        postRef
       );
       return data;
     } catch (err) {

@@ -1,6 +1,5 @@
 import React from "react";
 import ModalPost from "../modalPost";
-import Post from "../../components/post";
 import PostPopUp from "./PostPopUp";
 
 const ModalPostPopUp = ({
@@ -20,10 +19,11 @@ const ModalPostPopUp = ({
         footer={<></>}
       >
         <PostPopUp
-          post={post}
-          profile={profile}
-          key={post?._id}
           user={user}
+          post={post}
+          key={post?._id}
+          onClose={onClose}
+          profile={profile}
           socketRef={socketRef}
         />
       </ModalPost>

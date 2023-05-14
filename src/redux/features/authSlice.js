@@ -50,6 +50,18 @@ export const active = createAsyncThunk(
   }
 );
 
+export const changeTheme = createAsyncThunk(
+  "theme/changeTheme",
+  async ({ theme, userToken }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.changeTheme(theme, userToken);
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 const initialState = {
   user: Cookies.get("user") ? JSON.parse(Cookies.get("user")) : null,
   message: "",
@@ -123,6 +135,15 @@ export const authSlice = createSlice({
     [active.rejected]: (state, action) => {
       state.loadingActive = false;
       state.errorActive = action.payload.message;
+    },
+    [changeTheme.fulfilled]: (state, action) => {
+      state.user.theme = action.payload;
+      Cookies.set(
+        "user",
+        JSON.stringify({
+          ...state.user,
+        })
+      );
     },
   },
 });

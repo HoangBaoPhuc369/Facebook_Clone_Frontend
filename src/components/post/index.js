@@ -3,10 +3,8 @@ import "./style.css";
 import { Dots, Public } from "../../svg";
 import ReactsPopup from "./ReactsPopup";
 import { useEffect, useState } from "react";
-
 import PostMenu from "./PostMenu";
 import { getReacts, reactPost } from "../../functions/post";
-
 import DeletePostPopUp from "../deletePost";
 import { createNotifications } from "../../redux/features/notificationSlice";
 import { useDispatch } from "react-redux";
@@ -22,9 +20,7 @@ import {
 } from "../../redux/features/postSlice";
 import ModalPostPopUp from "./ModalPostPopUp";
 import { FaUserFriends } from "react-icons/fa";
-// HiLockClosed
 import { HiLockClosed } from "react-icons/hi";
-import CreatePostSharePopup from "../createPostSharePopup";
 import PostShare from "./PostShare";
 
 export default function Post({
@@ -50,7 +46,7 @@ export default function Post({
   const [openModalPost, setOpenModalPost] = useState(false);
   const [activeComment, setActiveComment] = useState(null);
 
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(post?.whoCanSee);
   const [openselectAudience, setOpenselectAudience] = useState(false);
 
   const handleChange = (value) => {
@@ -554,10 +550,10 @@ export default function Post({
       </ModalCustom>
 
       <ModalPostPopUp
-        open={openModalPost}
         post={post}
         user={user}
         profile={profile}
+        open={openModalPost}
         socketRef={socketRef}
         onClose={() => {
           document.documentElement.style.overflow = "auto";
@@ -588,9 +584,15 @@ export default function Post({
       >
         <div
           onClick={() => handleChange("public")}
-          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          className={`${
+            selected === "public" ? "audience-select-default" : ""
+          } audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] 
+          rounded-lg flex content-center py-[8px] gap-3`}
         >
-          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+          <div
+            className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full 
+          flex flex-wrap justify-center content-center"
+          >
             <Public color="#000" className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3">
@@ -602,7 +604,8 @@ export default function Post({
           <label class="inline-flex items-center">
             <input
               type="checkbox"
-              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0"
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full 
+              border-gray-300 focus:ring-0"
               checked={selected === "public"}
               onChange={() => handleChange("public")}
             />
@@ -611,9 +614,15 @@ export default function Post({
 
         <div
           onClick={() => handleChange("friends")}
-          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          className={`${
+            selected === "friends" ? "audience-select-default" : ""
+          } audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] 
+          rounded-lg flex content-center py-[8px] gap-3`}
         >
-          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+          <div
+            className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] 
+          rounded-full flex flex-wrap justify-center content-center"
+          >
             <FaUserFriends className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3">
@@ -625,7 +634,8 @@ export default function Post({
           <label class="inline-flex items-center">
             <input
               type="checkbox"
-              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0"
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full 
+              border-gray-300 focus:ring-0"
               checked={selected === "friends"}
               onChange={() => handleChange("friends")}
             />
@@ -633,10 +643,16 @@ export default function Post({
         </div>
 
         <div
-          onClick={() => handleChange("onlyMe")}
-          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          onClick={() => handleChange("private")}
+          className={`${
+            selected === "private" ? "audience-select-default" : ""
+          } audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] 
+          rounded-lg flex content-center py-[8px] gap-3`}
         >
-          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+          <div
+            className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] 
+          rounded-full flex flex-wrap justify-center content-center"
+          >
             <HiLockClosed className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3 flex flex-wrap content-center">
@@ -645,9 +661,10 @@ export default function Post({
           <label class="inline-flex items-center">
             <input
               type="checkbox"
-              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0 cursor-pointer"
-              checked={selected === "onlyMe"}
-              onChange={() => handleChange("onlyMe")}
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full 
+              border-gray-300 focus:ring-0 cursor-pointer"
+              checked={selected === "private"}
+              onChange={() => handleChange("private")}
             />
           </label>
         </div>

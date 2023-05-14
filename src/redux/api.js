@@ -171,6 +171,13 @@ export const getPosts = (userToken) =>
     },
   });
 
+export const getPost = (postId, userToken) =>
+  axios.get(`${process.env.REACT_APP_BACKEND_URL}/posts/${postId}`, {
+    headers: {
+      Authorization: `Bearer ${userToken}`,
+    },
+  });
+
 export const createPost = (
   type,
   background,

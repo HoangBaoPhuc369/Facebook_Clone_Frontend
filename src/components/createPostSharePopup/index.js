@@ -2,25 +2,23 @@ import { useEffect, useRef, useState } from "react";
 import "./style.css";
 import EmojiPickerBackgrounds from "./EmojiPickerBackgrounds";
 import PostError from "./PostError";
-import dataURItoBlob from "../../helpers/dataURItoBlob";
-import { uploadImages } from "../../functions/uploadImages";
 import { useSelector, useDispatch } from "react-redux";
-import { createPost, setPostLoading } from "../../redux/features/postSlice";
-import {
-  createPostProfile,
-  setPostProfileLoading,
-} from "../../redux/features/profileSlice";
+import { createPost } from "../../redux/features/postSlice";
+import { createPostProfile } from "../../redux/features/profileSlice";
 import { PuffLoader } from "react-spinners";
 import ModalCustom from "../Modal";
 import { Public } from "../../svg";
 import { FaUserFriends } from "react-icons/fa";
 import { HiLockClosed } from "react-icons/hi";
+import { createPostDetails } from "../../redux/features/notificationSlice";
 
 export default function CreatePostSharePopup({
+  post,
+  profile,
+  details,
+  onClose,
   openSharePost,
   setOpenSharePost,
-  profile,
-  post,
 }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { errorCreatePost, loadingCreatePost } = useSelector((state) => ({
@@ -29,11 +27,14 @@ export default function CreatePostSharePopup({
   const { loadingPosts } = useSelector((state) => ({
     ...state.profile,
   }));
+
+  const { loadingPostDetails } = useSelector((state) => ({
+    ...state.notification,
+  }));
   const dispatch = useDispatch();
   const popup = useRef(null);
   const [text, setText] = useState("");
   const [showPrev, setShowPrev] = useState(false);
-  const [images, setImages] = useState([]);
   const [background, setBackground] = useState("");
 
   const [selected, setSelected] = useState("public");
@@ -63,6 +64,19 @@ export default function CreatePostSharePopup({
             whoCanSee: selected,
           })
         );
+      } else if (details) {
+        dispatch(
+          createPostDetails({
+            type: "share",
+            postRef: post?._id,
+            background: null,
+            text: text,
+            images: null,
+            user: user.id,
+            token: user.token,
+            whoCanSee: selected,
+          })
+        );
       } else {
         dispatch(
           createPostProfile({
@@ -80,6 +94,9 @@ export default function CreatePostSharePopup({
       setBackground("");
       setText("");
       setOpenSharePost(false);
+      if (!details) {
+        onClose();
+      }
     } else {
       console.log("something went wrong");
     }
@@ -164,7 +181,7 @@ export default function CreatePostSharePopup({
         </div>
       ) : null}
 
-      {loadingCreatePost || loadingPosts ? (
+      {loadingCreatePost || loadingPosts || loadingPostDetails ? (
         <div className="blur-background-popup">
           <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div className="relative text-[22px] create-post-text">

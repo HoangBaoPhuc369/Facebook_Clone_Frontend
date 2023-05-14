@@ -9,6 +9,7 @@ export default function Comment({
   user,
   postId,
   profile,
+  details,
   setCount,
   comment,
   first,
@@ -23,7 +24,6 @@ export default function Comment({
   getReplies,
   RelyId,
   setGetParentId,
-  // setVisibleDelPost,
   setIsOpen,
   activeOptions,
   setActiveOptions,
@@ -81,21 +81,6 @@ export default function Comment({
   };
 
   const handleViewNegativeComment = () => {
-    // if (profile) {
-    //   dispatch(
-    //     viewNegativeCommentInProfile({
-    //       postId: postId,
-    //       commentId: comment?._id,
-    //     })
-    //   );
-    // } else {
-    //   dispatch(
-    //     viewNegativeCommentInPost({
-    //       postId: postId,
-    //       commentId: comment?._id,
-    //     })
-    //   );
-    // }
     setIsOpenUnhideComment(true);
     setActiveComment({
       id: comment?._id,
@@ -192,6 +177,7 @@ export default function Comment({
                 user={user}
                 postId={postId}
                 profile={profile}
+                details={details}
                 setCount={setCount}
                 postUserId={postUserId}
                 initialText={comment.comment}
@@ -280,16 +266,17 @@ export default function Comment({
               third={false}
               comment={reply}
               postId={postId}
-              startTyping={startTyping}
-              stopTyping={stopTyping}
-              cancelTyping={cancelTyping}
               profile={profile}
+              details={details}
               setCount={setCount}
               dispatch={dispatch}
               socketRef={socketRef}
               setIsOpen={setIsOpen}
               getParentId={parentId}
+              stopTyping={stopTyping}
               postUserId={postUserId}
+              startTyping={startTyping}
+              cancelTyping={cancelTyping}
               countReplies={countReplies}
               setGetParentId={setParentId}
               activeComment={activeComment}
@@ -317,14 +304,15 @@ export default function Comment({
           <CreateComment
             user={user}
             postId={postId}
-            socketRef={socketRef}
             profile={profile}
-            startTyping={startTyping}
-            stopTyping={stopTyping}
-            cancelTyping={cancelTyping}
+            details={details}
             setCount={setCount}
+            socketRef={socketRef}
+            stopTyping={stopTyping}
             postUserId={postUserId}
             createRelyFirstCm={true}
+            startTyping={startTyping}
+            cancelTyping={cancelTyping}
             handleTrigger={handleTrigger}
             getParentId={isReplying ? parentId : ""}
             handleSendNotifications={handleSendNotifications}
@@ -346,16 +334,17 @@ export default function Comment({
               second={false}
               comment={reply}
               postId={postId}
-              startTyping={startTyping}
-              stopTyping={stopTyping}
-              cancelTyping={cancelTyping}
               profile={profile}
+              details={details}
               dispatch={dispatch}
               setCount={setCount}
               socketRef={socketRef}
               setIsOpen={setIsOpen}
               RelyId={comment?._id}
               postUserId={postUserId}
+              stopTyping={stopTyping}
+              startTyping={startTyping}
+              cancelTyping={cancelTyping}
               activeComment={activeComment}
               activeOptions={activeOptions}
               setGetParentId={setParentIdSecond}
@@ -383,6 +372,7 @@ export default function Comment({
             user={user}
             postId={postId}
             profile={profile}
+            details={details}
             setCount={setCount}
             socketRef={socketRef}
             startTyping={startTyping}

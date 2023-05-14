@@ -15,7 +15,6 @@ import {
   getAllPosts,
   handleAddUserTypingPost,
   handleRemoveUserTypingPost,
-  handleUserTypingPost,
 } from "./redux/features/postSlice";
 import { getConversations } from "./redux/features/conversationSlice";
 import { getNotification } from "./redux/features/notificationSlice";
@@ -25,6 +24,7 @@ import Test from "./components/test";
 import { setActiveUsers } from "./redux/features/dashboardSlice";
 import { ToastContainer, cssTransition } from "react-toastify";
 import CreatePostSharePopup from "./components/createPostSharePopup";
+import DetailsNotifications from "./components/detailsNotifications";
 
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
@@ -40,7 +40,6 @@ const CloseButton = ({ closeToast }) => (
 function App() {
   const [visible, setVisible] = useState(false);
   const [onlineUser, setOnlineUsers] = useState([]);
-  // const [visibleDelPost, setVisibleDelPost] = useState(false);
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { darkTheme } = useSelector((state) => ({ ...state.theme }));
   const userId = user?.id;
@@ -86,7 +85,6 @@ function App() {
           activeUser.socketId !== socketRef?.id &&
           user.following.some((u) => u._id === activeUser.userId)
       );
-      // console.log(activeUsers);
       setOnlineUsers(activeUsers);
       dispatch(setActiveUsers(activeUsersSocket));
     });
@@ -144,8 +142,7 @@ function App() {
   // }, [socketRef, user]);
 
   return (
-    <div className={`relative ${darkTheme === "dark" ? "dark" : "light"}`}>
-      {/* {visible && } */}
+    <div className={`relative ${user.theme === "dark" ? "dark" : "light"}`}>
       <CreatePostPopup visible={visible} setVisible={setVisible} />
 
       <CreatePostSharePopup
@@ -220,6 +217,20 @@ function App() {
             exact
           />
           <Route path="/activate/:token" element={<Activate />} exact />
+          <Route
+            path="/details-notification/:type"
+            element={
+              <DetailsNotifications
+                socketRef={socketRef}
+                onlineUser={onlineUser}
+                setPostShare={setPostShare}
+                setIsProfile={setIsProfile}
+                setOnlineUsers={setOnlineUsers}
+                setsharePostPopUp={setsharePostPopUp}
+              />
+            }
+            exact
+          />
         </Route>
 
         {/* Khi đã ở trong app và bị mất user thì mới vô component này */}

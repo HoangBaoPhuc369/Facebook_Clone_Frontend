@@ -4,6 +4,7 @@ import { deleteComment } from "../../functions/post";
 import { deleteCommentInProfile } from "../../redux/features/profileSlice";
 import { deleteCommentInFeed } from "../../redux/features/postSlice";
 import "./style.css";
+import { deleteCommentInDetails } from "../../redux/features/notificationSlice";
 
 export default function DeletePostPopUp({
   open,
@@ -11,6 +12,7 @@ export default function DeletePostPopUp({
   postId,
   onClose,
   profile,
+  details,
   dispatch,
   children,
 }) {
@@ -20,15 +22,25 @@ export default function DeletePostPopUp({
     const response = await deleteComment(props);
     if (response.status === "ok") {
       if (profile) {
-        dispatch(deleteCommentInProfile({
-          postId,
-          comments: response.data
-        }))
+        dispatch(
+          deleteCommentInProfile({
+            postId,
+            comments: response.data,
+          })
+        );
+      } else if (details) {
+        dispatch(
+          deleteCommentInDetails({
+            comments: response.data,
+          })
+        );
       } else {
-        dispatch(deleteCommentInFeed({
-          postId,
-          comments: response.data
-        }))
+        dispatch(
+          deleteCommentInFeed({
+            postId,
+            comments: response.data,
+          })
+        );
       }
       onClose();
     } else {

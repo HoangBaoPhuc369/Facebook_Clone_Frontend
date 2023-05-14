@@ -1,17 +1,20 @@
 import Moment from "react-moment";
 import { useDispatch } from "react-redux";
-import { seenNotification } from "../../redux/features/notificationSlice";
+import {
+  seenNotification,
+  selecteNotification,
+} from "../../redux/features/notificationSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
 export default function AllNotificationItem({
   user,
   notification,
   checkReact,
-  setShowAllNotification,
 }) {
   const dispatch = useDispatch();
-  // console.log(notification);
+  const navigate = useNavigate();
   return (
     <div
       className="all_notification_item hover1"
@@ -19,7 +22,12 @@ export default function AllNotificationItem({
         dispatch(
           seenNotification({ userToken: user?.token, nofId: notification?._id })
         );
-        // setShowAllNotification((prev) => !prev);
+        dispatch(selecteNotification(notification));
+        if (notification.isSystem) {
+          navigate("/details-notification/system");
+        } else {
+          navigate("/details-notification/post");
+        }
       }}
     >
       <div className="all_notification_item_chat">

@@ -17,11 +17,18 @@ import {
 } from "../../redux/features/postSlice";
 import { v4 as uuidv4 } from "uuid";
 import SentIcon from "./../../svg/sentIcon";
+import {
+  createCommentInDetailsPost,
+  createCommentPostDetailsLoading,
+  editCommentInDetailsPost,
+  editCommentPostDetailsLoading,
+} from "../../redux/features/notificationSlice";
 
 export default function CreateComment({
   user,
   postId,
   profile,
+  details,
   setCount,
   socketRef,
   getParentId,
@@ -44,14 +51,8 @@ export default function CreateComment({
   const [commentImage, setCommentImage] = useState("");
   const [cursorPosition, setCursorPosition] = useState();
 
-  // const { startTyping, stopTyping, cancelTyping } = useTypingComment();
-
   const textRef = useRef(null);
   const imgInput = useRef(null);
-
-  // const { loadingComment } = useSelector((state) => ({ ...state.profile }));
-  // const { loadingCommentPost } = useSelector((state) => ({ ...state.newFeed }));
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -138,6 +139,17 @@ export default function CreateComment({
                 commentId: activeComment.id,
               })
             );
+          } else if (details) {
+            dispatch(
+              editCommentPostDetailsLoading({
+                comment: {
+                  comment: text,
+                  image: commentImage,
+                  isFetching: true,
+                },
+                commentId: activeComment.id,
+              })
+            );
           } else {
             dispatch(
               editCommentPostLoading({
@@ -158,6 +170,16 @@ export default function CreateComment({
             if (profile) {
               dispatch(
                 editCommentInProfilePost({
+                  id: activeComment.id,
+                  postId: postId,
+                  comment: text,
+                  image: imgComment[0].url,
+                  token: user.token,
+                })
+              );
+            } else if (details) {
+              dispatch(
+                editCommentInDetailsPost({
                   id: activeComment.id,
                   postId: postId,
                   comment: text,
@@ -195,6 +217,27 @@ export default function CreateComment({
 
             dispatch(
               editCommentInProfilePost({
+                id: activeComment.id,
+                postId: postId,
+                comment: text,
+                image: "",
+                token: user.token,
+              })
+            );
+          } else if (details) {
+            dispatch(
+              editCommentPostDetailsLoading({
+                comment: {
+                  comment: text,
+                  image: "",
+                  isFetching: true,
+                },
+                commentId: activeComment.id,
+              })
+            );
+
+            dispatch(
+              editCommentInDetailsPost({
                 id: activeComment.id,
                 postId: postId,
                 comment: text,
@@ -262,6 +305,27 @@ export default function CreateComment({
                 },
               })
             );
+          } else if (details) {
+            dispatch(
+              createCommentPostDetailsLoading({
+                comment: {
+                  comment: text,
+                  image: commentImage,
+                  parentId: getParentId === undefined ? "" : getParentId,
+                  isFetching: true,
+                  commentBy: {
+                    _id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    username: user.username,
+                    picture: user.picture,
+                  },
+                  hideComment: false,
+                  commentAt: new Date().toISOString(),
+                  _id: uuidv4(),
+                },
+              })
+            );
           } else {
             dispatch(
               createCommentPostLoading({
@@ -300,6 +364,17 @@ export default function CreateComment({
                   token: user.token,
                 })
               );
+            } else if (details) {
+              dispatch(
+                createCommentInDetailsPost({
+                  postId,
+                  getParentId,
+                  comment: text,
+                  image: imgComment[0].url,
+                  socketId: socketRef?.id,
+                  token: user.token,
+                })
+              );
             } else {
               dispatch(
                 createCommentPost({
@@ -314,9 +389,7 @@ export default function CreateComment({
             }
           }
           setCount((prev) => ++prev);
-          // setText("");
-          // setCommentImage("");
-          1("comment", "comment");
+          handleSendNotifications("comment", "comment");
         } else if (text !== "") {
           if (profile) {
             dispatch(
@@ -343,6 +416,38 @@ export default function CreateComment({
 
             dispatch(
               createCommentInProfilePost({
+                postId,
+                getParentId,
+                comment: text,
+                image: "",
+                socketId: socketRef?.id,
+                token: user.token,
+              })
+            );
+          } else if (details) {
+            dispatch(
+              createCommentPostDetailsLoading({
+                comment: {
+                  comment: text,
+                  image: "",
+                  parentId: getParentId === undefined ? "" : getParentId,
+                  isFetching: true,
+                  commentBy: {
+                    _id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    username: user.username,
+                    picture: user.picture,
+                  },
+                  hideComment: false,
+                  commentAt: new Date().toISOString(),
+                  _id: uuidv4(),
+                },
+              })
+            );
+
+            dispatch(
+              createCommentInDetailsPost({
                 postId,
                 getParentId,
                 comment: text,

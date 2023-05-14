@@ -2,13 +2,17 @@ import { Link } from "react-router-dom";
 import "./style.css";
 import { Dots, Public } from "../../svg";
 import ReactsPopup from "./ReactsPopup";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import CreateComment from "./CreateComment";
 import PostMenu from "./PostMenu";
 import { getReacts, reactPost } from "../../functions/post";
 import Comment from "./Comment";
 import DeletePostPopUp from "../deletePost";
-import { createNotifications } from "../../redux/features/notificationSlice";
+import {
+  createNotifications,
+  viewNegativeCommentInPostDetails,
+  viewNegativePostDetails,
+} from "../../redux/features/notificationSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { formatTimeOrPost } from "../../functions/formatTime";
 import {
@@ -27,7 +31,14 @@ import { HiLockClosed } from "react-icons/hi";
 import PostShare from "./PostShare";
 import CreatePostSharePopup from "../createPostSharePopup";
 
-export default function PostPopUp({ user, post, profile, socketRef }) {
+export default function PostPopUp({
+  user,
+  post,
+  profile,
+  details,
+  socketRef,
+  onClose,
+}) {
   const { userTypingPosts } = useSelector((state) => state.newFeed);
 
   const isPostHaveTyping = userTypingPosts.some((p) => p === post?._id);
@@ -50,7 +61,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
   const [activeOptions, setActiveOptions] = useState(null);
   const [openSharePost, setOpenSharePost] = useState(false);
 
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(post?.whoCanSee);
   const [openselectAudience, setOpenselectAudience] = useState(false);
 
   const handleChange = (value) => {
@@ -151,10 +162,6 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
     }
   };
 
-  const showMore = () => {
-    setCount((prev) => prev + 3);
-  };
-
   const showMoreReplies = () => {
     setCountReplies((prev) => prev + 3);
   };
@@ -174,6 +181,8 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
   const handleShowNegativePost = (id) => {
     if (profile) {
       dispatch(viewNegativePostInProfile(id));
+    } else if (details) {
+      dispatch(viewNegativePostDetails());
     } else {
       dispatch(viewNegativePost(id));
     }
@@ -191,6 +200,13 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
           commentId: commentId,
         })
       );
+    } else if (details) {
+      dispatch(
+        viewNegativeCommentInPostDetails({
+          postId: post?._id,
+          commentId: commentId,
+        })
+      );
     } else {
       dispatch(
         viewNegativeCommentInPost({
@@ -204,7 +220,10 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
   };
 
   return (
-    <div className="post-popup" style={{ width: `${profile && "100%"}` }}>
+    <div
+      className={!details ? "post-popup" : "post"}
+      style={{ width: `${profile && "100%"}` }}
+    >
       <div className="post_header">
         <div className="post_header_left">
           <Link to={`/profile/${post?.user.username}`}>
@@ -244,9 +263,19 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
               </div>
               <div
                 className="icon-audient hover1"
-                onClick={() => setOpenselectAudience(true)}
+                onClick={() => {
+                  if (post?.user?._id === user?.id) {
+                    setOpenselectAudience(true);
+                  }
+                }}
               >
-                <Public color="#828387" />
+                {post.whoCanSee === "public" ? (
+                  <Public color="#828387" />
+                ) : post.whoCanSee === "friends" ? (
+                  <FaUserFriends />
+                ) : (
+                  <HiLockClosed />
+                )}
               </div>
             </div>
           </div>
@@ -475,6 +504,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
                   isOpen={isOpen}
                   comment={comment}
                   profile={profile}
+                  details={details}
                   postId={post?._id}
                   setCount={setCount}
                   dispatch={dispatch}
@@ -504,31 +534,42 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
         {isPostHaveTyping && !isTyping ? (
           <div className="comment-is-typing">
             <ThreeDotLoaderFlashing />
-            <p className="text-sm font-medium">Some one is typing</p>
+            <p className="text-sm font-medium">
+              Some one is typing a comment...
+            </p>
           </div>
         ) : null}
       </div>
 
-      <div className="min-h-[20vh]"></div>
-      <div className="comment-input_popup scrollbar">
+      {!details ? <div className="min-h-[20vh]"></div> : null}
+
+      <div
+        className={
+          !details ? "comment-input_popup scrollbar" : "w-full px-[17px] pb-2"
+        }
+      >
         <CreateComment
           user={user}
-          startTyping={startTyping}
-          stopTyping={stopTyping}
-          cancelTyping={cancelTyping}
           profile={profile}
+          details={details}
           postId={post?._id}
           setCount={setCount}
           socketRef={socketRef}
+          stopTyping={stopTyping}
+          startTyping={startTyping}
           postUserId={post.user._id}
+          cancelTyping={cancelTyping}
           stopTypingComment={stopTypingComment}
           handleSendNotifications={handleSendNotifications}
         />
       </div>
+
       {showMenu && (
         <PostMenu
           userId={user.id}
+          onClose={onClose}
           profile={profile}
+          details={details}
           postId={post?._id}
           token={user.token}
           images={post?.images}
@@ -542,7 +583,9 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
 
       <CreatePostSharePopup
         post={post}
+        onClose={onClose}
         profile={profile}
+        details={details}
         openSharePost={openSharePost}
         setOpenSharePost={setOpenSharePost}
       />
@@ -550,6 +593,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
       <DeletePostPopUp
         open={isOpen}
         profile={profile}
+        details={details}
         postId={post?._id}
         dispatch={dispatch}
         onClose={() => {
@@ -640,9 +684,7 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
           <>
             <button
               className="modal_action"
-              // onClick={() => {
-              //   handleShowNegativePost(post?._id);
-              // }}
+              onClick={() => setOpenselectAudience(false)}
             >
               Done
             </button>
@@ -657,21 +699,28 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
       >
         <div
           onClick={() => handleChange("public")}
-          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          className={`${
+            selected === "public" ? "audience-select-default" : ""
+          } audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] 
+          rounded-lg flex content-center py-[8px] gap-3`}
         >
-          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+          <div
+            className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full 
+          flex flex-wrap justify-center content-center"
+          >
             <Public color="#000" className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3">
             <p className="text-[17px] leading-4 font-medium">Public</p>
-            <p className="text-[15px] text-[#65676b]">
+            <p className="text-[14px] text-[#65676b]">
               Anyone on or off Net Friend
             </p>
           </div>
           <label class="inline-flex items-center">
             <input
               type="checkbox"
-              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0"
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full 
+              border-gray-300 focus:ring-0"
               checked={selected === "public"}
               onChange={() => handleChange("public")}
             />
@@ -680,21 +729,28 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
 
         <div
           onClick={() => handleChange("friends")}
-          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          className={`${
+            selected === "friends" ? "audience-select-default" : ""
+          } audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] 
+          rounded-lg flex content-center py-[8px] gap-3`}
         >
-          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+          <div
+            className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] 
+          rounded-full flex flex-wrap justify-center content-center"
+          >
             <FaUserFriends className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3">
             <p className="text-[17px] leading-4 font-medium">Friends</p>
-            <p className="text-[15px] text-[#65676b]">
+            <p className="text-[14px] text-[#65676b]">
               Your friends on Net Friend
             </p>
           </div>
           <label class="inline-flex items-center">
             <input
               type="checkbox"
-              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0"
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full 
+              border-gray-300 focus:ring-0"
               checked={selected === "friends"}
               onChange={() => handleChange("friends")}
             />
@@ -702,10 +758,16 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
         </div>
 
         <div
-          onClick={() => handleChange("onlyMe")}
-          className="audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] rounded-lg flex content-center py-[8px] gap-3"
+          onClick={() => handleChange("private")}
+          className={`${
+            selected === "private" ? "audience-select-default" : ""
+          } audience-select hover:bg-[#f2f2f2] cursor-pointer h-[76px] px-[6px] 
+          rounded-lg flex content-center py-[8px] gap-3`}
         >
-          <div className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] rounded-full flex flex-wrap justify-center content-center">
+          <div
+            className="audience-icon-bg w-[60px] h-[60px] bg-[#e4e6eb] 
+          rounded-full flex flex-wrap justify-center content-center"
+          >
             <HiLockClosed className="audience-icon w-6 h-6" />
           </div>
           <div className="flex-1 py-3 flex flex-wrap content-center">
@@ -714,9 +776,10 @@ export default function PostPopUp({ user, post, profile, socketRef }) {
           <label class="inline-flex items-center">
             <input
               type="checkbox"
-              class="form-checkbox h-5 w-5 text-blue-500 rounded-full border-gray-300 focus:ring-0 cursor-pointer"
-              checked={selected === "onlyMe"}
-              onChange={() => handleChange("onlyMe")}
+              class="form-checkbox h-5 w-5 text-blue-500 rounded-full 
+              border-gray-300 focus:ring-0 cursor-pointer"
+              checked={selected === "private"}
+              onChange={() => handleChange("private")}
             />
           </label>
         </div>

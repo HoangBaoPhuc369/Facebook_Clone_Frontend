@@ -1,9 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import { changeTheme } from "../../../redux/features/themeSlice";
+import { changeTheme } from "../../../redux/features/authSlice";
 
 export default function DisplayAccessibility({ setVisible }) {
   const dispatch = useDispatch();
-  const { darkTheme } = useSelector((state) => ({ ...state.theme }));
   const { user } = useSelector((state) => ({ ...state.auth }));
 
   return (
@@ -48,7 +47,7 @@ export default function DisplayAccessibility({ setVisible }) {
           type="radio"
           name="dark"
           id="darkOff"
-          checked={darkTheme === "dark" ? false : true}
+          checked={user?.theme === "dark" ? false : true}
           onChange={() => {}}
         />
       </label>
@@ -69,7 +68,7 @@ export default function DisplayAccessibility({ setVisible }) {
           type="radio"
           name="dark"
           id="darkOn"
-          checked={darkTheme === "dark" ? true : false}
+          checked={user?.theme === "dark" ? true : false}
           onChange={() => {}}
         />
       </label>

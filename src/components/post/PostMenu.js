@@ -6,18 +6,21 @@ import { saveAs } from "file-saver";
 import { useDispatch } from "react-redux";
 import { deletePost } from "../../redux/features/postSlice";
 import { deletePostProfile } from "../../redux/features/profileSlice";
+import { deletePostDetails } from "../../redux/features/notificationSlice";
 
 export default function PostMenu({
-  postUserId,
-  userId,
-  imagesLength,
-  setShowMenu,
   token,
-  postId,
-  checkSaved,
-  setCheckSaved,
+  userId,
   images,
+  postId,
+  onClose,
+  details,
   profile,
+  checkSaved,
+  postUserId,
+  setShowMenu,
+  imagesLength,
+  setCheckSaved,
 }) {
   const [test, setTest] = useState(postUserId === userId ? true : false);
   const menu = useRef(null);
@@ -32,14 +35,31 @@ export default function PostMenu({
     }
   };
   const downloadImages = async () => {
-    images.map((img) => {
-      saveAs(img.url, "image.jpg");
-    });
+    images.map((img) => saveAs(img.url, "image.jpg"));
   };
   const deleteHandler = () => {
     if (!profile) {
       dispatch(
         deletePost({
+          postId,
+          token,
+        })
+      );
+    } else if (details) {
+      dispatch(
+        deletePost({
+          postId,
+          token,
+        })
+      );
+      dispatch(
+        deletePostDetails({
+          postId,
+          token,
+        })
+      );
+      dispatch(
+        deletePostProfile({
           postId,
           token,
         })
@@ -51,6 +71,9 @@ export default function PostMenu({
           token,
         })
       );
+    }
+    if (!details) {
+      onClose();
     }
   };
   return (
