@@ -99,6 +99,33 @@ const ReportNoftication = ({ text, icon }) => (
   </>
 );
 
+const DetailsNoftication = ({ picture, text }) => (
+  <>
+    <div className="notification-box_header">
+      <span>New notification</span>
+    </div>
+    <div className="notification-box_container">
+      <div className="notification-picture mr-[10px]">
+        <div
+          className="w-14 h-14 flex flex-wrap justify-center content-center bg-yellow-400
+            rounded-full mr-2.5 text-white text-2xl"
+        >
+          <FontAwesomeIcon icon={faTriangleExclamation} />
+        </div>
+        <img
+          className="absolute bottom-2 right-[7px] w-5 h-5"
+          src={picture}
+          alt=""
+        />
+      </div>
+      <div className="notification-information">
+        <div className="notification-text">{text}</div>
+        <span className="notification-time">a few second ago</span>
+      </div>
+    </div>
+  </>
+);
+
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
   exit: "animate__animated animate__bounceOutDown",
@@ -189,6 +216,18 @@ export default function Header({
   //   });
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, []);
+
+  useEffect(() => {
+    toast(<DetailsNoftication picture={""} text={"Đây là test thông báo"} />, {
+      className: "notification_form",
+      toastClassName: "notification_toast",
+      bodyClassName: "notification_body",
+      position: "bottom-left",
+      hideProgressBar: true,
+      autoClose: false,
+      transition: bounce,
+    });
+  }, []);
 
   useEffect(() => {
     socketRef?.on("getNotification", (data) => {

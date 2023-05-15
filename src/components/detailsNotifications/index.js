@@ -1,19 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { HashLoader } from "react-spinners";
-import CreatePost from "../../components/createPost";
 import Header from "../../components/header";
-import LeftHome from "../../components/home/left";
-import RightHome from "../../components/home/right";
-import SendVerification from "../../components/home/sendVerification";
-import Stories from "../../components/home/stories";
-import Post from "../../components/post";
-import { getConversations } from "../../redux/features/conversationSlice";
-import {
-  getAllPosts,
-  getNewCommentPost,
-  getNewPost,
-} from "../../redux/features/postSlice";
+import { getNewCommentPost } from "../../redux/features/postSlice";
 import { useParams } from "react-router-dom";
 import { getPost } from "../../redux/features/notificationSlice";
 import PostPopUp from "../post/PostPopUp";
@@ -21,10 +9,7 @@ import PostPopUp from "../post/PostPopUp";
 export default function DetailsNotifications({
   socketRef,
   onlineUser,
-  setPostShare,
-  setIsProfile,
   setOnlineUsers,
-  setsharePostPopUp,
 }) {
   const { type } = useParams();
   const { notificationsSelected, loadingPostDetails, postDetails } =
@@ -33,6 +18,8 @@ export default function DetailsNotifications({
     }));
   const { user } = useSelector((state) => ({ ...state.auth }));
   const dispatch = useDispatch();
+
+  console.log(notificationsSelected);
 
   useEffect(() => {
     if (type === "post") {

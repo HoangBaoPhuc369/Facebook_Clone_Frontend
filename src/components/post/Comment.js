@@ -12,6 +12,7 @@ export default function Comment({
   details,
   setCount,
   comment,
+  comments,
   first,
   second,
   third,
@@ -29,16 +30,19 @@ export default function Comment({
   setActiveOptions,
   countReplies,
   showMoreReplies,
-  countRepliesThird,
-  showMoreRepliesThird,
+  // countRepliesThird,
+  // showMoreRepliesThird,
   handleSendNotifications,
   setIsOpenUnhideComment,
   socketRef,
   startTyping,
   stopTyping,
   cancelTyping,
+  stopTypingComment,
 }) {
   const [parentId, setParentId] = useState("");
+  const [countRepliesSecond, setCountRepliesSecond] = useState(3);
+  const [countRepliesThird, setCountRepliesThird] = useState(3);
   const [parentIdSecond, setParentIdSecond] = useState(null);
   const [showOptionComment, setShowOptionComment] = useState(false);
 
@@ -86,6 +90,59 @@ export default function Comment({
       id: comment?._id,
       type: "unhideComment",
     });
+  };
+
+  const showMoreRepliesSecond = () => {
+    setCountRepliesSecond((prev) => prev + 3);
+  };
+
+  const countNestedComments = (data, id) => {
+    let count = 0;
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].parentId === id) {
+        count++;
+        count += countNestedComments(data, data[i]._id);
+      }
+    }
+    return count;
+  };
+
+  const count = () => {
+    if (first) {
+      return countNestedComments(comments, comment?._id);
+    }
+  };
+
+  function handleCountCommentsById(data, parentCommentId) {
+    let count = 0;
+    const level2Comments = data.filter(
+      (comment) => comment.parentId === parentCommentId
+    );
+    for (let i = 0; i < level2Comments.length; i++) {
+      const level3Comments = data.filter(
+        (comment) => comment.parentId === level2Comments[i]._id
+      );
+      count += level3Comments.length;
+    }
+    return count;
+  }
+
+  const handleCountComments = (countRepliesSecond) => {
+    if (countRepliesSecond === 0 && first) {
+      return count() - countRepliesSecond;
+    } else {
+      return count() - countRepliesSecond - countThird();
+    }
+  };
+
+  const countThird = () => {
+    if (first) {
+      return handleCountCommentsById(comments, comment?._id);
+    }
+  };
+
+  const showMoreRepliesThird = () => {
+    setCountRepliesThird((prev) => prev + 3);
   };
 
   return (
@@ -182,6 +239,7 @@ export default function Comment({
                 postUserId={postUserId}
                 initialText={comment.comment}
                 setActiveComment={setActiveComment}
+                stopTypingComment={stopTypingComment}
                 handleTriggerEdit={handleTriggerEdit}
                 handleSendNotifications={handleSendNotifications}
                 activeComment={isEditing ? activeComment : undefined}
@@ -256,7 +314,10 @@ export default function Comment({
       {repliesSecond &&
         repliesSecond.length > 0 &&
         repliesSecond
-          .slice(0, countReplies)
+          .slice(0, countRepliesSecond)
+          .sort((a, b) => {
+            return new Date(a.commentAt) - new Date(b.commentAt);
+          })
           .map((reply, i) => (
             <Comment
               key={i}
@@ -268,6 +329,7 @@ export default function Comment({
               postId={postId}
               profile={profile}
               details={details}
+              comments={comments}
               setCount={setCount}
               dispatch={dispatch}
               socketRef={socketRef}
@@ -284,18 +346,20 @@ export default function Comment({
               showMoreReplies={showMoreReplies}
               setActiveOptions={setActiveOptions}
               setActiveComment={setActiveComment}
+              stopTypingComment={stopTypingComment}
               repliesThird={getReplies(reply?._id)}
               countRepliesThird={countRepliesThird}
               showMoreRepliesThird={showMoreRepliesThird}
               setIsOpenUnhideComment={setIsOpenUnhideComment}
+              handleSendNotifications={handleSendNotifications}
             />
           ))}
 
-      {countReplies < repliesSecond.length && (
-        <div className="view_replies" onClick={() => showMoreReplies()}>
+      {countRepliesSecond < repliesSecond.length && (
+        <div className="view_replies" onClick={() => showMoreRepliesSecond()}>
           <VscReply size={16} style={{ fontWeight: "bold", strokeWidth: 1 }} />
-          {/* <i className="show_replies_icon mg-right-5"></i> */}{" "}
-          {`${repliesSecond.length} Replies`}
+          {handleCountComments(countRepliesSecond)} Replies
+          {/* {repliesSecond.length} Replies */}
         </div>
       )}
 
@@ -314,6 +378,7 @@ export default function Comment({
             startTyping={startTyping}
             cancelTyping={cancelTyping}
             handleTrigger={handleTrigger}
+            stopTypingComment={stopTypingComment}
             getParentId={isReplying ? parentId : ""}
             handleSendNotifications={handleSendNotifications}
             activeComment={isReplying ? activeComment : undefined}
@@ -325,6 +390,9 @@ export default function Comment({
         repliesThird.length > 0 &&
         repliesThird
           .slice(0, countRepliesThird)
+          .sort((a, b) => {
+            return new Date(a.commentAt) - new Date(b.commentAt);
+          })
           .map((reply, i) => (
             <Comment
               key={i}
@@ -332,10 +400,11 @@ export default function Comment({
               third={true}
               first={false}
               second={false}
-              comment={reply}
               postId={postId}
+              comment={reply}
               profile={profile}
               details={details}
+              comments={comments}
               dispatch={dispatch}
               setCount={setCount}
               socketRef={socketRef}
@@ -350,9 +419,11 @@ export default function Comment({
               setGetParentId={setParentIdSecond}
               setActiveOptions={setActiveOptions}
               setActiveComment={setActiveComment}
+              stopTypingComment={stopTypingComment}
               countRepliesThird={countRepliesThird}
               showMoreRepliesThird={showMoreRepliesThird}
               setIsOpenUnhideComment={setIsOpenUnhideComment}
+              handleSendNotifications={handleSendNotifications}
             />
           ))}
 
@@ -362,7 +433,7 @@ export default function Comment({
           onClick={() => showMoreRepliesThird()}
         >
           <VscReply size={16} style={{ fontWeight: "bold", strokeWidth: 1 }} />{" "}
-          {`${repliesThird.length} Replies`}
+          {`${repliesThird.length - countRepliesThird} Replies`}
         </div>
       )}
 
@@ -375,13 +446,14 @@ export default function Comment({
             details={details}
             setCount={setCount}
             socketRef={socketRef}
-            startTyping={startTyping}
-            stopTyping={stopTyping}
-            cancelTyping={cancelTyping}
             postUserId={postUserId}
+            stopTyping={stopTyping}
+            startTyping={startTyping}
             createRelyFirstCm={false}
             createRelySecondCm={true}
+            cancelTyping={cancelTyping}
             handleTrigger={handleTrigger}
+            stopTypingComment={stopTypingComment}
             getParentId={
               isReplying || comment?._id === activeComment?.parentId
                 ? parentIdSecond

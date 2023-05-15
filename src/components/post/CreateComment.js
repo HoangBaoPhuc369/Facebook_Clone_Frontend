@@ -115,391 +115,389 @@ export default function CreateComment({
     };
   };
   const handleComment = async (e) => {
-    if (e.key === "Enter" || e.type === "click") {
-      if (activeComment?.type === "editing") {
-        if (commentImage !== "") {
-          const img = dataURItoBlob(commentImage);
-          const path = `${user.username}/post_images/${postId}`;
-          let formData = new FormData();
-          formData.append("path", path);
-          formData.append("file", img);
+    e.preventDefault();
+    if (activeComment?.type === "editing") {
+      if (commentImage !== "") {
+        const img = dataURItoBlob(commentImage);
+        const path = `${user.username}/post_images/${postId}`;
+        let formData = new FormData();
+        formData.append("path", path);
+        formData.append("file", img);
 
-          setText("");
-          setCommentImage("");
+        setText("");
+        setCommentImage("");
 
+        if (profile) {
+          dispatch(
+            editCommentPostProfileLoading({
+              postId: postId,
+              comment: {
+                comment: text,
+                image: commentImage,
+                isFetching: true,
+              },
+              commentId: activeComment.id,
+            })
+          );
+        } else if (details) {
+          dispatch(
+            editCommentPostDetailsLoading({
+              comment: {
+                comment: text,
+                image: commentImage,
+                isFetching: true,
+              },
+              commentId: activeComment.id,
+            })
+          );
+        } else {
+          dispatch(
+            editCommentPostLoading({
+              postId: postId,
+              comment: {
+                comment: text,
+                image: commentImage,
+                isFetching: true,
+              },
+              commentId: activeComment.id,
+            })
+          );
+        }
+
+        const imgComment = await uploadImages(formData, user.token);
+
+        if (imgComment) {
           if (profile) {
-            dispatch(
-              editCommentPostProfileLoading({
-                postId: postId,
-                comment: {
-                  comment: text,
-                  image: commentImage,
-                  isFetching: true,
-                },
-                commentId: activeComment.id,
-              })
-            );
-          } else if (details) {
-            dispatch(
-              editCommentPostDetailsLoading({
-                comment: {
-                  comment: text,
-                  image: commentImage,
-                  isFetching: true,
-                },
-                commentId: activeComment.id,
-              })
-            );
-          } else {
-            dispatch(
-              editCommentPostLoading({
-                postId: postId,
-                comment: {
-                  comment: text,
-                  image: commentImage,
-                  isFetching: true,
-                },
-                commentId: activeComment.id,
-              })
-            );
-          }
-
-          const imgComment = await uploadImages(formData, user.token);
-
-          if (imgComment) {
-            if (profile) {
-              dispatch(
-                editCommentInProfilePost({
-                  id: activeComment.id,
-                  postId: postId,
-                  comment: text,
-                  image: imgComment[0].url,
-                  token: user.token,
-                })
-              );
-            } else if (details) {
-              dispatch(
-                editCommentInDetailsPost({
-                  id: activeComment.id,
-                  postId: postId,
-                  comment: text,
-                  image: imgComment[0].url,
-                  token: user.token,
-                })
-              );
-            } else {
-              dispatch(
-                editCommentPost({
-                  id: activeComment.id,
-                  postId: postId,
-                  comment: text,
-                  image: imgComment[0].url,
-                  token: user.token,
-                })
-              );
-            }
-          }
-
-          setActiveComment(null);
-        } else if (text !== "") {
-          if (profile) {
-            dispatch(
-              editCommentPostProfileLoading({
-                postId: postId,
-                comment: {
-                  comment: text,
-                  image: "",
-                  isFetching: true,
-                },
-                commentId: activeComment.id,
-              })
-            );
-
             dispatch(
               editCommentInProfilePost({
                 id: activeComment.id,
                 postId: postId,
                 comment: text,
-                image: "",
+                image: imgComment[0].url,
                 token: user.token,
               })
             );
           } else if (details) {
-            dispatch(
-              editCommentPostDetailsLoading({
-                comment: {
-                  comment: text,
-                  image: "",
-                  isFetching: true,
-                },
-                commentId: activeComment.id,
-              })
-            );
-
             dispatch(
               editCommentInDetailsPost({
                 id: activeComment.id,
                 postId: postId,
                 comment: text,
-                image: "",
+                image: imgComment[0].url,
                 token: user.token,
               })
             );
           } else {
-            dispatch(
-              editCommentPostLoading({
-                postId: postId,
-                comment: {
-                  comment: text,
-                  image: "",
-                  isFetching: true,
-                },
-                commentId: activeComment.id,
-              })
-            );
             dispatch(
               editCommentPost({
                 id: activeComment.id,
                 postId: postId,
                 comment: text,
-                image: "",
+                image: imgComment[0].url,
                 token: user.token,
               })
             );
           }
-
-          setText("");
-          setCommentImage("");
-          setActiveComment(null);
         }
-      } else {
-        if (commentImage !== "") {
-          const img = dataURItoBlob(commentImage);
-          const path = `${user.username}/post_images/${postId}`;
-          let formData = new FormData();
-          formData.append("path", path);
-          formData.append("file", img);
 
-          setText("");
-          setCommentImage("");
+        setActiveComment(null);
+      } else if (text !== "") {
+        if (profile) {
+          dispatch(
+            editCommentPostProfileLoading({
+              postId: postId,
+              comment: {
+                comment: text,
+                image: "",
+                isFetching: true,
+              },
+              commentId: activeComment.id,
+            })
+          );
 
+          dispatch(
+            editCommentInProfilePost({
+              id: activeComment.id,
+              postId: postId,
+              comment: text,
+              image: "",
+              token: user.token,
+            })
+          );
+        } else if (details) {
+          dispatch(
+            editCommentPostDetailsLoading({
+              comment: {
+                comment: text,
+                image: "",
+                isFetching: true,
+              },
+              commentId: activeComment.id,
+            })
+          );
+
+          dispatch(
+            editCommentInDetailsPost({
+              id: activeComment.id,
+              postId: postId,
+              comment: text,
+              image: "",
+              token: user.token,
+            })
+          );
+        } else {
+          dispatch(
+            editCommentPostLoading({
+              postId: postId,
+              comment: {
+                comment: text,
+                image: "",
+                isFetching: true,
+              },
+              commentId: activeComment.id,
+            })
+          );
+          dispatch(
+            editCommentPost({
+              id: activeComment.id,
+              postId: postId,
+              comment: text,
+              image: "",
+              token: user.token,
+            })
+          );
+        }
+
+        setText("");
+        setCommentImage("");
+        setActiveComment(null);
+      }
+    } else {
+      if (commentImage !== "") {
+        const img = dataURItoBlob(commentImage);
+        const path = `${user.username}/post_images/${postId}`;
+        let formData = new FormData();
+        formData.append("path", path);
+        formData.append("file", img);
+
+        setText("");
+        setCommentImage("");
+
+        if (profile) {
+          dispatch(
+            createCommentPostProfileLoading({
+              postId,
+              comment: {
+                comment: text,
+                image: commentImage,
+                parentId: getParentId === undefined ? "" : getParentId,
+                isFetching: true,
+                commentBy: {
+                  _id: user.id,
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                  username: user.username,
+                  picture: user.picture,
+                },
+                hideComment: false,
+                commentAt: new Date().toISOString(),
+                _id: uuidv4(),
+              },
+            })
+          );
+        } else if (details) {
+          dispatch(
+            createCommentPostDetailsLoading({
+              comment: {
+                comment: text,
+                image: commentImage,
+                parentId: getParentId === undefined ? "" : getParentId,
+                isFetching: true,
+                commentBy: {
+                  _id: user.id,
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                  username: user.username,
+                  picture: user.picture,
+                },
+                hideComment: false,
+                commentAt: new Date().toISOString(),
+                _id: uuidv4(),
+              },
+            })
+          );
+        } else {
+          dispatch(
+            createCommentPostLoading({
+              postId,
+              comment: {
+                comment: text,
+                image: commentImage,
+                parentId: getParentId === undefined ? "" : getParentId,
+                isFetching: true,
+                commentBy: {
+                  _id: user.id,
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                  username: user.username,
+                  picture: user.picture,
+                },
+                hideComment: false,
+                commentAt: new Date().toISOString(),
+                _id: uuidv4(),
+              },
+            })
+          );
+        }
+
+        const imgComment = await uploadImages(formData, user.token);
+
+        if (imgComment) {
           if (profile) {
-            dispatch(
-              createCommentPostProfileLoading({
-                postId,
-                comment: {
-                  comment: text,
-                  image: commentImage,
-                  parentId: getParentId === undefined ? "" : getParentId,
-                  isFetching: true,
-                  commentBy: {
-                    _id: user.id,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    username: user.username,
-                    picture: user.picture,
-                  },
-                  hideComment: false,
-                  commentAt: new Date().toISOString(),
-                  _id: uuidv4(),
-                },
-              })
-            );
-          } else if (details) {
-            dispatch(
-              createCommentPostDetailsLoading({
-                comment: {
-                  comment: text,
-                  image: commentImage,
-                  parentId: getParentId === undefined ? "" : getParentId,
-                  isFetching: true,
-                  commentBy: {
-                    _id: user.id,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    username: user.username,
-                    picture: user.picture,
-                  },
-                  hideComment: false,
-                  commentAt: new Date().toISOString(),
-                  _id: uuidv4(),
-                },
-              })
-            );
-          } else {
-            dispatch(
-              createCommentPostLoading({
-                postId,
-                comment: {
-                  comment: text,
-                  image: commentImage,
-                  parentId: getParentId === undefined ? "" : getParentId,
-                  isFetching: true,
-                  commentBy: {
-                    _id: user.id,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    username: user.username,
-                    picture: user.picture,
-                  },
-                  hideComment: false,
-                  commentAt: new Date().toISOString(),
-                  _id: uuidv4(),
-                },
-              })
-            );
-          }
-
-          const imgComment = await uploadImages(formData, user.token);
-
-          if (imgComment) {
-            if (profile) {
-              dispatch(
-                createCommentInProfilePost({
-                  postId,
-                  getParentId,
-                  comment: text,
-                  image: imgComment[0].url,
-                  socketId: socketRef?.id,
-                  token: user.token,
-                })
-              );
-            } else if (details) {
-              dispatch(
-                createCommentInDetailsPost({
-                  postId,
-                  getParentId,
-                  comment: text,
-                  image: imgComment[0].url,
-                  socketId: socketRef?.id,
-                  token: user.token,
-                })
-              );
-            } else {
-              dispatch(
-                createCommentPost({
-                  postId,
-                  getParentId,
-                  comment: text,
-                  image: imgComment[0].url,
-                  socketId: socketRef?.id,
-                  token: user.token,
-                })
-              );
-            }
-          }
-          setCount((prev) => ++prev);
-          handleSendNotifications("comment", "comment");
-        } else if (text !== "") {
-          if (profile) {
-            dispatch(
-              createCommentPostProfileLoading({
-                postId,
-                comment: {
-                  comment: text,
-                  image: "",
-                  parentId: getParentId === undefined ? "" : getParentId,
-                  isFetching: true,
-                  commentBy: {
-                    _id: user.id,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    username: user.username,
-                    picture: user.picture,
-                  },
-                  hideComment: false,
-                  commentAt: new Date().toISOString(),
-                  _id: uuidv4(),
-                },
-              })
-            );
-
             dispatch(
               createCommentInProfilePost({
                 postId,
                 getParentId,
                 comment: text,
-                image: "",
+                image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
               })
             );
           } else if (details) {
             dispatch(
-              createCommentPostDetailsLoading({
-                comment: {
-                  comment: text,
-                  image: "",
-                  parentId: getParentId === undefined ? "" : getParentId,
-                  isFetching: true,
-                  commentBy: {
-                    _id: user.id,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    username: user.username,
-                    picture: user.picture,
-                  },
-                  hideComment: false,
-                  commentAt: new Date().toISOString(),
-                  _id: uuidv4(),
-                },
-              })
-            );
-
-            dispatch(
               createCommentInDetailsPost({
                 postId,
                 getParentId,
                 comment: text,
-                image: "",
+                image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
               })
             );
           } else {
             dispatch(
-              createCommentPostLoading({
-                postId,
-                comment: {
-                  comment: text,
-                  image: "",
-                  parentId: getParentId === undefined ? "" : getParentId,
-                  isFetching: true,
-                  commentBy: {
-                    _id: user.id,
-                    first_name: user.first_name,
-                    last_name: user.last_name,
-                    username: user.username,
-                    picture: user.picture,
-                  },
-                  hideComment: false,
-                  commentAt: new Date().toISOString(),
-                  _id: uuidv4(),
-                },
-              })
-            );
-
-            dispatch(
               createCommentPost({
                 postId,
                 getParentId,
                 comment: text,
-                image: "",
+                image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
               })
             );
           }
-
-          setCount((prev) => ++prev);
-          setText("");
-          setCommentImage("");
-          handleSendNotifications("comment", "comment");
         }
-      }
+        setCount((prev) => ++prev);
+        handleSendNotifications("comment", "comment");
+      } else if (text !== "") {
+        if (profile) {
+          dispatch(
+            createCommentPostProfileLoading({
+              postId,
+              comment: {
+                comment: text,
+                image: "",
+                parentId: getParentId === undefined ? "" : getParentId,
+                isFetching: true,
+                commentBy: {
+                  _id: user.id,
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                  username: user.username,
+                  picture: user.picture,
+                },
+                hideComment: false,
+                commentAt: new Date().toISOString(),
+                _id: uuidv4(),
+              },
+            })
+          );
 
-      cancelTyping();
+          dispatch(
+            createCommentInProfilePost({
+              postId,
+              getParentId,
+              comment: text,
+              image: "",
+              socketId: socketRef?.id,
+              token: user.token,
+            })
+          );
+        } else if (details) {
+          dispatch(
+            createCommentPostDetailsLoading({
+              comment: {
+                comment: text,
+                image: "",
+                parentId: getParentId === undefined ? "" : getParentId,
+                isFetching: true,
+                commentBy: {
+                  _id: user.id,
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                  username: user.username,
+                  picture: user.picture,
+                },
+                hideComment: false,
+                commentAt: new Date().toISOString(),
+                _id: uuidv4(),
+              },
+            })
+          );
+
+          dispatch(
+            createCommentInDetailsPost({
+              postId,
+              getParentId,
+              comment: text,
+              image: "",
+              socketId: socketRef?.id,
+              token: user.token,
+            })
+          );
+        } else {
+          dispatch(
+            createCommentPostLoading({
+              postId,
+              comment: {
+                comment: text,
+                image: "",
+                parentId: getParentId === undefined ? "" : getParentId,
+                isFetching: true,
+                commentBy: {
+                  _id: user.id,
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                  username: user.username,
+                  picture: user.picture,
+                },
+                hideComment: false,
+                commentAt: new Date().toISOString(),
+                _id: uuidv4(),
+              },
+            })
+          );
+
+          dispatch(
+            createCommentPost({
+              postId,
+              getParentId,
+              comment: text,
+              image: "",
+              socketId: socketRef?.id,
+              token: user.token,
+            })
+          );
+        }
+
+        setCount((prev) => ++prev);
+        setText("");
+        setCommentImage("");
+        handleSendNotifications("comment", "comment");
+      }
     }
+    // cancelTyping();
   };
 
   return (
@@ -557,9 +555,14 @@ export default function CreateComment({
             onKeyPress={startTyping}
             onKeyUp={(e) => {
               stopTyping();
+              // if (e.key === "Enter" && e.target.value !== "") {
+              //   handleComment(e);
+              // }
+            }}
+            onKeyDown={(e) => {
               if (e.key === "Enter" && e.target.value !== "") {
-                stopTypingComment();
                 handleComment(e);
+                stopTypingComment();
               }
             }}
             onChange={(e) => setText(e.target.value)}

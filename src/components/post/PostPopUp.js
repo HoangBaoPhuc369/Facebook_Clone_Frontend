@@ -178,6 +178,8 @@ export default function PostPopUp({
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
 
+  
+
   const handleShowNegativePost = (id) => {
     if (profile) {
       dispatch(viewNegativePostInProfile(id));
@@ -512,6 +514,7 @@ export default function PostPopUp({
                   setIsOpen={setIsOpen}
                   stopTyping={stopTyping}
                   getReplies={getReplies}
+                  comments={post?.comments}
                   startTyping={startTyping}
                   postUserId={post.user._id}
                   cancelTyping={cancelTyping}
@@ -522,6 +525,7 @@ export default function PostPopUp({
                   showMoreReplies={showMoreReplies}
                   setActiveOptions={setActiveOptions}
                   setActiveComment={setActiveComment}
+                  stopTypingComment={stopTypingComment}
                   countRepliesThird={countRepliesThird}
                   repliesSecond={getReplies(comment?._id)}
                   showMoreRepliesThird={showMoreRepliesThird}

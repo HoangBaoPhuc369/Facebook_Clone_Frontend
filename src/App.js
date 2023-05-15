@@ -142,7 +142,7 @@ function App() {
   // }, [socketRef, user]);
 
   return (
-    <div className={`relative ${user.theme === "dark" ? "dark" : "light"}`}>
+    <div className={`relative ${user?.theme === "dark" ? "dark" : "light"}`}>
       <CreatePostPopup visible={visible} setVisible={setVisible} />
 
       <CreatePostSharePopup
