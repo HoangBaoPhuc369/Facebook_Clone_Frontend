@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { deletePost } from "../../redux/features/postSlice";
 import { deletePostProfile } from "../../redux/features/profileSlice";
 import { deletePostDetails } from "../../redux/features/notificationSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function PostMenu({
   token,
@@ -21,9 +22,11 @@ export default function PostMenu({
   setShowMenu,
   imagesLength,
   setCheckSaved,
+  toastDetailsPost,
 }) {
   const [test, setTest] = useState(postUserId === userId ? true : false);
   const menu = useRef(null);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   useOnClickOutside(menu, () => setShowMenu(false));
   const saveHandler = async () => {
@@ -43,38 +46,43 @@ export default function PostMenu({
         deletePost({
           postId,
           token,
+          toastDetailsPost: toastDetailsPost,
         })
       );
     } else if (details) {
-      dispatch(
-        deletePost({
-          postId,
-          token,
-        })
-      );
+      // dispatch(
+      //   deletePost({
+      //     postId,
+      //     token,
+      //     toastDetailsPost: toastDetailsPost,
+      //   })
+      // );
       dispatch(
         deletePostDetails({
           postId,
           token,
+          navigate,
+          toastDetailsPost: toastDetailsPost,
         })
       );
-      dispatch(
-        deletePostProfile({
-          postId,
-          token,
-        })
-      );
+      // dispatch(
+      //   deletePostProfile({
+      //     postId,
+      //     token,
+      //   })
+      // );
     } else {
       dispatch(
         deletePostProfile({
           postId,
           token,
+          toastDetailsPost: toastDetailsPost,
         })
       );
     }
-    if (!details) {
-      onClose();
-    }
+    // if (!details) {
+    //   onClose();
+    // }
   };
   return (
     <ul className="post_menu" ref={menu}>

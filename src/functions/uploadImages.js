@@ -13,7 +13,6 @@ export const uploadImages = async (formData, token) => {
         },
       }
     );
-    console.log(data);
     return data;
   } catch (error) {
     return error.response.data.message;

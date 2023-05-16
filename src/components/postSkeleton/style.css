@@ -1,0 +1,33 @@
+.post-meta span {
+  display: flex;
+  height: 10px;
+  margin-bottom: 5px;
+  color: #3e4042;
+}
+
+.post-meta span:first-child {
+  margin-top: 2px;
+}
+
+.post-meta {
+  display: flex;
+  align-items: center;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 15px;
+}
+
+.post-action span {
+  color: #3e4042;
+}
+
+.post-avatar span {
+  color: #3e4042;
+}
+
+.post-footer {
+  padding: 174px 16px 16px;
+}

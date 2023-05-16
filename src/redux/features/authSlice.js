@@ -15,7 +15,6 @@ export const login = createAsyncThunk(
           timeJoin: new Date(),
         });
       }
-      console.log(data);
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);

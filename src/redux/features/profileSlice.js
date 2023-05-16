@@ -151,7 +151,15 @@ export const deleteRequest = createAsyncThunk(
 export const createCommentInProfilePost = createAsyncThunk(
   "profile/createComment",
   async (
-    { postId, getParentId, comment, image, socketId, token },
+    {
+      postId,
+      getParentId,
+      comment,
+      image,
+      socketId,
+      token,
+      handleSendNotifications,
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -163,6 +171,9 @@ export const createCommentInProfilePost = createAsyncThunk(
         socketId,
         token
       );
+      if (data) {
+        handleSendNotifications("comment", "comment");
+      }
       return { data: data.comments, postId };
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -185,7 +196,17 @@ export const editCommentInProfilePost = createAsyncThunk(
 export const createPostProfile = createAsyncThunk(
   "profile/createPost",
   async (
-    { type, background, text, images, user, postRef, token, whoCanSee },
+    {
+      type,
+      background,
+      text,
+      images,
+      user,
+      postRef,
+      token,
+      whoCanSee,
+      toastDetailsPost,
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -199,6 +220,9 @@ export const createPostProfile = createAsyncThunk(
         token,
         postRef
       );
+      if (data) {
+        toastDetailsPost("share");
+      }
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -208,9 +232,14 @@ export const createPostProfile = createAsyncThunk(
 
 export const deletePostProfile = createAsyncThunk(
   "profile/deletePost",
-  async ({ postId, token }, { rejectWithValue }) => {
+  async ({ postId, token, toastDetailsPost }, { rejectWithValue }) => {
     try {
       const { data } = await api.deletePost(postId, token);
+
+      if (data) {
+        toastDetailsPost("delete");
+      }
+
       return {
         status: data.status,
         postId,

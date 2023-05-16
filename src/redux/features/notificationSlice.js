@@ -6,7 +6,6 @@ export const createNotifications = createAsyncThunk(
   "notification/createNotifications",
   async ({ props, token }, { rejectWithValue }) => {
     try {
-      console.log(props);
       const { data } = await api.createNotifications(props, token);
       return data;
     } catch (err) {
@@ -66,7 +65,15 @@ export const editCommentInDetailsPost = createAsyncThunk(
 export const createCommentInDetailsPost = createAsyncThunk(
   "notification/details/createComment",
   async (
-    { postId, getParentId, comment, image, socketId, token },
+    {
+      postId,
+      getParentId,
+      comment,
+      image,
+      socketId,
+      token,
+      handleSendNotifications,
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -78,6 +85,10 @@ export const createCommentInDetailsPost = createAsyncThunk(
         socketId,
         token
       );
+      if (data) {
+        handleSendNotifications("comment", "comment");
+      }
+
       return { data: data.comments, postId };
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -87,10 +98,16 @@ export const createCommentInDetailsPost = createAsyncThunk(
 
 export const deletePostDetails = createAsyncThunk(
   "notification/details/deletePost",
-  async ({ postId, token, navigate }, { rejectWithValue }) => {
+  async (
+    { postId, token, navigate, toastDetailsPost },
+    { rejectWithValue }
+  ) => {
     try {
       const { data } = await api.deletePost(postId, token);
-      navigate("/");
+      if (data) {
+        navigate("/");
+        toastDetailsPost("delete");
+      }
       return {
         status: data.status,
         postId,
@@ -104,7 +121,17 @@ export const deletePostDetails = createAsyncThunk(
 export const createPostDetails = createAsyncThunk(
   "notification/details/createPost",
   async (
-    { type, background, text, images, user, postRef, token, whoCanSee },
+    {
+      type,
+      background,
+      text,
+      images,
+      user,
+      postRef,
+      token,
+      whoCanSee,
+      toastDetailsPost,
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -118,6 +145,9 @@ export const createPostDetails = createAsyncThunk(
         token,
         postRef
       );
+      if (data) {
+        toastDetailsPost("share");
+      }
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -131,9 +161,12 @@ const initialState = {
     ? JSON.parse(Cookies.get("notification"))
     : [],
   notificationsSelected: null,
-  postDetails: null,
+  postDetails: localStorage.getItem("post-details")
+    ? JSON.parse(localStorage.getItem("post-details"))
+    : null,
   error: "",
   loading: false,
+  loadingSharePost: false,
   loadingPostDetails: false,
 };
 
@@ -223,6 +256,7 @@ export const notificationSlice = createSlice({
     [getPost.fulfilled]: (state, action) => {
       state.loadingPostDetails = false;
       state.postDetails = action.payload;
+      localStorage.setItem("post-details", JSON.stringify(action.payload));
       state.error = "";
     },
     [getPost.rejected]: (state, action) => {
@@ -257,15 +291,15 @@ export const notificationSlice = createSlice({
     },
 
     [createPostDetails.pending]: (state, action) => {
-      state.loadingPostDetails = true;
+      state.loadingSharePost = true;
     },
     [createPostDetails.fulfilled]: (state, action) => {
-      state.loadingPostDetails = false;
+      state.loadingSharePost = false;
       console.log(action.payload);
       state.error = "";
     },
     [createPostDetails.rejected]: (state, action) => {
-      state.loadingPostDetails = false;
+      state.loadingSharePost = false;
       state.error = action.payload?.message;
     },
   },

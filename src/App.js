@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import Login from "./pages/login";
 import Profile from "./pages/profile";
 import Home from "./pages/home";
@@ -22,9 +22,10 @@ import { io } from "socket.io-client";
 import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInParent";
 import Test from "./components/test";
 import { setActiveUsers } from "./redux/features/dashboardSlice";
-import { ToastContainer, cssTransition } from "react-toastify";
+import { ToastContainer, cssTransition, toast } from "react-toastify";
 import CreatePostSharePopup from "./components/createPostSharePopup";
 import DetailsNotifications from "./components/detailsNotifications";
+import { IoIosCheckmarkCircle } from "react-icons/io";
 
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
@@ -34,6 +35,24 @@ const bounce = cssTransition({
 const CloseButton = ({ closeToast }) => (
   <div className="small_circle" onClick={closeToast}>
     <i className="exit_icon"></i>
+  </div>
+);
+
+const DetailsNoftication = ({ type }) => (
+  <div className="flex items-center justify-between">
+    {type === "share" ? (
+      <>
+        <div className="flex flex-wrap items-center gap-2">
+          <IoIosCheckmarkCircle className="w-5 h-5 text-[#007000]" />
+          <span>Shared to Feed.</span>
+        </div>
+        <Link to="/" className="text-blue-500">
+          View post
+        </Link>
+      </>
+    ) : (
+      <div>Your post has been deleted.</div>
+    )}
   </div>
 );
 
@@ -141,6 +160,17 @@ function App() {
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [socketRef, user]);
 
+  const toastDetailsPost = (type) =>
+    toast(<DetailsNoftication type={type} />, {
+      className: "details_notification_form",
+      toastClassName: "details_notification_toast",
+      bodyClassName: "details_notification_body",
+      position: "bottom-left",
+      hideProgressBar: true,
+      autoClose: 3000,
+      transition: bounce,
+    });
+
   return (
     <div className={`relative ${user?.theme === "dark" ? "dark" : "light"}`}>
       <CreatePostPopup visible={visible} setVisible={setVisible} />
@@ -159,13 +189,14 @@ function App() {
             element={
               socketRef ? (
                 <Profile
-                  setPostShare={setPostShare}
-                  setsharePostPopUp={setsharePostPopUp}
-                  setIsProfile={setIsProfile}
                   socketRef={socketRef}
                   setVisible={setVisible}
                   onlineUser={onlineUser}
+                  setPostShare={setPostShare}
+                  setIsProfile={setIsProfile}
                   setOnlineUsers={setOnlineUsers}
+                  toastDetailsPost={toastDetailsPost}
+                  setsharePostPopUp={setsharePostPopUp}
                 />
               ) : null
             }
@@ -176,13 +207,14 @@ function App() {
             element={
               socketRef ? (
                 <Profile
-                  setPostShare={setPostShare}
-                  setsharePostPopUp={setsharePostPopUp}
-                  setIsProfile={setIsProfile}
                   socketRef={socketRef}
                   setVisible={setVisible}
                   onlineUser={onlineUser}
+                  setIsProfile={setIsProfile}
+                  setPostShare={setPostShare}
                   setOnlineUsers={setOnlineUsers}
+                  toastDetailsPost={toastDetailsPost}
+                  setsharePostPopUp={setsharePostPopUp}
                 />
               ) : null
             }
@@ -204,12 +236,13 @@ function App() {
               socketRef ? (
                 <Home
                   socketRef={socketRef}
-                  setPostShare={setPostShare}
-                  setIsProfile={setIsProfile}
-                  setsharePostPopUp={setsharePostPopUp}
                   onlineUser={onlineUser}
                   setVisible={setVisible}
+                  setIsProfile={setIsProfile}
+                  setPostShare={setPostShare}
                   setOnlineUsers={setOnlineUsers}
+                  toastDetailsPost={toastDetailsPost}
+                  setsharePostPopUp={setsharePostPopUp}
                   // setVisibleDelPost={setVisibleDelPost}
                 />
               ) : null
@@ -223,10 +256,8 @@ function App() {
               <DetailsNotifications
                 socketRef={socketRef}
                 onlineUser={onlineUser}
-                setPostShare={setPostShare}
-                setIsProfile={setIsProfile}
                 setOnlineUsers={setOnlineUsers}
-                setsharePostPopUp={setsharePostPopUp}
+                toastDetailsPost={toastDetailsPost}
               />
             }
             exact

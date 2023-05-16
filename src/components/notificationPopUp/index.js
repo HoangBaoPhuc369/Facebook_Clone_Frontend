@@ -80,7 +80,10 @@ export default function NotificationPopUp({
 
           <div className="call-box-btn-group">
             <div className="call-box-btn-item ">
-              <div className="call-box-btn-wrap call-decline">
+              <div
+                className="call-box-btn-wrap call-decline"
+                onClick={handleClose}
+              >
                 <FontAwesomeIcon icon={faXmark} />
               </div>
               <span>Decline</span>

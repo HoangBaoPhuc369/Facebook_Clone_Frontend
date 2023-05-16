@@ -138,21 +138,21 @@
 }
 
 .message-sent {
-  max-width: 75%;
   display: flex;
   margin: 1px 0 1px auto;
 }
 
 .message-sent-text {
+  max-width: 206px;
   color: var(--bg-primary);
   background: var(--blue-color-secondary);
   border-radius: 20px 4px 4px 20px;
   min-height: 20px;
   padding: 10px;
   margin-left: auto;
-  text-align: left;
+  text-align: justify;
+  text-align-last: left;
 }
-
 
 .message-sent_first-child > .message-sent-text {
   border-top-right-radius: 20px;
@@ -167,7 +167,6 @@
   border-radius: 20px;
   margin-bottom: 8px;
 }
-
 
 .message-sent-status {
   width: 15px;
@@ -221,7 +220,7 @@
 }
 
 .message-received {
-  max-width: 75%;
+  max-width: 178px;
   margin: 1px 0;
   display: flex;
 }
@@ -245,7 +244,9 @@
   color: var(--color-primary);
   background: var(--bg-third);
   border-radius: 4px 20px 20px 4px;
-  text-align: left;
+  /* text-align: left; */
+  text-align: justify;
+  text-align-last: left;
 }
 
 /* =================Information Chat =================*/

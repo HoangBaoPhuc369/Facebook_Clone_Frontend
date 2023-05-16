@@ -31,6 +31,7 @@ export default function Post({
   setPostShare,
   setIsProfile,
   setsharePostPopUp,
+  toastDetailsPost,
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
@@ -100,9 +101,9 @@ export default function Post({
         picture: user?.picture,
         name: user?.first_name + " " + user?.last_name,
       };
-      dispatch(
-        createNotifications({ props: notification, token: user?.token })
-      );
+      // dispatch(
+      //   createNotifications({ props: notification, token: user?.token })
+      // );
       socketRef?.emit("sendNotification", notificationSocket);
     }
   };
@@ -169,6 +170,8 @@ export default function Post({
     document.documentElement.style.overflow = "hidden";
     setOpenModalPost(true);
   };
+
+  const handleClose = () => {};
 
   return (
     <div className="post" style={{ width: `${profile && "100%"}` }}>
@@ -237,23 +240,25 @@ export default function Post({
       </div>
       {post?.hidePost ? (
         <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
-          <div className="px-3 py-4">
-            <div className="text-lg font-medium flex gap-2">
-              <i className="m_warning mt-1"></i>
-              We hide something you posted
-            </div>
-            <p className="text-sm text-gray-500 negative-post-text">
-              We covered the post because it doesn't follow the
-              <span className="ml-1 text-blue-500 hover:underline hover:cursor-pointer">
-                Net Friend Community Standard
-              </span>
-            </p>
-
-            <div
-              onClick={() => setIsOpenNegativePost(true)}
-              className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
-            >
-              Unhide
+          <div className="px-3 py-4 flex">
+            <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi"/>
+            <div>
+              <div className="text-[15px] font-medium flex gap-2">
+                We hide something you posted
+              </div>
+              <p className="text-[13px] text-gray-500 negative-post-text">
+                We covered the post because it doesn't follow the
+                <span className="ml-1 text-blue-500 hover:underline hover:cursor-pointer">
+                  Net Friend Community Standard
+                </span>
+              </p>
+  
+              <div
+                onClick={() => setIsOpenNegativePost(true)}
+                className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
+              >
+                Unhide
+              </div>
             </div>
           </div>
         </div>
@@ -460,6 +465,7 @@ export default function Post({
           setShowMenu={setShowMenu}
           postUserId={post.user._id}
           setCheckSaved={setCheckSaved}
+          toastDetailsPost={toastDetailsPost}
           imagesLength={post?.images?.length}
         />
       )}
@@ -555,6 +561,8 @@ export default function Post({
         profile={profile}
         open={openModalPost}
         socketRef={socketRef}
+        toastDetailsPost={toastDetailsPost}
+        handleSendNotifications={handleSendNotifications}
         onClose={() => {
           document.documentElement.style.overflow = "auto";
           setOpenModalPost(false);

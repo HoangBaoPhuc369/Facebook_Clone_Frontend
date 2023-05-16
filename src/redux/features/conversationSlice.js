@@ -250,7 +250,7 @@ export const conversationSlice = createSlice({
           action.payload.data,
         ];
         state.conversations.splice(indexConversation, 1, checkConversation);
-
+        
         if (state.chatBox.currentChatBox !== action.payload.currentChatId) {
           const index = state.chatBox.chatBoxWaiting.findIndex(
             (i) => i === action.payload.currentChatId

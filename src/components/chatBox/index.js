@@ -102,7 +102,11 @@ export default function ChatBox({
         );
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+
+  useEffect(() => {
     socket?.on("getMessageSeenAll", (data) => {
       if (data.currentChatId === currentChat?._id) {
         dispatch(

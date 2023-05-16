@@ -38,6 +38,7 @@ export default function PostPopUp({
   details,
   socketRef,
   onClose,
+  toastDetailsPost,
 }) {
   const { userTypingPosts } = useSelector((state) => state.newFeed);
 
@@ -102,6 +103,7 @@ export default function PostPopUp({
 
   const handleSendNotifications = (icon, type) => {
     if (user?.id !== post?.user._id) {
+      console.log("Lỗi ở đây");
       const typeNotification =
         type === "react"
           ? post?.type === null
@@ -113,12 +115,12 @@ export default function PostPopUp({
             : " commented on your photo."
           : null;
 
-      const notification = {
-        senderId: user?.id,
-        receiverId: post?.user._id,
-        icon: icon,
-        text: typeNotification,
-      };
+      // const notification = {
+      //   senderId: user?.id,
+      //   receiverId: post?.user._id,
+      //   icon: icon,
+      //   text: typeNotification,
+      // };
       const notificationSocket = {
         senderId: user?.id,
         receiverId: post?.user._id,
@@ -128,9 +130,9 @@ export default function PostPopUp({
         picture: user?.picture,
         name: user?.first_name + " " + user?.last_name,
       };
-      dispatch(
-        createNotifications({ props: notification, token: user?.token })
-      );
+      // dispatch(
+      //   createNotifications({ props: notification, token: user?.token })
+      // );
 
       socketRef?.emit("sendNotification", notificationSocket);
     }
@@ -177,8 +179,6 @@ export default function PostPopUp({
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-
-  
 
   const handleShowNegativePost = (id) => {
     if (profile) {
@@ -271,9 +271,9 @@ export default function PostPopUp({
                   }
                 }}
               >
-                {post.whoCanSee === "public" ? (
+                {post?.whoCanSee === "public" ? (
                   <Public color="#828387" />
-                ) : post.whoCanSee === "friends" ? (
+                ) : post?.whoCanSee === "friends" ? (
                   <FaUserFriends />
                 ) : (
                   <HiLockClosed />
@@ -290,24 +290,26 @@ export default function PostPopUp({
         </div>
       </div>
       {post?.hidePost ? (
-        <div className="mx-4 border border-solid border-gray-500 shadow-sm">
-          <div className="p-2">
-            <div className="text-lg font-medium flex gap-2">
-              <i className="m_warning mt-1"></i>
-              We hide something you posted
-            </div>
-            <p className="text-sm text-gray-500 negative-post-text">
-              We covered the post because it doesn't follow the
-              <span className="ml-1 text-blue-500 hover:underline hover:cursor-pointer">
-                Net Friend Community Standard
-              </span>
-            </p>
+        <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
+          <div className="px-3 py-4 flex">
+            <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi" />
+            <div>
+              <div className="text-[15px] font-medium flex gap-2">
+                We hide something you posted
+              </div>
+              <p className="text-[13px] text-gray-500 negative-post-text">
+                We covered the post because it doesn't follow the
+                <span className="ml-1 text-blue-500 hover:underline hover:cursor-pointer">
+                  Net Friend Community Standard
+                </span>
+              </p>
 
-            <div
-              onClick={() => setIsOpenNegativePost(true)}
-              className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
-            >
-              Unhide
+              <div
+                onClick={() => setIsOpenNegativePost(true)}
+                className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
+              >
+                Unhide
+              </div>
             </div>
           </div>
         </div>
@@ -354,15 +356,15 @@ export default function PostPopUp({
       ) : post?.type === "profilePicture" ? (
         <div className="post_profile_wrap">
           <div className="post_updated_bg">
-            <img src={post.user.cover} alt="" />
+            <img src={post?.user?.cover} alt="" />
           </div>
           <img
-            src={post?.images ? post.images[0]?.url : ""}
+            src={post?.images ? post?.images[0]?.url : ""}
             alt=""
             className="post_updated_picture"
           />
         </div>
-      ) : post.type === "share" ? (
+      ) : post?.type === "share" ? (
         <>
           <div className="post_text">{post?.text}</div>
           <div className="px-[17px] w-full">
@@ -376,7 +378,7 @@ export default function PostPopUp({
         </>
       ) : (
         <div className="post_cover_wrap">
-          <img src={post?.images ? post.images[0]?.url : ""} alt="" />
+          <img src={post?.images ? post?.images[0]?.url : ""} alt="" />
         </div>
       )}
 
@@ -516,7 +518,7 @@ export default function PostPopUp({
                   getReplies={getReplies}
                   comments={post?.comments}
                   startTyping={startTyping}
-                  postUserId={post.user._id}
+                  postUserId={post?.user?._id}
                   cancelTyping={cancelTyping}
                   countReplies={countReplies}
                   activeOptions={activeOptions}
@@ -561,7 +563,7 @@ export default function PostPopUp({
           socketRef={socketRef}
           stopTyping={stopTyping}
           startTyping={startTyping}
-          postUserId={post.user._id}
+          postUserId={post?.user._id}
           cancelTyping={cancelTyping}
           stopTypingComment={stopTypingComment}
           handleSendNotifications={handleSendNotifications}
@@ -570,17 +572,18 @@ export default function PostPopUp({
 
       {showMenu && (
         <PostMenu
-          userId={user.id}
+          userId={user?.id}
           onClose={onClose}
           profile={profile}
           details={details}
           postId={post?._id}
-          token={user.token}
+          token={user?.token}
           images={post?.images}
           checkSaved={checkSaved}
           setShowMenu={setShowMenu}
-          postUserId={post.user._id}
+          postUserId={post?.user._id}
           setCheckSaved={setCheckSaved}
+          toastDetailsPost={toastDetailsPost}
           imagesLength={post?.images?.length}
         />
       )}
@@ -591,6 +594,7 @@ export default function PostPopUp({
         profile={profile}
         details={details}
         openSharePost={openSharePost}
+        toastDetailsPost={toastDetailsPost}
         setOpenSharePost={setOpenSharePost}
       />
 

@@ -11,7 +11,6 @@ const broadcastEventTypes = {
 export const handleWSSCallInParent = (newSocket) => {
   // listeners related with direct call
   newSocket.on('call-other', (data) => {
-    console.log(data);
     webRTCHandler.handlePreOfferInParent(data);
   });
 

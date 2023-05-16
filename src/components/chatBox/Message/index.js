@@ -16,7 +16,7 @@ export default function Message({
   const checkSeenMessage = message?._id === getLastSeenMessage;
   const checkMessageBottomExits =
     messagesChat[index + 1]?.sender !== message?.sender;
-  const checkChildrenLeft = 
+  const checkChildrenLeft =
     messagesChat[index - 1]?.sender !== message?.sender &&
     messagesChat[index + 1]?.sender === message?.sender
       ? "message-received_first-child"
@@ -28,7 +28,7 @@ export default function Message({
       ? "message-received_last-child"
       : "message-received_normal";
 
-      const checkChildrenRight = 
+  const checkChildrenRight =
     messagesChat[index - 1]?.sender !== message?.sender &&
     messagesChat[index + 1]?.sender === message?.sender
       ? "message-sent_first-child"
@@ -61,7 +61,12 @@ export default function Message({
           <div className="message-group-received">
             <div>
               {checkMessageBottomExits ? (
-                <img src={friendChat?.picture} alt="" />
+                <img
+                  src={friendChat?.picture}
+                  className="appearance-none prose"
+                  style={{ width: "28px", height: "28px" }}
+                  alt=""
+                />
               ) : (
                 <div className="message-group-received_no-image"></div>
               )}

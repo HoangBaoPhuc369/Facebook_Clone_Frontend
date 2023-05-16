@@ -24,6 +24,7 @@ import {
   getProfile,
 } from "../../redux/features/profileSlice";
 import ProfilePictureInfos from "./ProfilePictureInfos";
+import PostSkeleton from "../../components/postSkeleton";
 export default function Profile({
   socketRef,
   onlineUser,
@@ -297,7 +298,7 @@ export default function Profile({
                 <GridPosts />
                 {loading ? (
                   <div className="skeleton_loader">
-                    <HashLoader color="#1876f2" />
+                    <PostSkeleton />
                   </div>
                 ) : (
                   <div className="posts">

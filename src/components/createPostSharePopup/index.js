@@ -19,6 +19,7 @@ export default function CreatePostSharePopup({
   onClose,
   openSharePost,
   setOpenSharePost,
+  toastDetailsPost,
 }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { errorCreatePost, loadingCreatePost } = useSelector((state) => ({
@@ -28,7 +29,7 @@ export default function CreatePostSharePopup({
     ...state.profile,
   }));
 
-  const { loadingPostDetails } = useSelector((state) => ({
+  const { loadingSharePost } = useSelector((state) => ({
     ...state.notification,
   }));
   const dispatch = useDispatch();
@@ -51,9 +52,9 @@ export default function CreatePostSharePopup({
 
   const postSubmit = async () => {
     if (text) {
-      if (!profile) {
+      if (profile) {
         dispatch(
-          createPost({
+          createPostProfile({
             type: "share",
             postRef: post?._id,
             background: null,
@@ -62,6 +63,7 @@ export default function CreatePostSharePopup({
             user: user.id,
             token: user.token,
             whoCanSee: selected,
+            toastDetailsPost,
           })
         );
       } else if (details) {
@@ -75,11 +77,12 @@ export default function CreatePostSharePopup({
             user: user.id,
             token: user.token,
             whoCanSee: selected,
+            toastDetailsPost,
           })
         );
       } else {
         dispatch(
-          createPostProfile({
+          createPost({
             type: "share",
             postRef: post?._id,
             background: null,
@@ -88,15 +91,14 @@ export default function CreatePostSharePopup({
             user: user.id,
             token: user.token,
             whoCanSee: selected,
+            toastDetailsPost,
           })
         );
       }
       setBackground("");
       setText("");
       setOpenSharePost(false);
-      if (!details) {
-        onClose();
-      }
+      // onClose();
     } else {
       console.log("something went wrong");
     }
@@ -181,7 +183,7 @@ export default function CreatePostSharePopup({
         </div>
       ) : null}
 
-      {loadingCreatePost || loadingPosts || loadingPostDetails ? (
+      {loadingCreatePost || loadingPosts || loadingSharePost ? (
         <div className="blur-background-popup">
           <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <div className="relative text-[22px] create-post-text">

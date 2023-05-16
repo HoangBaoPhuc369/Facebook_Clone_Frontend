@@ -101,9 +101,9 @@
 .dark .gray_btn img {
   filter: invert(100%);
 }
-.dark .profile_container svg {
+/* .dark .profile_container svg {
   filter: invert(88%);
-}
+} */
 .dark .grid_icon {
   filter: invert(80%);
 }
@@ -133,6 +133,18 @@
 .dark .ChatBox_header {
   background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color) !important;
+}
+
+.dark .ChatBox_header_left_circle {
+  border: 2px solid var(--color-primary);
+}
+
+.dark .ChatBox_header_left_username {
+  color: var(--color-primary) !important;
+}
+
+.dark .chatBox_display .blue-background {
+  background: var(--blue-color-secondary);
 }
 
 .dark .ChatBox_message_bottom {
@@ -227,7 +239,7 @@
   background: var(--bg-forth);
 }
 
-.dark .audience-select .audience-icon-bg .audience-icon{
+.dark .audience-select .audience-icon-bg .audience-icon {
   color: var(--color-primary);
   fill: var(--color-primary);
 }
@@ -247,3 +259,35 @@
 .dark .audience-select-default:hover {
   background: var(--blue-color-third) !important;
 }
+
+.dark .Toastify__toast-container > .details_notification_form {
+  color: var(--color-primary);
+}
+
+.dark .details-post-text-content {
+  color: var(--color-primary);
+}
+
+.dark .icon-lock-hi {
+  color: var(--color-primary) !important;
+}
+
+.dark .chat-typing .details .loader {
+  background: var(--bg-third);
+}
+
+.dark 
+.call-text,
+.call_small_circle {
+  color: var(--color-primary) !important;
+}
+
+.dark .all_messenger_col span:last-of-type {
+  color: var(--color-secondary) !important;
+}
+
+.dark .status-sent-msg {
+  color: var(--bg-fifth);
+}
+
+

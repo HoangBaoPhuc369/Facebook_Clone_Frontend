@@ -50,7 +50,6 @@ export const registerGroupCall = (data) => {
 };
 
 export const userWantsToJoinGroupCall = (data) => {
-  console.log(data);
   socket.emit('group-call-join-request', data);
 };
 // emitting events related with group calls

@@ -177,6 +177,7 @@
 }
 /*------ppl u may know------*/
 .profile_bottom {
+  min-height: 100vh;
   margin-top: 1px;
   background: var(--bg-secondary);
 }

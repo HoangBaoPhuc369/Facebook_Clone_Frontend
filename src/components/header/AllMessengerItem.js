@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import { faCheckCircle } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 
 export default function AllMessengerItem({
@@ -11,7 +12,9 @@ export default function AllMessengerItem({
   handleRemoveWaitingMessage,
 }) {
   const [checkOnline, setCheckOnline] = useState(false);
-  const [messages, setMessages] = useState(messagesChat);
+  // const [messages, setMessages] = useState(messagesChat);
+
+  // console.log(messagesChat[messagesChat.length - 1]);
 
   useEffect(() => {
     setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
@@ -20,16 +23,13 @@ export default function AllMessengerItem({
   const getNewMessage = messagesChat[messagesChat.length - 1];
 
   const checkNewMessage = () => {
-    if(getNewMessage?.sender !== user.id &&
-    getNewMessage?.status !== "seen" &&
-    getNewMessage !== undefined) {
-      handleRemoveWaitingMessage(
-        currentChat?._id,
-        friendChat._id,
-        user?.token
-      )
+    if (
+      getNewMessage?.sender !== user.id &&
+      getNewMessage?.status !== "seen" &&
+      getNewMessage !== undefined
+    ) {
+      handleRemoveWaitingMessage(currentChat?._id, friendChat._id, user?.token);
     }
-      
   };
 
   return (
@@ -67,7 +67,25 @@ export default function AllMessengerItem({
             <span>{getNewMessage?.text}</span>
           )}
         </div>
-        {/* all_messenger-arrival-message */}
+        <div className="all_messenger-arrival-message">
+          {getNewMessage.status === "delivered" ? (
+            <div className="all_messenger-arrival-message-status"></div>
+          ) : getNewMessage.status === "seen" ? (
+            <img
+              src={friendChat?.picture}
+              className="absolute right-[7px] top-[43%] 
+          rounded-full object-cover"
+              alt="friend status"
+            />
+          ) : getNewMessage.status === "unseen" &&
+            getNewMessage?.sender === user.id ? (
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              className="absolute w-3 h-3 right-[7px] top-[43%] 
+          status-sent-msg text-gray-400"
+            />
+          ) : null}
+        </div>
       </div>
     </div>
   );

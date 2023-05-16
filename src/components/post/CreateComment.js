@@ -362,6 +362,7 @@ export default function CreateComment({
                 image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
+                handleSendNotifications,
               })
             );
           } else if (details) {
@@ -373,6 +374,7 @@ export default function CreateComment({
                 image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
+                handleSendNotifications,
               })
             );
           } else {
@@ -384,12 +386,13 @@ export default function CreateComment({
                 image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
+                handleSendNotifications,
               })
             );
           }
         }
         setCount((prev) => ++prev);
-        handleSendNotifications("comment", "comment");
+        // handleSendNotifications("comment", "comment");
       } else if (text !== "") {
         if (profile) {
           dispatch(
@@ -422,6 +425,7 @@ export default function CreateComment({
               image: "",
               socketId: socketRef?.id,
               token: user.token,
+              handleSendNotifications,
             })
           );
         } else if (details) {
@@ -454,6 +458,7 @@ export default function CreateComment({
               image: "",
               socketId: socketRef?.id,
               token: user.token,
+              handleSendNotifications,
             })
           );
         } else {
@@ -487,6 +492,7 @@ export default function CreateComment({
               image: "",
               socketId: socketRef?.id,
               token: user.token,
+              handleSendNotifications,
             })
           );
         }
@@ -494,10 +500,10 @@ export default function CreateComment({
         setCount((prev) => ++prev);
         setText("");
         setCommentImage("");
-        handleSendNotifications("comment", "comment");
+        // handleSendNotifications("comment", "comment");
       }
     }
-    // cancelTyping();
+    cancelTyping();
   };
 
   return (

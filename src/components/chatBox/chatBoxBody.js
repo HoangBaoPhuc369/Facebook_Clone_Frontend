@@ -167,6 +167,7 @@ export default function ChatBoxBody({
             </div>
           </div>
         ))}
+
         <div className="chatBox-scroll" ref={scrollRef}></div>
       </div>
 

@@ -24,7 +24,17 @@ export const getAllPosts = createAsyncThunk(
 export const createPost = createAsyncThunk(
   "post/createPost",
   async (
-    { type, background, text, images, whoCanSee, user, token, postRef },
+    {
+      type,
+      background,
+      text,
+      images,
+      whoCanSee,
+      user,
+      token,
+      postRef,
+      toastDetailsPost,
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -38,6 +48,9 @@ export const createPost = createAsyncThunk(
         token,
         postRef
       );
+      if (data && toastDetailsPost) {
+        toastDetailsPost("share");
+      }
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -47,9 +60,12 @@ export const createPost = createAsyncThunk(
 
 export const deletePost = createAsyncThunk(
   "post/deletePost",
-  async ({ postId, token }, { rejectWithValue }) => {
+  async ({ postId, token, toastDetailsPost }, { rejectWithValue }) => {
     try {
       const { data } = await api.deletePost(postId, token);
+      if (data) {
+        toastDetailsPost("delete");
+      }
       return {
         status: data.status,
         postId,
@@ -63,7 +79,15 @@ export const deletePost = createAsyncThunk(
 export const createCommentPost = createAsyncThunk(
   "post/createComment",
   async (
-    { postId, getParentId, comment, image, socketId, token },
+    {
+      postId,
+      getParentId,
+      comment,
+      image,
+      socketId,
+      token,
+      handleSendNotifications,
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -75,6 +99,9 @@ export const createCommentPost = createAsyncThunk(
         socketId,
         token
       );
+      if (data) {
+        handleSendNotifications("comment", "comment");
+      }
       return { data: data.comments, postId };
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -189,7 +216,7 @@ export const postSlice = createSlice({
     },
     [createPost.rejected]: (state, action) => {
       state.loadingCreatePost = false;
-      state.errorCreatePost = action.payload.message;
+      state.errorCreatePost = action.payload;
     },
 
     [deletePost.fulfilled]: (state, action) => {

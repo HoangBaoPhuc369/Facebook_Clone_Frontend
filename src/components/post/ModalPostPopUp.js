@@ -9,6 +9,8 @@ const ModalPostPopUp = ({
   user,
   socketRef,
   onClose,
+  toastDetailsPost,
+  handleSendNotifications,
 }) => {
   return (
     <>
@@ -25,6 +27,8 @@ const ModalPostPopUp = ({
           onClose={onClose}
           profile={profile}
           socketRef={socketRef}
+          toastDetailsPost={toastDetailsPost}
+          handleSendNotifications={handleSendNotifications}
         />
       </ModalPost>
     </>

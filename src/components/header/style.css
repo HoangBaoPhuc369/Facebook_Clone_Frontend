@@ -28,13 +28,13 @@ header {
 }
 .search {
   display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--bg-forth);
-    padding: 10px;
-    border-radius: 50px;
-    cursor: text;
-    height: 40px;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-forth);
+  padding: 10px;
+  border-radius: 50px;
+  cursor: text;
+  height: 40px;
 }
 .search input {
   outline: none;
@@ -671,13 +671,18 @@ header {
   text-decoration: underline;
 }
 
-.all_messenger-arrival-message {
-  color: var(--blue-color) !important;
-  font-weight: 600;
-}
+/* .all_messenger-arrival-message {
+  
+  position: absolute;
+  right: 7px;
+  top: 43%;
+  width: 12px;
+  height: 12px;
+  background: var(--blue-color);
+  border-radius: 50%;
+} */
 
-.all_messenger-arrival-message::before {
-  content: "";
+.all_messenger-arrival-message-status {
   position: absolute;
   right: 7px;
   top: 43%;
@@ -686,6 +691,27 @@ header {
   background: var(--blue-color);
   border-radius: 50%;
 }
+
+.message-status-seen {
+  position: absolute;
+  right: 7px;
+  top: 43%;
+  width: 12px;
+  height: 12px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* .all_messenger-arrival-message::before {
+  content: "";
+  position: absolute;
+  right: 7px;
+  top: 43%;
+  width: 12px;
+  height: 12px;
+  background: var(--blue-color);
+  border-radius: 50%;
+} */
 
 .avatar-user {
   width: 40px;
@@ -948,7 +974,8 @@ header {
   /* padding: 0; */
 }
 
-.Toastify__toast-container.notification-form > .Toastify__toast-container--bottom-left {
+.Toastify__toast-container.notification-form
+  > .Toastify__toast-container--bottom-left {
   bottom: 0.4em;
   left: 1em;
 }
@@ -965,12 +992,39 @@ header {
   font-family: "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
+.Toastify__toast-container > .details_notification_form {
+  background: var(--bg-primary);
+  box-shadow: 0 12px 28px 0 var(--shadow-1), 0 2px 4px 0 var(--shadow-2),
+    inset 0 0 0 1px var(--shadow-inset);
+  min-height: 68px;
+  width: 288px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+  display: flex;
+  align-items: center;
+}
+
 .Toastify__toast-container > .notification_form > .notification_body {
   margin: 0;
   padding: 0;
 }
 
 .Toastify__toast-container > .notification_form > .notification_body > div {
+  height: 100%;
+}
+
+.Toastify__toast-container
+  > .details_notification_toast
+  > .details_notification_body {
+  margin: 0;
+  padding: 0;
+}
+
+.Toastify__toast-container
+  > .details_notification_toast
+  > .details_notification_body
+  > div {
   height: 100%;
 }
 
@@ -1050,6 +1104,17 @@ header {
 }
 
 .Toastify__toast-container > .notification_form > .small_circle > i {
+  background-position: -131px -76px;
+  width: 10px;
+  height: 10px;
+}
+
+.Toastify__toast-container > .details_notification_form > .small_circle {
+  width: 24px;
+  height: 24px;
+}
+
+.Toastify__toast-container > .details_notification_form > .small_circle > i {
   background-position: -131px -76px;
   width: 10px;
   height: 10px;
@@ -1180,3 +1245,9 @@ header {
   color: var(--blue-color);
 }
 /*----Active header----*/
+
+.all_messenger-arrival-message img {
+  width: 12px;
+  height: 12px;
+  margin: 0;
+}

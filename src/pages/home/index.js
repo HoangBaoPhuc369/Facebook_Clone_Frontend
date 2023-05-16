@@ -15,6 +15,7 @@ import {
   getNewPost,
 } from "../../redux/features/postSlice";
 import "./style.css";
+import PostSkeleton from "../../components/postSkeleton";
 
 export default function Home({
   socketRef,
@@ -24,6 +25,7 @@ export default function Home({
   setPostShare,
   setIsProfile,
   setsharePostPopUp,
+  toastDetailsPost,
 }) {
   const { posts, loading, error } = useSelector((state) => ({
     ...state.newFeed,
@@ -32,7 +34,6 @@ export default function Home({
   useEffect(() => {
     if (socketRef) {
       socketRef.on("newComment", (data) => {
-        // console.log(data);
         dispatch(getNewCommentPost(data));
       });
     }
@@ -76,9 +77,7 @@ export default function Home({
           {user.verified === false && <SendVerification user={user} />}
           <CreatePost user={user} setVisible={setVisible} />
           {loading ? (
-            <div className="skeleton_loader">
-              <HashLoader color="#1876f2" />
-            </div>
+            <PostSkeleton />
           ) : (
             <div className="posts">
               {posts.map((post, i) => (
@@ -89,6 +88,7 @@ export default function Home({
                   socketRef={socketRef}
                   setIsProfile={setIsProfile}
                   setPostShare={setPostShare}
+                  toastDetailsPost={toastDetailsPost}
                   setsharePostPopUp={setsharePostPopUp}
                 />
               ))}
