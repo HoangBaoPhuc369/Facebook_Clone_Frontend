@@ -1,0 +1,259 @@
+.notification-box_form {
+  position: fixed;
+  left: 16px;
+  bottom: 132px;
+  background: var(--bg-primary);
+  box-shadow: 0 12px 28px 0 var(--shadow-1), 0 2px 4px 0 var(--shadow-2),
+    inset 0 0 0 1px var(--shadow-inset);
+  min-height: 100px;
+  width: 17.5%;
+  border-radius: 8px;
+}
+
+.notification-box_form .small_circle {
+  position: absolute;
+  right: 16px;
+  top: 12px;
+  margin: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.notification-box_form .small_circle i {
+  background-position: -131px -76px;
+  width: 10px;
+  height: 10px;
+}
+
+.notification-box_header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-primary);
+  padding: 14px 14px 4px 14px;
+}
+
+.notification-box_container {
+  padding: 7px 7px 18px 14px;
+  display: flex;
+}
+
+.notification-box_footer {
+  /* border-top: 1px solid var(--bg-third); */
+}
+
+.notification-box_action {
+  float: right;
+  width: 125px;
+  margin: 10px;
+  padding: 10px;
+  outline: none;
+  border: none;
+  background: var(--blue-color);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.notification-box_action:hover {
+  background: #0760d5;
+}
+
+.notification-box_cancel {
+  float: right;
+  width: 45px;
+  margin: 10px 0;
+  padding: 10px;
+  outline: none;
+  border: none;
+  background: #fff;
+  color: var(--blue-color);
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.notification-box_cancel:hover {
+  background: var(--bg-forth);
+}
+
+.notification-picture > .noftification-avatar {
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.notification-picture > i {
+  position: absolute;
+  right: -5px;
+  bottom: -3px;
+}
+
+.notification-status {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-status_circle {
+  background: var(--blue-color);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.notification-picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.notification-information {
+  max-width: 196px;
+}
+
+.notification-information > .notification-text {
+  font-size: 15px;
+  color: var(--color-primary);
+}
+
+.notification-time {
+  font-size: 13px;
+  color: var(--blue-color);
+  font-weight: 600;
+}
+
+/* ===========================Call CSS ======================== */
+.call-box_form {
+  position: fixed;
+  top: 30%;
+  right: 0;
+  left: 0;
+  margin: 0 auto;
+  background: var(--bg-primary);
+  box-shadow: 0 12px 28px 0 var(--shadow-1), 0 2px 4px 0 var(--shadow-2),
+    inset 0 0 0 1px var(--shadow-inset);
+  min-height: 100px;
+  width: 304px;
+  height: 277px;
+  border-radius: 12px;
+  z-index: 999999999;
+}
+
+.call-box_header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 14px 14px 4px 14px;
+}
+
+.call-box_container {
+  position: relative;
+  padding: 16px;
+}
+
+.call-information {
+  text-align: center;
+}
+
+.call-text {
+  font-size: 24px;
+  font-weight: 700;
+  width: 232px;
+  margin: 0 auto;
+  word-break: break-word;
+  line-height: 1.1667;
+}
+
+.call-sub-text {
+  font-size: 13px;
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.call_small_circle {
+  position: absolute;
+  right: 0;
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 11px;
+  background: var(--bg-third);
+  cursor: pointer;
+}
+
+.call_small_circle > .exit_icon {
+  background-position: -130px -75px;
+  background-size: auto;
+  width: 12px;
+  height: 12px;
+}
+
+.call-picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-top: 8px;
+}
+
+.call-picture > img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.call-box-btn-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 12px 12px 12px;
+}
+
+.call-box-btn-item {
+  text-align: center;
+}
+
+.call-box-btn-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0 30px 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.call-box-btn-item > span {
+  font-size: 13px;
+  color: var(--color-primary);
+}
+
+.call-box-btn-item > .call-box-btn-wrap > svg {
+  width: 18px;
+  height: 18px;
+  color: #fff;
+}
+
+.call-decline {
+  background: #ff443d;
+}
+
+.call-accept {
+  background: #31cc46;
+}

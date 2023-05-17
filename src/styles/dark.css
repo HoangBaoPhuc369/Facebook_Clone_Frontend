@@ -1,0 +1,306 @@
+.dark {
+  --bg-primary: #242526;
+  --bg-secondary: #18191a;
+  --bg-third: #3a3b3c;
+  --bg-forth: #3a3b3c;
+  --bg-fifth: #888888;
+  --color-primary: #e4e6eb;
+  --color-secondary: #b0b3b8;
+  --border-color: #2f3031;
+  --select-option: #2f3131;
+}
+.dark .blur-background {
+  background: rgba(1, 1, 1, 0.53);
+}
+.dark .hover1:hover,
+.dark .hover2:hover {
+  background: var(--bg-third);
+}
+/* ----Header -----*/
+.dark .header_right svg {
+  fill: #fff;
+}
+.dark .all_right_circle i {
+  filter: invert(100%);
+}
+.dark .active_header {
+  background: var(--light-blue-color) !important;
+}
+.dark .active_header svg {
+  fill: var(--blue-color) !important;
+}
+.dark .header_right .circle_icon:hover {
+  background: var(--bg-fifth);
+}
+.dark input[type="text"] {
+  color: var(--color-primary);
+}
+
+.dark textarea {
+  color: var(--color-primary);
+}
+.dark .small_circle i,
+.dark .small_circle svg,
+.dark .white_circle svg,
+.dark .circle i {
+  filter: invert(100%) !important;
+}
+/* ----Header -----*/
+.dark .left_home .small_circle {
+  background: var(--bg-fifth);
+}
+.dark .open_post:hover {
+  background: #333;
+}
+.dark .post_action i {
+  filter: invert(90%);
+}
+
+.dark .post-popup_action i {
+  filter: invert(90%);
+}
+.dark .post_menu i,
+.dark .post_menu img {
+  filter: invert(100%);
+}
+.dark .comment_circle_icon i {
+  filter: invert(95%);
+}
+.dark .comment_circle_icon:hover {
+  background: #555;
+}
+.dark .box_privacy i,
+.dark .box_privacy img {
+  filter: invert(95%);
+}
+.dark .emoji_icon_large:hover {
+  filter: invert(0);
+}
+.dark .add_pics_wrap i {
+  filter: invert(100%);
+}
+/*----profile---*/
+.dark .active_link:hover {
+  background: var(--light-blue-color);
+}
+.dark .open_cover_menu i,
+.dark .open_cover_menu img {
+  filter: invert(100%);
+}
+.dark .profile_circle i {
+  filter: invert(100%);
+}
+.dark .gray_btn {
+  background: var(--bg-third);
+  color: var(--color-primary);
+}
+.dark .gray_btn:hover {
+  background: #777;
+}
+.dark .gray_btn i,
+.dark .gray_btn img {
+  filter: invert(100%);
+}
+/* .dark .profile_container svg {
+  filter: invert(88%);
+} */
+.dark .grid_icon {
+  filter: invert(80%);
+}
+.dark .pictureBox i {
+  filter: invert(100%) !important;
+}
+.dark .slider i {
+  filter: invert(100%);
+}
+.dark .flex_p_t i {
+  filter: invert(100%);
+}
+
+.dark .toolbox {
+  background-color: var(--bg-primary);
+}
+
+.dark .css-1jt58b5,
+.css-i1b41b {
+  border: thick solid var(--color-primary) !important;
+}
+
+.dark .post_input {
+  color: var(--color-primary);
+}
+
+.dark .ChatBox_header {
+  background-color: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.dark .ChatBox_header_left_circle {
+  border: 2px solid var(--color-primary);
+}
+
+.dark .ChatBox_header_left_username {
+  color: var(--color-primary) !important;
+}
+
+.dark .chatBox_display .blue-background {
+  background: var(--blue-color-secondary);
+}
+
+.dark .ChatBox_message_bottom {
+  background-color: var(--bg-primary);
+}
+
+.dark .ChatBox_message_bottom_input {
+  background-color: var(--bg-third) !important;
+}
+
+.dark .ChatBox_message_bottom_input input {
+  background-color: var(--bg-third) !important;
+}
+
+.dark .all_notification_header,
+.all_messenger_header {
+  color: var(--color-primary) !important;
+}
+/*----profile---*/
+.dark .negative-post-text {
+  color: var(--color-secondary);
+}
+
+.dark .negative-post-btn {
+  color: var(--color-secondary);
+}
+
+.dark .post_bg_text {
+  color: var(--color-primary);
+}
+
+/* ======Box Modal============ */
+.dark .box_header {
+  background-color: var(--bg-primary) !important;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.dark .box_container {
+  color: var(--color-primary);
+}
+
+.dark .box_cancel {
+  background: var(--bg-primary);
+}
+
+.dark .create-post-text {
+  color: var(--color-primary);
+}
+
+.dark .modal_header span {
+  color: var(--color-primary);
+}
+
+.dark .modal_post_header span {
+  color: var(--color-primary);
+}
+
+.dark .modal_container p {
+  color: var(--color-primary);
+}
+
+.dark .modal_post_container p {
+  color: var(--color-primary);
+}
+
+.dark .view_replies_third svg {
+  color: var(--bg-fifth) !important;
+}
+
+.dark .view_replies svg {
+  color: var(--bg-fifth) !important;
+}
+
+.dark .chatBox_display {
+  background-color: transparent;
+}
+
+.dark .message-sent-text {
+  color: var(--color-primary);
+}
+
+.dark .comment-input_popup {
+  background: var(--bg-primary);
+}
+
+.dark .audience-select:hover {
+  background: var(--select-option);
+}
+
+.dark .audience-select .audience-icon-bg {
+  background: var(--bg-forth);
+}
+
+.dark .audience-select .audience-icon-bg .audience-icon {
+  color: var(--color-primary);
+  fill: var(--color-primary);
+}
+
+.dark .audience-selected-public svg {
+  fill: var(--color-primary);
+}
+
+.dark .icon-audient {
+  fill: var(--color-primary) !important;
+}
+
+.dark .audience-select-default {
+  background: var(--blue-color-third);
+}
+
+.dark .audience-select-default:hover {
+  background: var(--blue-color-third) !important;
+}
+
+.dark .Toastify__toast-container > .details_notification_form {
+  color: var(--color-primary);
+}
+
+.dark .details-post-text-content {
+  color: var(--color-primary);
+}
+
+.dark .icon-lock-hi {
+  color: var(--color-primary) !important;
+}
+
+.dark .chat-typing .details .loader {
+  background: var(--bg-third);
+}
+
+.dark .call-text,
+.call_small_circle {
+  color: var(--color-primary) !important;
+}
+
+.dark .all_messenger_col span:last-of-type {
+  color: var(--color-secondary);
+}
+
+.dark .status-sent-msg {
+  color: var(--bg-fifth);
+}
+
+.dark .all_messenger_col .blue-text-status {
+  color: var(--blue-color) !important;
+}
+
+.dark .all_messenger_item_status {
+  border: 2px solid var(--color-primary);
+}
+
+.dark .comment-notification {
+  background: #203f65 !important;
+}
+
+.dark .primary-color {
+  color: var(--color-primary) !important;
+}
