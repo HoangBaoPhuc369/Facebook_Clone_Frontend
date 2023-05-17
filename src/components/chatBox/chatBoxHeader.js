@@ -1,4 +1,3 @@
-import { closePopup } from "../../helpers/displayChatBox";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ArrowDown2 from "../../svg/arrowDown2";
@@ -7,9 +6,6 @@ import PhoneCall from "../../svg/phoneCall";
 import VideoCall from "../../svg/videoCall";
 import XClose from "../../svg/xClose";
 import { removeChatBox } from "../../redux/features/conversationSlice";
-import { callToOtherUser } from "../../utils/webRTC/webRTCHandler";
-import { getCallUser } from "../../redux/features/callSlice";
-import { sendPreOffer } from "../../utils/wssConnection/wssConnectionInParent";
 
 export default function ChatBoxHeader({
   user,
@@ -20,8 +16,6 @@ export default function ChatBoxHeader({
   chatBox,
 }) {
   const [checkOnline, setCheckOnline] = useState(false);
-  const { callState } = useSelector((state) => ({ ...state.call }));
-  const { activeUsers } = useSelector((state) => ({ ...state.dashboard }));
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -70,9 +64,9 @@ export default function ChatBoxHeader({
     console.log(userCall);
     const roomId = currentChat?._id;
     const type = "host";
-    const username =  `${user.first_name} ${user.last_name}`
+    const username = `${user.first_name} ${user.last_name}`;
     const videoCallWindow = window.open(
-      `http://localhost:3001/?roomId=${roomId}&username=${username}&type=${type}`, 
+      `http://localhost:3001/?roomId=${roomId}&username=${username}&type=${type}`,
       "Video Call",
       `
       width=${w / systemZoom}, 
@@ -92,13 +86,22 @@ export default function ChatBoxHeader({
       username: username,
       picture: user.picture,
       roomId: roomId,
-    }
-    socket.emit('call-other', data);
+    };
+    socket.emit("call-other", data);
   };
   const handleCallPressed = () => {
     // dispatch(getCallUser(activeUser));
     openVideoCallWindow();
     // callToOtherUser(activeUser, user, socket);
+  };
+
+  const stopTypingMessage = () => {
+    if (!socket) return;
+    socket?.emit("stop typing message", {
+      senderId: socket?.id,
+      receiverId: friendChat._id,
+      user: user.id,
+    });
   };
 
   return (
@@ -154,6 +157,7 @@ export default function ChatBoxHeader({
             onClick={(e) => {
               e.stopPropagation();
               dispatch(removeChatBox(currentChat?._id));
+              stopTypingMessage();
             }}
           >
             <XClose color={setColorIcon} />

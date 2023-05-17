@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import AttachFiles from "../../svg/attachFiles";
 import FaceEmojis from "../../svg/faceEmoji";
 import GifIcon from "../../svg/gif";
@@ -5,6 +6,7 @@ import LikeIcon from "../../svg/likeIcon";
 import PlusIcon from "../../svg/PlusIcon";
 import SentIcon from "../../svg/sentIcon";
 import StickerIcon from "../../svg/sticker";
+import { useEffect } from "react";
 
 export default function ChatBoxBottom({
   color,
@@ -15,6 +17,19 @@ export default function ChatBoxBottom({
   setNewMessage,
   handleSendMessage,
 }) {
+  const textRef = useRef(null);
+
+  const adjustTextareaHeight = () => {
+    if (textRef.current) {
+      textRef.current.style.height = "auto";
+      textRef.current.style.height = `${textRef.current.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [newMessage]);
+
   return (
     <>
       <div className="ChatBox_message_bottom">
@@ -22,25 +37,30 @@ export default function ChatBoxBottom({
           <PlusIcon color={color} />
         </div>
         <div className="ChatBox_message_bottom_wrapper">
-          <div className="ChatBox_message_bottom_icons_wrap">
-            <div className="ChatBox_message_bottom_icon hover1">
-              <AttachFiles color={color} />
+          {!newMessage ? (
+            <div className="ChatBox_message_bottom_icons_wrap">
+              <div className="ChatBox_message_bottom_icon hover1">
+                <AttachFiles color={color} />
+              </div>
+              <div className="ChatBox_message_bottom_icon hover1">
+                <StickerIcon color={color} />
+              </div>
+              <div className="ChatBox_message_bottom_icon hover1">
+                <GifIcon color={color} />
+              </div>
             </div>
-            <div className="ChatBox_message_bottom_icon hover1">
-              <StickerIcon color={color} />
-            </div>
-            <div className="ChatBox_message_bottom_icon hover1">
-              <GifIcon color={color} />
-            </div>
-          </div>
+          ) : null}
           <div className="ChatBox_message_bottom_input">
-            <input
+            <textarea
               placeholder="Aa"
               type="text"
+              rows="1"
+              ref={textRef}
               onChange={(e) => setNewMessage(e.target.value)}
               value={newMessage}
               onKeyPress={startTyping}
-              className="focus:ring-0 appearance-none p-0 bg-transparent"
+              className="focus:ring-0 appearance-none p-0 
+              bg-transparent resize-none px-3 border-none w-full min-h-[24px]"
               onKeyUp={(e) => {
                 stopTyping();
                 if (e.key === "Enter" && e.target.value !== "") {

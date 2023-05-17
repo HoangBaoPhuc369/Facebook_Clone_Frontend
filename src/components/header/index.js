@@ -27,6 +27,8 @@ import {
   getNewFriendMessage,
   removeChatBoxWaiting,
   seenAllMessageChat,
+  setDeliveredMessage,
+  setSeenMessage,
 } from "../../redux/features/conversationSlice";
 import AllNotifications from "./AllNotifications";
 import {
@@ -274,23 +276,32 @@ export default function Header({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    socketRef?.on("start typing message", (typingInfo) => {
-      if (typingInfo.senderId !== socketRef.id) {
-        const user = typingInfo.user;
-        setTypingUsers((users) => [...users, user]);
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   socketRef?.on("start typing message", (typingInfo) => {
+  //     if (typingInfo.senderId !== socketRef.id) {
+  //       const user = typingInfo.user;
+  //       setTypingUsers((users) => [...users, user]);
+  //     }
+  //   });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
+  // const checkUsers = (users, user) => {
+  //   return users.filter((u) => u?.id !== user.id);
+  // };
+
+
+  // useEffect(() => {
+  //   socketRef?.on("stop typing message", (typingInfo) => {
+  //     if (typingInfo.senderId !== socketRef.id) {
+  //       const user = typingInfo.user;
+  //       setTypingUsers((users) => checkUsers(users, user));
+  //       // setShowTyping((users) => checkUsers(users, user));
+  //     }
+  //   });
+  // }, []);
 
   useEffect(() => {
-    // socketRef?.emit("addUser", {
-    //   userId: user?.id,
-    //   userName: `${user?.first_name} ${user?.last_name}`,
-    //   picture: user?.picture,
-    //   timeJoin: new Date(),
-    // });
     if (user) {
       socketRef?.on("getUsers", (users) => {
         const activeUsers = user.following.filter((f) =>
@@ -308,6 +319,37 @@ export default function Header({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  useEffect(() =>{
+    socketRef?.emit("messageDelivered", {
+      message: arrivalMessage?.messages,
+      currentChatId: arrivalMessage?.currentChatID,
+    });
+    dispatch(
+      setDeliveredMessage({
+        currentChatId: arrivalMessage?.currentChatID,
+        messageId: arrivalMessage?.messages._id,
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrivalMessage])
+
+  useEffect(() => {
+    if (arrivalMessage?.currentChatID === chatBox.currentChatBox) {
+      socketRef?.emit("messageSeen", {
+        message: arrivalMessage?.messages,
+        currentChatId: arrivalMessage?.currentChatID,
+      });
+
+      dispatch(
+        setSeenMessage({
+          currentChatId: arrivalMessage?.currentChatID,
+          messageId: arrivalMessage?.messages._id,
+        })
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrivalMessage]);
 
   const getFiendChat = (current) => {
     return current.members.find((m) => m._id !== user.id);

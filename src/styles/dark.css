@@ -276,18 +276,31 @@
   background: var(--bg-third);
 }
 
-.dark 
-.call-text,
+.dark .call-text,
 .call_small_circle {
   color: var(--color-primary) !important;
 }
 
 .dark .all_messenger_col span:last-of-type {
-  color: var(--color-secondary) !important;
+  color: var(--color-secondary);
 }
 
 .dark .status-sent-msg {
   color: var(--bg-fifth);
 }
 
+.dark .all_messenger_col .blue-text-status {
+  color: var(--blue-color) !important;
+}
 
+.dark .all_messenger_item_status {
+  border: 2px solid var(--color-primary);
+}
+
+.dark .comment-notification {
+  background: #203f65 !important;
+}
+
+.dark .primary-color {
+  color: var(--color-primary) !important;
+}

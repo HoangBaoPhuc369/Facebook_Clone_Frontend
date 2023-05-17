@@ -342,6 +342,19 @@ export const seenAllMessageChat = (userToken, currentChatId) =>
     }
   );
 
+export const seenAllConversationsChat = (userToken) => {
+  return axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/chat/seen-all-conversations`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    }
+  );
+}
+ 
+
 // --------------------------NOTIFICATION API--------------------------------------
 export const createNotifications = (props, token) =>
   axios.post(

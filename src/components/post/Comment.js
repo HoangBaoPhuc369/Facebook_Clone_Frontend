@@ -4,6 +4,7 @@ import CommentOptions from "./CommentOptions";
 import useClickOutside from "./../../helpers/clickOutside";
 import { formatTime } from "../../functions/formatTime";
 import { VscReply } from "react-icons/vsc";
+import { useSelector } from "react-redux";
 
 export default function Comment({
   user,
@@ -39,6 +40,7 @@ export default function Comment({
   stopTyping,
   cancelTyping,
   stopTypingComment,
+  notificationsSelected,
 }) {
   const [parentId, setParentId] = useState("");
   const [countRepliesSecond, setCountRepliesSecond] = useState(3);
@@ -145,6 +147,15 @@ export default function Comment({
     setCountRepliesThird((prev) => prev + 3);
   };
 
+  // const checkMsg = () => {
+  //   if (details) {
+  //     console.log(notificationsSelected)
+  //     console.log(comment?._id)
+  //   }
+  // };
+
+  // checkMsg()
+
   return (
     <>
       <div
@@ -189,7 +200,15 @@ export default function Comment({
             />
             {!isEditing && (
               <>
-                <div className="comment_wrap_comment">
+                <div
+                  className={`comment_wrap_comment ${
+                    details &&
+                    notificationsSelected &&
+                    notificationsSelected.commentId === comment?._id
+                      ? "comment-notification"
+                      : "test"
+                  }`}
+                >
                   <div className="comment_name">
                     {comment.commentBy.first_name} {comment.commentBy.last_name}
                   </div>
@@ -350,6 +369,7 @@ export default function Comment({
               repliesThird={getReplies(reply?._id)}
               countRepliesThird={countRepliesThird}
               showMoreRepliesThird={showMoreRepliesThird}
+              notificationsSelected={notificationsSelected}
               setIsOpenUnhideComment={setIsOpenUnhideComment}
               handleSendNotifications={handleSendNotifications}
             />
@@ -422,6 +442,7 @@ export default function Comment({
               stopTypingComment={stopTypingComment}
               countRepliesThird={countRepliesThird}
               showMoreRepliesThird={showMoreRepliesThird}
+              notificationsSelected={notificationsSelected}
               setIsOpenUnhideComment={setIsOpenUnhideComment}
               handleSendNotifications={handleSendNotifications}
             />

@@ -24,10 +24,19 @@ export const getConversations = createAsyncThunk(
 
 export const sendMessageChat = createAsyncThunk(
   "conversations/sendMessageChat",
-  async ({ userToken, message, currentChatId }, { rejectWithValue }) => {
+  async (
+    { userToken, message, socket, currentChatId },
+    { rejectWithValue }
+  ) => {
     try {
       const { data } = await api.sendMessageChat(userToken, message);
-      if (data) return { data, currentChatId };
+      if (data && socket) {
+        const messages = data.messages[data.messages.length - 1];
+        const currentChatID = currentChatId;
+        console.log();
+        socket.emit("sendMessage", { messages, currentChatID });
+      }
+      return { data, currentChatId };
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -77,6 +86,18 @@ export const seenAllMessageChat = createAsyncThunk(
       const { data } = await api.seenAllMessageChat(userToken, currentChatId);
 
       return { data, currentChatId };
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const seenAllConversationsChat = createAsyncThunk(
+  "conversations/seenAllConversationsChat",
+  async ({ userToken }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.seenAllConversationsChat(userToken);
+      return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -250,7 +271,7 @@ export const conversationSlice = createSlice({
           action.payload.data,
         ];
         state.conversations.splice(indexConversation, 1, checkConversation);
-        
+
         if (state.chatBox.currentChatBox !== action.payload.currentChatId) {
           const index = state.chatBox.chatBoxWaiting.findIndex(
             (i) => i === action.payload.currentChatId
@@ -323,6 +344,9 @@ export const conversationSlice = createSlice({
         })
       );
     },
+    setConversation: (state, action) => {
+      state.conversations = action.payload;
+    },
   },
   extraReducers: {
     [getConversations.pending]: (state, action) => {
@@ -394,6 +418,11 @@ export const conversationSlice = createSlice({
     [seenAllMessageChat.rejected]: (state, action) => {
       console.log(action.payload?.message);
     },
+    //
+
+    [seenAllConversationsChat.fulfilled]: (state, action) => {
+      state.conversations = action.payload;
+    },
   },
 });
 
@@ -402,6 +431,7 @@ export const {
   setChatBox,
   removeChatBox,
   setSeenMessage,
+  setConversation,
   setCurrentChatBox,
   getNewFriendMessage,
   clearMessageSuccess,

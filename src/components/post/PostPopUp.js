@@ -41,6 +41,9 @@ export default function PostPopUp({
   toastDetailsPost,
 }) {
   const { userTypingPosts } = useSelector((state) => state.newFeed);
+  const { notificationsSelected } = useSelector((state) => ({
+    ...state.notification,
+  }));
 
   const isPostHaveTyping = userTypingPosts.some((p) => p === post?._id);
 
@@ -531,6 +534,7 @@ export default function PostPopUp({
                   countRepliesThird={countRepliesThird}
                   repliesSecond={getReplies(comment?._id)}
                   showMoreRepliesThird={showMoreRepliesThird}
+                  notificationsSelected={notificationsSelected}
                   setIsOpenUnhideComment={setIsOpenUnhideComment}
                   handleSendNotifications={handleSendNotifications}
                 />

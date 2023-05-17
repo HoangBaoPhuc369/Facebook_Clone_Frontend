@@ -36,6 +36,10 @@
   .fb_copyright {
     display: none;
   }
+
+  .left_link img {
+    margin-right: 0;
+  }
   .left_home {
     width: 70px;
   }

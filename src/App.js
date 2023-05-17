@@ -16,7 +16,11 @@ import {
   handleAddUserTypingPost,
   handleRemoveUserTypingPost,
 } from "./redux/features/postSlice";
-import { getConversations } from "./redux/features/conversationSlice";
+import {
+  getConversations,
+  seenAllConversationsChat,
+  setConversation,
+} from "./redux/features/conversationSlice";
 import { getNotification } from "./redux/features/notificationSlice";
 import { io } from "socket.io-client";
 import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInParent";
@@ -159,6 +163,27 @@ function App() {
   //   });
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [socketRef, user]);
+
+  useEffect(() => {
+    if (user?.token) {
+      dispatch(
+        seenAllConversationsChat({
+          userToken: user?.token,
+        })
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     socketRef?.on("seenAllConversations", (data) => {
+  //       console.log(data);
+  //       dispatch(setConversation(data));
+  //     });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [socketRef]);
 
   const toastDetailsPost = (type) =>
     toast(<DetailsNoftication type={type} />, {

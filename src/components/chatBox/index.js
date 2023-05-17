@@ -34,45 +34,17 @@ export default function ChatBox({
   const dispatch = useDispatch();
 
   //Send message to socket when call api success
-  useEffect(() => {
-    if (messageSendSuccess) {
-      const messages = messagesChat[messagesChat.length - 1];
-      const currentChatID = currentChat?._id;
-      socket.emit("sendMessage", { messages, currentChatID });
-      dispatch(clearMessageSuccess());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messageSendSuccess]);
+  // useEffect(() => {
+  //   if (messageSendSuccess) {
+  //     const messages = messagesChat[messagesChat.length - 1];
+  //     const currentChatID = currentChat?._id;
+  //     socket.emit("sendMessage", { messages, currentChatID });
+  //     dispatch(clearMessageSuccess());
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [messageSendSuccess]);
 
-  useEffect(() => {
-    if (arrivalMessage?.currentChatID === currentChat?._id) {
-      socket?.emit("messageDelivered", {
-        message: arrivalMessage?.messages,
-        currentChatId: arrivalMessage?.currentChatID,
-      });
-      dispatch(
-        setDeliveredMessage({
-          currentChatId: arrivalMessage?.currentChatID,
-          messageId: arrivalMessage?.messages._id,
-        })
-      );
-    }
-
-    if (arrivalMessage?.currentChatID === chatBox.currentChatBox) {
-      socket?.emit("messageSeen", {
-        message: arrivalMessage?.messages,
-        currentChatId: arrivalMessage?.currentChatID,
-      });
-
-      dispatch(
-        setSeenMessage({
-          currentChatId: arrivalMessage?.currentChatID,
-          messageId: arrivalMessage?.messages._id,
-        })
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arrivalMessage]);
+  
 
   useEffect(() => {
     socket?.on("getMessageDelivered", (data) => {

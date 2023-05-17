@@ -42,6 +42,16 @@ export default function ChatBoxBody({
   }, []);
 
   useEffect(() => {
+    socket?.on("start typing message", (typingInfo) => {
+      if (typingInfo.senderId !== socket.id) {
+        const user = typingInfo.user;
+        setTypingUsers((users) => [...users, user]);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     const lastSeenMessage = messagesChat.filter((m) => m.status === "seen");
     SetGetLastSeenMessage(lastSeenMessage[lastSeenMessage.length - 1]?._id);
   }, [messagesChat]);
@@ -98,6 +108,7 @@ export default function ChatBoxBody({
     dispatch(
       sendMessageChat({
         message,
+        socket,
         userToken: user.token,
         currentChatId: currentChat?._id,
       })

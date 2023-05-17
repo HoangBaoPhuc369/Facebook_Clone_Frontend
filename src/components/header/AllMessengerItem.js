@@ -14,13 +14,13 @@ export default function AllMessengerItem({
   const [checkOnline, setCheckOnline] = useState(false);
   // const [messages, setMessages] = useState(messagesChat);
 
-  // console.log(messagesChat[messagesChat.length - 1]);
-
   useEffect(() => {
     setCheckOnline(onlineUser?.some((f) => f._id === friendChat._id));
   }, [onlineUser]);
 
   const getNewMessage = messagesChat[messagesChat.length - 1];
+
+  console.log();
 
   const checkNewMessage = () => {
     if (
@@ -58,13 +58,13 @@ export default function AllMessengerItem({
           </span>
           {getNewMessage?.sender === user.id ? (
             <span>You: {getNewMessage?.text}</span>
-          ) : getNewMessage?.status !== "seen" &&
+          ) : getNewMessage?.status === "delivered" &&
             getNewMessage !== undefined ? (
-            <span className="all_messenger-arrival-message">
+            <span className="all_messenger-arrival-message font-medium blue-text-status">
               {getNewMessage?.text}
             </span>
           ) : (
-            <span>{getNewMessage?.text}</span>
+            <span className="all_messenger-arrival-message">{getNewMessage?.text}</span>
           )}
         </div>
         <div className="all_messenger-arrival-message">
