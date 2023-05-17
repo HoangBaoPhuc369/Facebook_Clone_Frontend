@@ -60,7 +60,8 @@ export default function ChatBoxBottom({
               value={newMessage}
               onKeyPress={startTyping}
               className="focus:ring-0 appearance-none p-0 
-              bg-transparent resize-none px-3 border-none w-full min-h-[24px]"
+              bg-transparent resize-none px-3 border-none w-full 
+              max-h-[20vh] overflow-y-auto scrollbar"
               onKeyUp={(e) => {
                 stopTyping();
                 if (e.key === "Enter" && e.target.value !== "") {

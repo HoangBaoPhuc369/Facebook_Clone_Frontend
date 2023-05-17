@@ -90,6 +90,12 @@ function App() {
     if (user) {
       newSocket.emit("joinUser", user.id);
 
+      dispatch(
+        seenAllConversationsChat({
+          userToken: user?.token,
+        })
+      );
+
       newSocket?.emit("addUser", {
         userId: user?.id,
         userName: `${user?.first_name} ${user?.last_name}`,
@@ -165,25 +171,14 @@ function App() {
   // }, [socketRef, user]);
 
   useEffect(() => {
-    if (user?.token) {
-      dispatch(
-        seenAllConversationsChat({
-          userToken: user?.token,
-        })
-      );
+    if (user) {
+      socketRef?.on("seenAllConversations", (data) => {
+        console.log();
+        dispatch(setConversation(data));
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     socketRef?.on("seenAllConversations", (data) => {
-  //       console.log(data);
-  //       dispatch(setConversation(data));
-  //     });
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [socketRef]);
+  }, [user, socketRef]);
 
   const toastDetailsPost = (type) =>
     toast(<DetailsNoftication type={type} />, {
