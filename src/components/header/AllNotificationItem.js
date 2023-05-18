@@ -7,6 +7,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { setPage } from "../../redux/features/pageSlice";
 
 export default function AllNotificationItem({
   user,
@@ -26,10 +27,12 @@ export default function AllNotificationItem({
         dispatch(selecteNotification(notification));
         if (notification.isSystem) {
           navigate("/details-notification/system");
+          dispatch(setPage(""));
         } else {
           navigate("/details-notification/post");
         }
         setShowAllNotification(false);
+        dispatch(setPage(""));
       }}
     >
       <div className="all_notification_item_chat">

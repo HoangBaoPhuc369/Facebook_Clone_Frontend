@@ -5,6 +5,7 @@ import HelpSupport from "./HelpSupport";
 import SettingsPrivacy from "./SettingsPrivacy";
 import { useDispatch } from "react-redux";
 import { setLogout } from "../../../redux/features/authSlice";
+import { setPage } from "../../../redux/features/pageSlice";
 
 export default function UserMenu({ user, socket }) {
   const dispatch = useDispatch();
@@ -19,7 +20,11 @@ export default function UserMenu({ user, socket }) {
     <div className="mmenu">
       {visible === 0 && (
         <div>
-          <Link to="/profile" className="mmenu_header hover3">
+          <Link
+            to="/profile"
+            onClick={() => dispatch(setPage("profile"))}
+            className="mmenu_header hover3"
+          >
             <img src={user?.picture} alt="" />
             <div className="mmenu_col">
               <span>

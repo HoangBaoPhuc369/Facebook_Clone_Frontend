@@ -4,6 +4,7 @@
 }
 
 .login_wrap {
+  padding-top: 30px;
   height: 78vh;
   color: var(--color-primary);
 }

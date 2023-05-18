@@ -5,11 +5,18 @@ import { Link } from "react-router-dom";
 import { ArrowDown1 } from "../../../svg";
 import { useState } from "react";
 import Shortcut from "./Shortcut";
+import { setPage } from "../../../redux/features/pageSlice";
+import { useDispatch } from "react-redux";
 export default function LeftHome({ user }) {
   const [visible, setVisible] = useState(false);
+  const dispatch = useDispatch();
   return (
     <div className="left_home scrollbar">
-      <Link to="/profile" className="left_link hover2">
+      <Link
+        to="/profile"
+        onClick={() => dispatch(setPage("profile"))}
+        className="left_link hover2"
+      >
         <img src={user?.picture} alt="" />
         <span>
           {user?.first_name} {user?.last_name}
@@ -60,7 +67,7 @@ export default function LeftHome({ user }) {
         </div>
       )}
       {/* <div className="splitter"></div> */}
-      
+
       <div className={`fb_copyright ${visible && "relative_fb_copyright"}`}>
         <Link to="/">Privacy </Link>
         <span>. </span>

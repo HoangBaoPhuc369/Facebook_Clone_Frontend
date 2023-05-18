@@ -61,12 +61,12 @@ export default function Home({
 
   return (
     <div className="background-secondary">
-      <Header
+      {/* <Header
         page="home"
         socketRef={socketRef}
         onlineUser={onlineUser}
         setOnlineUsers={setOnlineUsers}
-      />
+      /> */}
       <LeftHome user={user} />
 
       <RightHome onlineUser={onlineUser} />
