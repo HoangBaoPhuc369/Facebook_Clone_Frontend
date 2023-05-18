@@ -4,6 +4,7 @@ import { useEffect} from "react";
 import ChatBoxHeader from "./chatBoxHeader";
 import { useDispatch } from "react-redux";
 import {
+  clearMessageDelivered,
   clearMessageSuccess,
   deliveredMessageChat,
   seenAllMessageChat,
@@ -27,7 +28,7 @@ export default function ChatBox({
   handleRemoveWaitingMessage,
 }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
-  const { messageSendSuccess, chatBox } = useSelector((state) => ({
+  const { chatBox } = useSelector((state) => ({
     ...state.messenger,
   }));
 
@@ -107,6 +108,7 @@ export default function ChatBox({
             friendChat._id,
             user?.token
           );
+          dispatch(clearMessageDelivered(currentChat?._id))
         }}
       >
         <div className="chatBox_display">

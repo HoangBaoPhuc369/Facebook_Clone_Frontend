@@ -34,6 +34,7 @@ import CreatePostSharePopup from "./components/createPostSharePopup";
 import DetailsNotifications from "./components/detailsNotifications";
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import Header from "./components/header";
+import socketRef from "./socket/socket";
 
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
@@ -100,7 +101,7 @@ function App() {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { page } = useSelector((state) => ({ ...state.pageSite }));
   const userId = user?.id;
-  const [socketRef, setSocketRef] = useState(null);
+  // const [socketRef, setSocketRef] = useState(null);
   const [sharePostPopUp, setsharePostPopUp] = useState(false);
   const [isProfile, setIsProfile] = useState(false);
   const [postShare, setPostShare] = useState({});
@@ -117,14 +118,21 @@ function App() {
 
   //  process.env.REACT_APP_BACKEND_URL
   // "http://localhost:8900/"
-  useEffect(() => {
-    const newSocket = io(process.env.REACT_APP_BACKEND_URL, {
-      transports: ["polling"],
-    });
 
-    console.log(newSocket);
+  // useEffect(() => {
+  //   console.log(socket);
+  // }, []);
+
+  // useEffect(() =>{
+  //   console.log(socketRef);
+  // },[])
+
+  useEffect(() => {
+    // const newSocket = io(process.env.REACT_APP_BACKEND_URL, {
+    //   transports: ["polling"],
+    // });
     if (user) {
-      newSocket.emit("joinUser", user.id);
+      socketRef.emit("joinUser", user.id);
 
       dispatch(
         seenAllConversationsChat({
@@ -132,7 +140,7 @@ function App() {
         })
       );
 
-      newSocket?.emit("addUser", {
+      socketRef?.emit("addUser", {
         userId: user?.id,
         userName: `${user?.first_name} ${user?.last_name}`,
         picture: user?.picture,
@@ -140,7 +148,7 @@ function App() {
       });
     }
 
-    newSocket?.on("getUsers", (users) => {
+    socketRef?.on("getUsers", (users) => {
       const activeUsers = user.following.filter((f) =>
         users.some((u) => u.userId === f._id)
       );
@@ -154,10 +162,10 @@ function App() {
       dispatch(setActiveUsers(activeUsersSocket));
     });
 
-    setSocketRef(newSocket);
-    handleWSSCallInParent(newSocket);
-    return () => newSocket.close();
-  }, [user]); //
+    // setSocketRef(socketRef);
+    handleWSSCallInParent(socketRef);
+    return () => socketRef.close();
+  }, [user]);
 
   useEffect(() => {
     if (socketRef) {
@@ -209,17 +217,16 @@ function App() {
   useEffect(() => {
     if (user) {
       socketRef?.on("seenAllConversations", (data) => {
-        console.log();
         dispatch(setConversation(data));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, socketRef]);
+  }, [user]);
 
   useEffect(() => {
+    console.log(socketRef);
     socketRef?.on("getNotification", (data) => {
       console.log(data);
-      //Cho nay chi can day vo state khong can call api
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
 
@@ -244,7 +251,7 @@ function App() {
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, socketRef]);
+  }, [socketRef]);
 
   const toastDetailsPost = (type) =>
     toast(<DetailsNoftication type={type} />, {

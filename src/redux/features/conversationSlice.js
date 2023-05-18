@@ -114,6 +114,9 @@ const initialState = {
         chatBoxMinimized: [],
         chatBoxWaiting: [],
       },
+  newMessage: localStorage.getItem("newMessage")
+    ? JSON.parse(localStorage.getItem("newMessage"))
+    : [],
   error: "",
   loading: false,
   messageSendSuccess: false,
@@ -287,7 +290,7 @@ export const conversationSlice = createSlice({
                 ...state.chatBox,
                 chatBoxWaiting: [
                   ...state.chatBox.chatBoxWaiting,
-                  action.payload,
+                  // action.payload,
                 ],
               })
             );
@@ -327,6 +330,32 @@ export const conversationSlice = createSlice({
         messageId: action.payload.messageId,
         status: "seen",
       });
+
+      state.newMessage = state.newMessage.filter((m) => m !== action.payload.currentChatId);
+      localStorage.setItem("newMessage", JSON.stringify([...state.newMessage]));
+    },
+
+    getNewMessage: (state, action) => {
+      const checkMsg = state.newMessage.some((m) => m === action.payload);
+      console.log(checkMsg);
+      if (action.payload && !checkMsg) {
+        state.newMessage.push(action.payload);
+        localStorage.setItem(
+          "newMessage",
+          JSON.stringify([...state.newMessage])
+        );
+      }
+    },
+
+    clearMessageDelivered: (state, action) => {
+      // console.log(state.newMessage.filter((m) => m !== action.payload));
+      state.newMessage = state.newMessage.filter((m) => m !== action.payload);
+      localStorage.setItem("newMessage", JSON.stringify([...state.newMessage]));
+    },
+
+    clearNewMessage: (state, action) => {
+      state.newMessage = [];
+      localStorage.setItem("newMessage", JSON.stringify([...state.newMessage]));
     },
 
     removeChatBoxWaiting: (state, action) => {
@@ -430,13 +459,16 @@ export const conversationSlice = createSlice({
 export const {
   setChatBox,
   removeChatBox,
+  getNewMessage,
   setSeenMessage,
+  clearNewMessage,
   setConversation,
   setCurrentChatBox,
   getNewFriendMessage,
   clearMessageSuccess,
   setDeliveredMessage,
   removeChatBoxWaiting,
+  clearMessageDelivered,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;
