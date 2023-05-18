@@ -193,35 +193,34 @@ export default function Header({
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, []);
 
-  useEffect(() => {
-    socketRef?.on("getNotification", (data) => {
-      console.log();
-      //Cho nay chi can day vo state khong can call api
-      dispatch(getNotification({ userToken: user?.token }));
-      dispatch(getNewNotifications(data));
+  // useEffect(() => {
+  //   socketRef?.on("getNotification", (data) => {
+  //     //Cho nay chi can day vo state khong can call api
+  //     dispatch(getNotification({ userToken: user?.token }));
+  //     dispatch(getNewNotifications(data));
 
-      toast(
-        <Msg
-          picture={data?.picture}
-          text={data?.text}
-          icon={data?.icon}
-          name={data?.name}
-          type={data?.type}
-        />,
-        {
-          className: "notification_form",
-          toastClassName: "notification_toast",
-          bodyClassName: "notification_body",
-          position: "bottom-left",
-          hideProgressBar: true,
-          autoClose: 3000,
-          transition: bounce,
-        }
-      );
-    });
+  //     toast(
+  //       <Msg
+  //         picture={data?.picture}
+  //         text={data?.text}
+  //         icon={data?.icon}
+  //         name={data?.name}
+  //         type={data?.type}
+  //       />,
+  //       {
+  //         className: "notification_form",
+  //         toastClassName: "notification_toast",
+  //         bodyClassName: "notification_body",
+  //         position: "bottom-left",
+  //         hideProgressBar: true,
+  //         autoClose: 3000,
+  //         transition: bounce,
+  //       }
+  //     );
+  //   });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     socketRef?.on("postNotification", (data) => {

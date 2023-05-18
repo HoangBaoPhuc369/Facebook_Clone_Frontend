@@ -10,8 +10,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function AllNotificationItem({
   user,
-  notification,
   checkReact,
+  notification,
+  setShowAllNotification,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ export default function AllNotificationItem({
         } else {
           navigate("/details-notification/post");
         }
+        setShowAllNotification(false);
       }}
     >
       <div className="all_notification_item_chat">

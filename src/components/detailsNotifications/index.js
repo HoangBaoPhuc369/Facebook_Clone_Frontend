@@ -3,7 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import Header from "../../components/header";
 import { getNewCommentPost } from "../../redux/features/postSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { getPost } from "../../redux/features/notificationSlice";
+import {
+  clearPostDetails,
+  getPost,
+} from "../../redux/features/notificationSlice";
 import PostPopUp from "../post/PostPopUp";
 import PostSkeleton from "../postSkeleton";
 
@@ -19,7 +22,7 @@ export default function DetailsNotifications({
       ...state.notification,
     }));
   const { user } = useSelector((state) => ({ ...state.auth }));
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -31,9 +34,11 @@ export default function DetailsNotifications({
           postId: notificationsSelected?.postId,
         })
       );
+    } else if (type === "system") {
+      dispatch(clearPostDetails());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type]);
+  }, [type, notificationsSelected]);
 
   useEffect(() => {
     if (socketRef) {
@@ -69,7 +74,7 @@ export default function DetailsNotifications({
               socketRef={socketRef}
               toastDetailsPost={toastDetailsPost}
             />
-          ) : (
+          ) : !postDetails && type === "post" ? (
             <div
               className="w-full h-full flex items-center justify-center 
           details-post-text-content"
@@ -92,7 +97,46 @@ export default function DetailsNotifications({
                     or it's been deleted.
                   </p>
                 </div>
-                <button onClick={() => navigate('/')} className="bg-blue-600 h-10 px-10 rounded-md mt-4">
+                <button
+                  onClick={() => navigate("/")}
+                  className="bg-blue-600 h-10 px-10 rounded-md mt-4"
+                >
+                  Go to News Feed
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center 
+        details-post-text-content"
+            >
+              <div className="w-[500px] text-center">
+                <div className="w-full flex justify-center">
+                  <img
+                    className="h-[112px] w-[112px]"
+                    src="../../icons/AI_icon.png"
+                    alt="lock"
+                  />
+                </div>
+                <div className="">
+                  <p className="text-[20px] font-bold">
+                    Warning: Your Content Contains Toxic Elements and has been
+                    Hidden
+                  </p>
+                  <p className="text-[17px]">
+                    Our AI model have detected and hidden your content as it
+                    contains harmful elements, your content contains the
+                    following toxic labels:{" "}
+                    <span className="text-blue-500">
+                      {notificationsSelected.hateSpeechLabels.join(", ")}
+                    </span>
+                    .
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate("/")}
+                  className="bg-blue-600 h-10 px-10 rounded-md mt-4"
+                >
                   Go to News Feed
                 </button>
               </div>

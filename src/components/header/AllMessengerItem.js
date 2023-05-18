@@ -64,20 +64,22 @@ export default function AllMessengerItem({
               {getNewMessage?.text}
             </span>
           ) : (
-            <span className="all_messenger-arrival-message">{getNewMessage?.text}</span>
+            <span className="all_messenger-arrival-message">
+              {getNewMessage?.text}
+            </span>
           )}
         </div>
         <div className="all_messenger-arrival-message">
-          {getNewMessage.status === "delivered" ? (
+          {getNewMessage?.status === "delivered" ? (
             <div className="all_messenger-arrival-message-status"></div>
-          ) : getNewMessage.status === "seen" ? (
+          ) : getNewMessage?.status === "seen" ? (
             <img
               src={friendChat?.picture}
               className="absolute right-[7px] top-[43%] 
           rounded-full object-cover"
               alt="friend status"
             />
-          ) : getNewMessage.status === "unseen" &&
+          ) : getNewMessage?.status === "unseen" &&
             getNewMessage?.sender === user.id ? (
             <FontAwesomeIcon
               icon={faCheckCircle}
