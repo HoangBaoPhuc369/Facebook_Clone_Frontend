@@ -106,7 +106,7 @@ export default function PostPopUp({
 
   const handleSendNotifications = (icon, type) => {
     if (user?.id !== post?.user._id) {
-      console.log("Lỗi ở đây");
+      
       const typeNotification =
         type === "react"
           ? post?.type === null
@@ -136,7 +136,8 @@ export default function PostPopUp({
       // dispatch(
       //   createNotifications({ props: notification, token: user?.token })
       // );
-
+      console.log(notificationSocket);
+      console.log(socketRef);
       socketRef?.emit("sendNotification", notificationSocket);
     }
   };

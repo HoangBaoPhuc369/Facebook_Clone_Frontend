@@ -21,7 +21,10 @@ import {
   seenAllConversationsChat,
   setConversation,
 } from "./redux/features/conversationSlice";
-import { getNotification } from "./redux/features/notificationSlice";
+import {
+  getNewNotifications,
+  getNotification,
+} from "./redux/features/notificationSlice";
 import { io } from "socket.io-client";
 import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInParent";
 import Test from "./components/test";
@@ -60,6 +63,36 @@ const DetailsNoftication = ({ type }) => (
   </div>
 );
 
+const Msg = ({ picture, text, icon, name, type }) => (
+  <>
+    <div className="notification-box_header">
+      <span>New notification</span>
+    </div>
+    <div className="notification-box_container">
+      <div className="notification-picture mr-[10px]">
+        <img className="noftification-avatar" src={picture} alt="" />
+        {type !== "react" ? (
+          <div className="absolute bottom-2 right-0 w-5 h-5">
+            <i className={`notification_${type}_icon`}></i>
+          </div>
+        ) : (
+          <img
+            className="absolute bottom-2 right-0 w-5 h-5"
+            src={`../../../reacts/${icon}.svg`}
+            alt=""
+          />
+        )}
+      </div>
+      <div className="notification-information">
+        <div className="notification-text">
+          <span>{name}</span> {text}
+        </div>
+        <span className="notification-time">a few second ago</span>
+      </div>
+    </div>
+  </>
+);
+
 function App() {
   const [visible, setVisible] = useState(false);
   const [onlineUser, setOnlineUsers] = useState([]);
@@ -87,6 +120,8 @@ function App() {
     const newSocket = io(process.env.REACT_APP_BACKEND_URL, {
       transports: ["polling"],
     });
+
+    console.log(newSocket);
     if (user) {
       newSocket.emit("joinUser", user.id);
 
@@ -179,6 +214,36 @@ function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, socketRef]);
+
+  useEffect(() => {
+    socketRef?.on("getNotification", (data) => {
+      console.log(data);
+      //Cho nay chi can day vo state khong can call api
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+
+      toast(
+        <Msg
+          picture={data?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.name}
+          type={data?.type}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user,socketRef]);
 
   const toastDetailsPost = (type) =>
     toast(<DetailsNoftication type={type} />, {

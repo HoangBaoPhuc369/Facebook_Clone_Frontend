@@ -86,12 +86,12 @@ export default function Post({
             : " commented on your photo."
           : null;
 
-      const notification = {
-        senderId: user?.id,
-        receiverId: post?.user._id,
-        icon: icon,
-        text: typeNotification,
-      };
+      // const notification = {
+      //   senderId: user?.id,
+      //   receiverId: post?.user._id,
+      //   icon: icon,
+      //   text: typeNotification,
+      // };
       const notificationSocket = {
         senderId: user?.id,
         receiverId: post?.user._id,

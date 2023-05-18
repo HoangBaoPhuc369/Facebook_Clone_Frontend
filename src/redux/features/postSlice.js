@@ -100,6 +100,7 @@ export const createCommentPost = createAsyncThunk(
         token
       );
       if (data) {
+        console.log(handleSendNotifications)
         handleSendNotifications("comment", "comment");
       }
       return { data: data.comments, postId };

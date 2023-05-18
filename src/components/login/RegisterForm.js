@@ -20,9 +20,9 @@ export default function RegisterForm({ setVisible }) {
     last_name: "",
     email: "",
     password: "",
-    bYear: new Date().getFullYear(),
-    bMonth: new Date().getMonth() + 1,
-    bDay: new Date().getDate(),
+    bYear: new Date().getFullYear().toString(),
+    bMonth: (new Date().getMonth() + 1).toString(),
+    bDay: new Date().getDate().toString(),
     gender: "",
   };
   const [formValue, setformValue] = useState(userInfos);
@@ -153,7 +153,7 @@ export default function RegisterForm({ setVisible }) {
               <div className="reg_line">
                 <RegisterInput
                   type="text"
-                  placeholder="Mobile number or email address"
+                  placeholder="Email address"
                   name="email"
                   onChange={handleRegisterChange}
                 />

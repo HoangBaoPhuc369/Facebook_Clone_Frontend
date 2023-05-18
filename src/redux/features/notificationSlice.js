@@ -160,7 +160,9 @@ const initialState = {
   newNotifications: Cookies.get("notification")
     ? JSON.parse(Cookies.get("notification"))
     : [],
-  notificationsSelected: null,
+  notificationsSelected: localStorage.getItem("notificationsSelected")
+    ? JSON.parse(localStorage.getItem("notificationsSelected"))
+    : null,
   postDetails: localStorage.getItem("post-details")
     ? JSON.parse(localStorage.getItem("post-details"))
     : null,
@@ -188,13 +190,17 @@ export const notificationSlice = createSlice({
     },
     selecteNotification: (state, action) => {
       state.notificationsSelected = action.payload;
+      localStorage.setItem(
+        "notificationsSelected",
+        JSON.stringify(action.payload)
+      );
     },
     viewNegativePostDetails: (state, action) => {
-      state.postDetails.hidePost = true;
+      state.postDetails.hidePost = false;
     },
     viewNegativeCommentInPostDetails: (state, action) => {
       const findCommnent = state.postDetails.comments.find(
-        (c) => c._id === action.payload
+        (c) => c._id === action.payload.commentId
       );
       if (findCommnent) {
         findCommnent.hideComment = false;
@@ -219,6 +225,11 @@ export const notificationSlice = createSlice({
 
     deleteCommentInDetails: (state, action) => {
       state.postDetails.comments = action.payload.comments;
+    },
+
+    clearPostDetails: (state, action) => {
+      state.postDetails = null;
+      localStorage.setItem("post-details", JSON.stringify(""));
     },
   },
   extraReducers: {
@@ -255,8 +266,8 @@ export const notificationSlice = createSlice({
     },
     [getPost.fulfilled]: (state, action) => {
       state.loadingPostDetails = false;
-      state.postDetails = action.payload;
       localStorage.setItem("post-details", JSON.stringify(action.payload));
+      state.postDetails = action.payload;
       state.error = "";
     },
     [getPost.rejected]: (state, action) => {
@@ -307,6 +318,7 @@ export const notificationSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
+  clearPostDetails,
   selecteNotification,
   getNewNotifications,
   clearNewNotifications,
