@@ -101,7 +101,7 @@ export default function SearchMenu({ color, setShowSearchMenu, token }) {
             .map((user) => (
               <div className="search_user_item hover1" key={user._id}>
                 <Link
-                  className="flex"
+                  className="flex items-center gap-3"
                   to={`/profile/${user.user.username}`}
                   onClick={() => addToSearchHistoryHandler(user.user._id)}
                 >

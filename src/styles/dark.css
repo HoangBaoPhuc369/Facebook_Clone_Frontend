@@ -304,3 +304,7 @@
 .dark .primary-color {
   color: var(--color-primary) !important;
 }
+
+.dark .search {
+  color: var(--color-primary) !important;
+}

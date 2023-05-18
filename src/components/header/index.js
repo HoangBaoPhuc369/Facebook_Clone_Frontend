@@ -24,7 +24,9 @@ import AllMessenger from "./AllMessenger";
 import ChatBox from "../chatBox";
 import { getAllPosts } from "../../redux/features/postSlice";
 import {
+  clearNewMessage,
   getNewFriendMessage,
+  getNewMessage,
   removeChatBoxWaiting,
   seenAllMessageChat,
   setDeliveredMessage,
@@ -125,7 +127,7 @@ export default function Header({
   const { newNotifications } = useSelector((state) => ({
     ...state.notification,
   }));
-  const { conversations, chatBox } = useSelector((state) => ({
+  const { conversations, chatBox, newMessage } = useSelector((state) => ({
     ...state.messenger,
   }));
   const color = "#65676b";
@@ -254,7 +256,6 @@ export default function Header({
 
   useEffect(() => {
     socketRef?.on("toxicNotification", (data) => {
-      console.log(data);
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
 
@@ -347,6 +348,8 @@ export default function Header({
           messageId: arrivalMessage?.messages._id,
         })
       );
+    } else if (arrivalMessage?.currentChatID) {
+      dispatch(getNewMessage(arrivalMessage?.currentChatID));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arrivalMessage]);
@@ -375,7 +378,20 @@ export default function Header({
     }
   };
 
-  // console.log(Moment("20010704T120854").format("ddd"));
+  const getAllMessageDelivery = (conversations) => {
+    let count = 0;
+    if (conversations) {
+      for (let i = 0; i < conversations?.length; i++) {
+        let lastSubItem =
+          conversations[i]?.messages[conversations[i]?.messages.length - 1];
+        if (lastSubItem.status === "delivered") {
+          count++;
+        }
+      }
+      return count;
+    }
+    return count;
+  };
 
   //================================================================
   return (
@@ -464,6 +480,7 @@ export default function Header({
             className="icon_wrapper"
             onClick={() => {
               setShowAllMessenger((prev) => !prev);
+              dispatch(clearNewMessage());
             }}
           >
             <Messenger />
@@ -482,6 +499,10 @@ export default function Header({
             setCloseArrivalMessage={setCloseArrivalMessage}
             handleRemoveWaitingMessage={handleRemoveWaitingMessage}
           />
+
+          {newMessage.length > 0 ? (
+            <div className="right_notification">{newMessage.length}</div>
+          ) : null}
         </div>
         <div className="circle_icon hover1" ref={notificationRef}>
           <div
