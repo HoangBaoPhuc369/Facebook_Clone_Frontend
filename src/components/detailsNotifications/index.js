@@ -51,12 +51,6 @@ export default function DetailsNotifications({
 
   return (
     <div className="background-secondary">
-      <Header
-        page="home"
-        socketRef={socketRef}
-        onlineUser={onlineUser}
-        setOnlineUsers={setOnlineUsers}
-      />
       <div className="home">
         <div
           className="home_middle w-full flex flex-col flex-wrap content-center"

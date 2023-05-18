@@ -1,17 +1,19 @@
-import './style.css';
-import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
-import { useState } from 'react';
-import SearchAccount from './SearchAccount';
+import "./style.css";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import { useState } from "react";
+import SearchAccount from "./SearchAccount";
 import SendEmail from "./SendEmail";
-import CodeVerification from './CodeVerification';
-import ChangePassword from './ChangePassword';
-import Footer from '../../components/login/Footer';
+import CodeVerification from "./CodeVerification";
+import ChangePassword from "./ChangePassword";
+import Footer from "../../components/login/Footer";
+import { setPage } from "../../redux/features/pageSlice";
 
 export default function Reset() {
   const { user } = useSelector((state) => ({ ...state.auth }));
+  // const { page } = useSelector((state) => ({ ...state.pageSite }));
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [visible, setVisible] = useState(0);
@@ -37,11 +39,11 @@ export default function Reset() {
         <img src="../../../icons/facebook.svg" alt="" />
         {user ? (
           <div className="right_reset">
-            <Link to="/profile">
+            <Link to="/profile" onClick={() => dispatch(setPage("profile"))}>
               <img src={user.picture} alt="" />
             </Link>
-            <button 
-              className='blue_btn'
+            <button
+              className="blue_btn"
               onClick={() => {
                 logout();
               }}
@@ -109,5 +111,5 @@ export default function Reset() {
       </div>
       <Footer />
     </div>
-  )
+  );
 }

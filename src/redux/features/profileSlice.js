@@ -16,6 +16,7 @@ export const getProfile = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
+      console.log(userName, path, sort, max);
       const { data } = await api.getProfile(userName, token);
       if (!data) {
         navigate("/profile");

@@ -503,7 +503,7 @@ export default function CreateComment({
         // handleSendNotifications("comment", "comment");
       }
     }
-    cancelTyping();
+    // cancelTyping();
   };
 
   return (
@@ -560,10 +560,7 @@ export default function CreateComment({
             // onInput={handleInput}
             onKeyPress={startTyping}
             onKeyUp={(e) => {
-              stopTyping();
-              // if (e.key === "Enter" && e.target.value !== "") {
-              //   handleComment(e);
-              // }
+              // stopTyping();
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && e.target.value !== "") {

@@ -6,6 +6,7 @@ import { friendspage } from "../../functions/reducers";
 import { getFriendsPageInfos } from "../../functions/user";
 import Card from "./Card";
 import "./style.css";
+import { setPage } from "../../redux/features/pageSlice";
 export default function Friends({socketRef}) {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { type } = useParams();
@@ -42,6 +43,7 @@ export default function Friends({socketRef}) {
           <div className="friends_left_wrap">
             <Link
               to="/friends"
+              onClick={() => dispatch(setPage("friends"))}
               className={`mmenu_item hover3 ${
                 type === undefined && "active_friends"
               }`}

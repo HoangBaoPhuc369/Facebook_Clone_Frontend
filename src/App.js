@@ -33,6 +33,7 @@ import { ToastContainer, cssTransition, toast } from "react-toastify";
 import CreatePostSharePopup from "./components/createPostSharePopup";
 import DetailsNotifications from "./components/detailsNotifications";
 import { IoIosCheckmarkCircle } from "react-icons/io";
+import Header from "./components/header";
 
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
@@ -97,7 +98,7 @@ function App() {
   const [visible, setVisible] = useState(false);
   const [onlineUser, setOnlineUsers] = useState([]);
   const { user } = useSelector((state) => ({ ...state.auth }));
-  const { darkTheme } = useSelector((state) => ({ ...state.theme }));
+  const { page } = useSelector((state) => ({ ...state.pageSite }));
   const userId = user?.id;
   const [socketRef, setSocketRef] = useState(null);
   const [sharePostPopUp, setsharePostPopUp] = useState(false);
@@ -156,7 +157,7 @@ function App() {
     setSocketRef(newSocket);
     handleWSSCallInParent(newSocket);
     return () => newSocket.close();
-  }, [setSocketRef, user]); //
+  }, [user]); //
 
   useEffect(() => {
     if (socketRef) {
@@ -243,7 +244,7 @@ function App() {
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user,socketRef]);
+  }, [user, socketRef]);
 
   const toastDetailsPost = (type) =>
     toast(<DetailsNoftication type={type} />, {
@@ -266,6 +267,15 @@ function App() {
         openSharePost={sharePostPopUp}
         setOpenSharePost={setsharePostPopUp}
       />
+
+      {socketRef && user ? (
+        <Header
+          page={page}
+          socketRef={socketRef}
+          onlineUser={onlineUser}
+          setOnlineUsers={setOnlineUsers}
+        />
+      ) : null}
 
       <Routes>
         <Route element={<LoggedInRoutes socketRef={socketRef} />}>

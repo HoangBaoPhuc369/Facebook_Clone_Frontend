@@ -43,6 +43,7 @@ import { setActiveUsers } from "../../redux/features/dashboardSlice";
 import NotificationPopUp from "../notificationPopUp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { setPage } from "../../redux/features/pageSlice";
 
 const Msg = ({ picture, text, icon, name, type }) => (
   <>
@@ -253,6 +254,7 @@ export default function Header({
 
   useEffect(() => {
     socketRef?.on("toxicNotification", (data) => {
+      console.log(data);
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
 
@@ -289,7 +291,6 @@ export default function Header({
   //   return users.filter((u) => u?.id !== user.id);
   // };
 
-
   // useEffect(() => {
   //   socketRef?.on("stop typing message", (typingInfo) => {
   //     if (typingInfo.senderId !== socketRef.id) {
@@ -319,7 +320,7 @@ export default function Header({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  useEffect(() =>{
+  useEffect(() => {
     socketRef?.emit("messageDelivered", {
       message: arrivalMessage?.messages,
       currentChatId: arrivalMessage?.currentChatID,
@@ -331,7 +332,7 @@ export default function Header({
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arrivalMessage])
+  }, [arrivalMessage]);
 
   useEffect(() => {
     if (arrivalMessage?.currentChatID === chatBox.currentChatBox) {
@@ -411,12 +412,16 @@ export default function Header({
         <Link
           to="/"
           className={`middle_icon ${page === "home" ? "active" : "hover1"}`}
-          onClick={() => dispatch(getAllPosts({ userToken: user.token }))}
+          onClick={() => {
+            dispatch(getAllPosts({ userToken: user.token }));
+            dispatch(setPage("home"));
+          }}
         >
           {page === "home" ? <HomeActive /> : <Home color={color} />}
         </Link>
         <Link
           to="/friends"
+          onClick={() => dispatch(setPage("friends"))}
           className={`middle_icon ${page === "friends" ? "active" : "hover1"}`}
         >
           {page === "friends" ? <FriendsActive /> : <Friends color={color} />}

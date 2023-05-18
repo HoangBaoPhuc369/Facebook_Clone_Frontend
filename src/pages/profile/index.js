@@ -98,12 +98,7 @@ export default function Profile({
   return (
     <div className="profile">
       <CreatePostPopup visible={visible} setVisible={setVisible} profile />
-      <Header
-        page="profile"
-        socketRef={socketRef}
-        onlineUser={onlineUser}
-        setOnlineUsers={setOnlineUsers}
-      />
+     
       <div className="profile_top" ref={profileTop}>
         <div className="profile_container">
           {loading ? (
