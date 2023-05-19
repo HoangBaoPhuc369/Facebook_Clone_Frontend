@@ -541,8 +541,8 @@ export default function PostPopUp({
                 />
               ))
           : null}
-
-        {isPostHaveTyping && !isTyping ? (
+          {/*  && !isTyping */}
+        {isPostHaveTyping ? (
           <div className="comment-is-typing">
             <ThreeDotLoaderFlashing />
             <p className="text-sm font-medium">

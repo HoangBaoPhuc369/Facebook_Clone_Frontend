@@ -127,7 +127,12 @@ export const conversationSlice = createSlice({
   initialState,
   reducers: {
     setChatBox: (state, action) => {
-      if (action.payload !== state.chatBox.currentChatBox) {
+      if (
+        action.payload !== state.chatBox.currentChatBox &&
+        !state.chatBox.chatBoxVisible.includes(action.payload) &&
+        action.payload !== null &&
+        action.payload !== undefined
+      ) {
         if (state.chatBox.currentChatBox === null) {
           state.chatBox.currentChatBox = action.payload;
           state.chatBox.chatBoxVisible = [
@@ -162,9 +167,6 @@ export const conversationSlice = createSlice({
                 ...state.chatBox.chatBoxVisible,
               ];
             }
-            // else {
-            //   state.chatBox = { ...state.chatBox };
-            // }
           } else {
             const getChatBoxMinimized = state.chatBox.chatBoxVisible.pop();
 
@@ -195,9 +197,6 @@ export const conversationSlice = createSlice({
           }
         }
       }
-      // else {
-      //   state.chatBox = { ...state.chatBox };
-      // }
     },
     removeChatBox: (state, action) => {
       if (state.chatBox.chatBoxVisible.length > 1) {
@@ -331,7 +330,9 @@ export const conversationSlice = createSlice({
         status: "seen",
       });
 
-      state.newMessage = state.newMessage.filter((m) => m !== action.payload.currentChatId);
+      state.newMessage = state.newMessage.filter(
+        (m) => m !== action.payload.currentChatId
+      );
       localStorage.setItem("newMessage", JSON.stringify([...state.newMessage]));
     },
 
@@ -365,17 +366,21 @@ export const conversationSlice = createSlice({
       if (index > -1) {
         state.chatBox.chatBoxWaiting.splice(index, 1);
       }
-      Cookies.set(
-        "chatBox",
-        JSON.stringify({
-          ...state.chatBox,
-          chatBoxWaiting: [...state.chatBox.chatBoxWaiting],
-        })
-      );
+
+      if (state.chatBox.chatBoxWaiting.length > 0) {
+        Cookies.set(
+          "chatBox",
+          JSON.stringify({
+            ...state.chatBox,
+            chatBoxWaiting: [...state.chatBox.chatBoxWaiting],
+          })
+        );
+      }
     },
     setConversation: (state, action) => {
       state.conversations = action.payload;
     },
+    
   },
   extraReducers: {
     [getConversations.pending]: (state, action) => {

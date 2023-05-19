@@ -18,7 +18,7 @@ export default function EmojiPickerBackgrounds({
   });
 
   return (
-    <div className="h-auto max-h-[310px] overflow-y-scroll">
+    <div className="h-auto max-h-[310px] overflow-y-scroll pb-5">
       <div className="flex_center flex-1" ref={bgRef}>
         <textarea
           ref={textRef}

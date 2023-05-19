@@ -1,5 +1,5 @@
 import AllMessengerItem from "./AllMessengerItem";
-import { setChatBox } from "../../redux/features/conversationSlice";
+import { setChatBox, setCurrentChatBox } from "../../redux/features/conversationSlice";
 import { useDispatch } from "react-redux";
 
 export default function AllMessenger({
@@ -36,6 +36,7 @@ export default function AllMessenger({
                       dispatch(setChatBox(c._id));
                       setShowAllMessenger((prev) => !prev);
                       setScrollBottom((prev) => !prev);
+                      dispatch(setCurrentChatBox(c._id))
                     }}
                   >
                     <AllMessengerItem

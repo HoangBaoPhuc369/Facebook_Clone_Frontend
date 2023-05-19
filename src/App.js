@@ -35,6 +35,7 @@ import DetailsNotifications from "./components/detailsNotifications";
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import Header from "./components/header";
 import socketRef from "./socket/socket";
+import { setPage } from "./redux/features/pageSlice";
 
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
@@ -223,35 +224,36 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  // useEffect(() => {
+  //   const handleUnload = (event) => {
+  //     // Xử lý tắt trang ở đây
+  //     dispatch(setPage("home"));
+  //   };
+
+  //   window.addEventListener("beforeunload", handleUnload);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleUnload);
+  //   };
+  // }, []);
+
   useEffect(() => {
-    console.log(socketRef);
-    socketRef?.on("getNotification", (data) => {
-      console.log(data);
-      dispatch(getNotification({ userToken: user?.token }));
-      dispatch(getNewNotifications(data));
+    const handleUnload = (event) => {
+      const [navigation] = performance.getEntriesByType('navigation');
+      if (navigation.type === 'reload') {
+        console.log("Trang đã được tải lại");
+      } else {
+        dispatch(setPage("home"));
+        console.log("Người dùng đã đóng trang");
+      }
+    };
 
-      toast(
-        <Msg
-          picture={data?.picture}
-          text={data?.text}
-          icon={data?.icon}
-          name={data?.name}
-          type={data?.type}
-        />,
-        {
-          className: "notification_form",
-          toastClassName: "notification_toast",
-          bodyClassName: "notification_body",
-          position: "bottom-left",
-          hideProgressBar: true,
-          autoClose: 3000,
-          transition: bounce,
-        }
-      );
-    });
+    window.addEventListener('beforeunload', handleUnload);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+    };
+  }, []);
 
   const toastDetailsPost = (type) =>
     toast(<DetailsNoftication type={type} />, {
@@ -272,6 +274,7 @@ function App() {
         post={postShare}
         profile={isProfile}
         openSharePost={sharePostPopUp}
+        toastDetailsPost={toastDetailsPost}
         setOpenSharePost={setsharePostPopUp}
       />
 

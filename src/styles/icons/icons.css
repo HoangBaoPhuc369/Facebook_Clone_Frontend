@@ -408,6 +408,18 @@
   display: inline-block;
   filter: invert(40%);
 }
+
+.like_icon_action {
+  background-image: url("../../../public/icons/icons5.png");
+  background-position: 0 -224px;
+  background-size: auto;
+  width: 18px;
+  height: 18px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  filter: invert(20%) sepia(100%) saturate(7500%) hue-rotate(200deg)
+    brightness(140%);
+}
 .like_icon_fill {
   background-image: url("../../../public/icons/icons5.png");
   background-position: 0px -232px;

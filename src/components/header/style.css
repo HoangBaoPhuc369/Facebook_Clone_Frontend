@@ -775,7 +775,7 @@ header {
 .all_notification_group_header {
   font-weight: 600;
   font-size: 15px;
-  padding: 9px 12px;
+  /* padding: 9px 12px; */
   background: #e7f3ff;
   display: flex;
   align-items: center;

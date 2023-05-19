@@ -16,7 +16,6 @@ export const getProfile = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      console.log(userName, path, sort, max);
       const { data } = await api.getProfile(userName, token);
       if (!data) {
         navigate("/profile");
@@ -221,7 +220,7 @@ export const createPostProfile = createAsyncThunk(
         token,
         postRef
       );
-      if (data) {
+      if (data && type === "share") {
         toastDetailsPost("share");
       }
       return data;
@@ -240,7 +239,10 @@ export const deletePostProfile = createAsyncThunk(
       if (data) {
         toastDetailsPost("delete");
       }
-
+      console.log({
+        status: data.status,
+        postId,
+      });
       return {
         status: data.status,
         postId,
@@ -482,7 +484,7 @@ export const profileSlice = createSlice({
       state.error = "";
     },
     [deletePostProfile.rejected]: (state, action) => {
-      state.error = action.payload?.message;
+      console.log(action.payload);
     },
   },
 });

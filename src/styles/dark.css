@@ -308,3 +308,19 @@
 .dark .search {
   color: var(--color-primary) !important;
 }
+
+.dark .details-post-btn {
+  color: var(--color-primary);
+}
+
+.dark .like_icon_action {
+  filter: invert(20%) sepia(100%) saturate(7500%) hue-rotate(200deg) brightness(120%) !important;
+}
+
+.dark .circle-online {
+  border: 2px solid var(--color-primary);
+}
+
+.dark .menu_post_col {
+  color: var(--color-primary);
+}

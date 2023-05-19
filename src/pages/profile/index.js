@@ -32,6 +32,7 @@ export default function Profile({
   setPostShare,
   setIsProfile,
   setsharePostPopUp,
+  toastDetailsPost,
 }) {
   const [visible, setVisible] = useState(false);
   const { username } = useParams();
@@ -97,8 +98,13 @@ export default function Profile({
 
   return (
     <div className="profile">
-      <CreatePostPopup visible={visible} setVisible={setVisible} profile />
-     
+      <CreatePostPopup
+        profile
+        visible={visible}
+        setVisible={setVisible}
+        toastDetailsPost={toastDetailsPost}
+      />
+
       <div className="profile_top" ref={profileTop}>
         <div className="profile_container">
           {loading ? (
@@ -300,14 +306,15 @@ export default function Profile({
                     {profile.posts && profile.posts.length ? (
                       profile.posts.map((post) => (
                         <Post
-                          post={post}
-                          socketRef={socketRef}
+                          profile
                           user={user}
+                          post={post}
+                          key={post?._id}
+                          socketRef={socketRef}
                           setIsProfile={setIsProfile}
                           setPostShare={setPostShare}
+                          toastDetailsPost={toastDetailsPost}
                           setsharePostPopUp={setsharePostPopUp}
-                          key={post?._id}
-                          profile
                         />
                       ))
                     ) : (

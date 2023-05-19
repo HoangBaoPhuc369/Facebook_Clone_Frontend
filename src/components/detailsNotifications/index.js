@@ -9,6 +9,7 @@ import {
 } from "../../redux/features/notificationSlice";
 import PostPopUp from "../post/PostPopUp";
 import PostSkeleton from "../postSkeleton";
+import { setPage } from "../../redux/features/pageSlice";
 
 export default function DetailsNotifications({
   socketRef,
@@ -92,8 +93,11 @@ export default function DetailsNotifications({
                   </p>
                 </div>
                 <button
-                  onClick={() => navigate("/")}
-                  className="bg-blue-600 h-10 px-10 rounded-md mt-4"
+                  onClick={() => {
+                    dispatch(setPage("home"));
+                    navigate("/");
+                  }}
+                  className="bg-blue-600 h-10 px-10 rounded-md mt-4 text-white details-post-btn"
                 >
                   Go to News Feed
                 </button>
@@ -128,8 +132,11 @@ export default function DetailsNotifications({
                   </p>
                 </div>
                 <button
-                  onClick={() => navigate("/")}
-                  className="bg-blue-600 h-10 px-10 rounded-md mt-4"
+                  onClick={() => {
+                    dispatch(setPage("home"));
+                    navigate("/");
+                  }}
+                  className="bg-blue-600 h-10 px-10 rounded-md mt-4 text-white details-post-btn"
                 >
                   Go to News Feed
                 </button>

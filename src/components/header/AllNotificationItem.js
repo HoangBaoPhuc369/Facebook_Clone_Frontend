@@ -21,6 +21,7 @@ export default function AllNotificationItem({
     <div
       className="all_notification_item hover1"
       onClick={() => {
+        dispatch(setPage(""));
         dispatch(
           seenNotification({ userToken: user?.token, nofId: notification?._id })
         );
@@ -32,7 +33,6 @@ export default function AllNotificationItem({
           navigate("/details-notification/post");
         }
         setShowAllNotification(false);
-        dispatch(setPage(""));
       }}
     >
       <div className="all_notification_item_chat">

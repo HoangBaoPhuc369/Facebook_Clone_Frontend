@@ -29,6 +29,7 @@ import {
   getNewMessage,
   removeChatBoxWaiting,
   seenAllMessageChat,
+  setChatBox,
   setDeliveredMessage,
   setSeenMessage,
 } from "../../redux/features/conversationSlice";
@@ -46,6 +47,7 @@ import NotificationPopUp from "../notificationPopUp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { setPage } from "../../redux/features/pageSlice";
+import socketRef from "../../socket/socket";
 
 const Msg = ({ picture, text, icon, name, type }) => (
   <>
@@ -120,7 +122,7 @@ export default function Header({
   page,
   onlineUser,
   setOnlineUsers,
-  socketRef,
+  // socketRef,
 }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { callState, callerUser } = useSelector((state) => ({ ...state.call }));
@@ -303,6 +305,35 @@ export default function Header({
   // }, []);
 
   useEffect(() => {
+    socketRef?.on("getNotification", (data) => {
+      console.log(data);
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+
+      toast(
+        <Msg
+          picture={data?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.name}
+          type={data?.type}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (user) {
       socketRef?.on("getUsers", (users) => {
         const activeUsers = user.following.filter((f) =>
@@ -354,6 +385,18 @@ export default function Header({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arrivalMessage]);
 
+  useEffect(() => {
+    if (
+      arrivalMessage?.currentChatID !== chatBox.currentChatBox &&
+      !chatBox.chatBoxVisible.includes(
+        arrivalMessage?.currentChatID && arrivalMessage?.currentChat
+      )
+    ) {
+      dispatch(setChatBox(arrivalMessage?.currentChatID));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrivalMessage]);
+
   const getFiendChat = (current) => {
     return current.members.find((m) => m._id !== user.id);
   };
@@ -376,21 +419,6 @@ export default function Header({
         currentChatId: currentChatId,
       });
     }
-  };
-
-  const getAllMessageDelivery = (conversations) => {
-    let count = 0;
-    if (conversations) {
-      for (let i = 0; i < conversations?.length; i++) {
-        let lastSubItem =
-          conversations[i]?.messages[conversations[i]?.messages.length - 1];
-        if (lastSubItem.status === "delivered") {
-          count++;
-        }
-      }
-      return count;
-    }
-    return count;
   };
 
   //================================================================
@@ -504,7 +532,12 @@ export default function Header({
             <div className="right_notification">{newMessage.length}</div>
           ) : null}
         </div>
-        <div className="circle_icon hover1" ref={notificationRef}>
+        <div
+          className={`circle_icon hover1 ${
+            showAllNotification ? "active_header" : null
+          }`}
+          ref={notificationRef}
+        >
           <div
             className="icon_wrapper"
             onClick={() => {

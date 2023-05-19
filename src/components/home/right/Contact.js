@@ -1,8 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
-import { setChatBox } from "../../../redux/features/conversationSlice";
+import {
+  setChatBox,
+  setCurrentChatBox,
+} from "../../../redux/features/conversationSlice";
 
 export default function Contact({ user, userId }) {
-  const { conversations } = useSelector((state) => ({
+  const { conversations, chatBox } = useSelector((state) => ({
     ...state.messenger,
   }));
   const dispatch = useDispatch();
@@ -10,7 +13,15 @@ export default function Contact({ user, userId }) {
     const getCurrentConversation = conversations.find((c) =>
       c.members.some((u) => u._id === userId)
     );
-    dispatch(setChatBox(getCurrentConversation._id));
+
+    if (getCurrentConversation !== undefined) {
+      if (!chatBox.chatBoxVisible.includes(getCurrentConversation._id)) {
+        console.log(getCurrentConversation._id);
+        dispatch(setChatBox(getCurrentConversation._id));
+      } else {
+        dispatch(setCurrentChatBox(getCurrentConversation._id));
+      }
+    }
   };
 
   return (
@@ -19,9 +30,11 @@ export default function Contact({ user, userId }) {
         <img src={user.picture} alt="" />
         <div className="circle-online"></div>
       </div>
-      <span>
-        {user.first_name} {user.last_name}
-      </span>
+      <div className="">
+        <span>
+          {user.first_name} {user.last_name}
+        </span>
+      </div>
     </div>
   );
 }

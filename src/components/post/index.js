@@ -86,12 +86,12 @@ export default function Post({
             : " commented on your photo."
           : null;
 
-      // const notification = {
-      //   senderId: user?.id,
-      //   receiverId: post?.user._id,
-      //   icon: icon,
-      //   text: typeNotification,
-      // };
+      const notification = {
+        senderId: user?.id,
+        receiverId: post?.user._id,
+        icon: icon,
+        text: typeNotification,
+      };
       const notificationSocket = {
         senderId: user?.id,
         receiverId: post?.user._id,
@@ -101,9 +101,12 @@ export default function Post({
         picture: user?.picture,
         name: user?.first_name + " " + user?.last_name,
       };
-      // dispatch(
-      //   createNotifications({ props: notification, token: user?.token })
-      // );
+      // if (type === "react") {
+      //   dispatch(
+      //     createNotifications({ props: notification, token: user?.token })
+      //   );
+      // }
+      console.log(socketRef);
       socketRef?.emit("sendNotification", notificationSocket);
     }
   };
@@ -241,7 +244,7 @@ export default function Post({
       {post?.hidePost ? (
         <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
           <div className="px-3 py-4 flex">
-            <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi"/>
+            <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi" />
             <div>
               <div className="text-[15px] font-medium flex gap-2">
                 We hide something you posted
@@ -252,7 +255,7 @@ export default function Post({
                   Net Friend Community Standard
                 </span>
               </p>
-  
+
               <div
                 onClick={() => setIsOpenNegativePost(true)}
                 className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
@@ -387,13 +390,7 @@ export default function Post({
           <div className="post_action_reaction_wrap">
             {check ? (
               check === "like" ? (
-                <div className="post_action_reaction_like_react">
-                  <img
-                    src={`../../../reacts/${check}.png`}
-                    alt=""
-                    className="like_react"
-                  />
-                </div>
+                <i className="like_icon_action"></i>
               ) : (
                 <img
                   src={`../../../reacts/${check}.svg`}

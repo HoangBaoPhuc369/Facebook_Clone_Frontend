@@ -503,7 +503,7 @@ export default function CreateComment({
         // handleSendNotifications("comment", "comment");
       }
     }
-    // cancelTyping();
+    cancelTyping();
   };
 
   return (
@@ -549,7 +549,8 @@ export default function CreateComment({
             value={text}
             ref={textRef}
             rows="1"
-            className="textarea-comment focus:outline-none focus:ring-0"
+            className="textarea-comment focus:outline-none 
+            focus:ring-0"
             onClick={() =>
               handleTriggerEdit
                 ? handleTriggerEdit()
@@ -560,12 +561,9 @@ export default function CreateComment({
             // onInput={handleInput}
             onKeyPress={startTyping}
             onKeyUp={(e) => {
-              // stopTyping();
-            }}
-            onKeyDown={(e) => {
+              stopTyping();
               if (e.key === "Enter" && e.target.value !== "") {
                 handleComment(e);
-                stopTypingComment();
               }
             }}
             onChange={(e) => setText(e.target.value)}

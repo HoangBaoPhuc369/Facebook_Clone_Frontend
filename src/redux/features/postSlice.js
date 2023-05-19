@@ -229,7 +229,7 @@ export const postSlice = createSlice({
       state.errorCreatePost = "";
     },
     [deletePost.rejected]: (state, action) => {
-      state.errorCreatePost = action.payload.message;
+      state.errorCreatePost = action.payload;
     },
     [createCommentPost.pending]: (state, action) => {
       state.loadingCommentPost = true;
