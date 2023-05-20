@@ -29,6 +29,8 @@ export default function AllNotificationItem({
         if (notification.isSystem) {
           navigate("/details-notification/system");
           // dispatch(setPage(""));
+        } else if (notification.icon === "friend") {
+          navigate(`/profile/${notification?.from?.username}`);
         } else {
           navigate("/details-notification/post");
         }

@@ -15,6 +15,7 @@ import {
 } from "../../redux/features/profileSlice";
 import ModalCustom from "../Modal";
 import {
+  handleRemoveUserTypingPost,
   viewNegativeCommentInPost,
   viewNegativePost,
 } from "../../redux/features/postSlice";
@@ -170,6 +171,7 @@ export default function Post({
 
   const handleOpenModalPost = () => {
     document.documentElement.style.overflow = "hidden";
+    socketRef.emit("joinPostComment", post?._id);
     setOpenModalPost(true);
   };
 
@@ -561,6 +563,9 @@ export default function Post({
         // handleSendNotifications={handleSendNotifications}
         onClose={() => {
           document.documentElement.style.overflow = "auto";
+          socketRef?.emit("leavePostCommentTyping", post?._id);
+          socketRef.emit("leavePostComment", post?._id);
+          dispatch(handleRemoveUserTypingPost(false));
           setOpenModalPost(false);
         }}
       />

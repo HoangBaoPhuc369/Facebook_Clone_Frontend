@@ -90,10 +90,11 @@ export const addFriend = createAsyncThunk(
 
 export const cancelRequest = createAsyncThunk(
   "profile/cancelRequest",
-  async ({ profileId, token }, { rejectWithValue }) => {
+  async ({ profileId, userName, token }, { rejectWithValue }) => {
     try {
       const { data } = await api.cancelRequest(profileId, token);
-      return data;
+      const res = await api.getProfile(userName, token);
+      return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -139,10 +140,11 @@ export const acceptRequest = createAsyncThunk(
 
 export const unfriend = createAsyncThunk(
   "profile/unfriend",
-  async ({ profileId, token }, { rejectWithValue }) => {
+  async ({ profileId, userName, token }, { rejectWithValue }) => {
     try {
       const { data } = await api.unfriend(profileId, token);
-      return data;
+      const res = await api.getProfile(userName, token);
+      return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -367,15 +369,11 @@ export const profileSlice = createSlice({
     },
 
     [cancelRequest.fulfilled]: (state, action) => {
-      state.profile.friendship = {
-        ...state.profile.friendship,
-        requestSent: false,
-        following: false,
-      };
+      state.profile = action.payload;
       state.error = "";
     },
     [cancelRequest.rejected]: (state, action) => {
-      state.error = action.payload?.message;
+      state.error = action.payload;
     },
 
     [follow.fulfilled]: (state, action) => {
@@ -416,13 +414,7 @@ export const profileSlice = createSlice({
     },
 
     [unfriend.fulfilled]: (state, action) => {
-      state.profile.friendship = {
-        ...state.profile.friendship,
-        friends: false,
-        following: false,
-        requestSent: false,
-        requestReceived: false,
-      };
+      state.profile = action.payload;
       state.error = "";
     },
     [unfriend.rejected]: (state, action) => {

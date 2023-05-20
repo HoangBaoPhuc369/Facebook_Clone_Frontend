@@ -1051,9 +1051,10 @@
 }
 
 /* ==========Post Pop Up ============== */
+/* 100vh */
 .post-popup {
   position: relative;
-  min-height: 100vh;
+  min-height: 400px;
   width: 100%;
   background: var(--bg-primary);
   -webkit-user-select: none;

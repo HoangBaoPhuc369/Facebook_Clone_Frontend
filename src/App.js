@@ -19,11 +19,9 @@ import {
 import {
   deliveredAllConversationsChat,
   getConversations,
-  seenAllConversationsChat,
   setConversation,
 } from "./redux/features/conversationSlice";
 import {
-  getNewNotifications,
   getNotification,
 } from "./redux/features/notificationSlice";
 import { io } from "socket.io-client";
@@ -36,9 +34,6 @@ import DetailsNotifications from "./components/detailsNotifications";
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import Header from "./components/header";
 import socketRef from "./socket/socket";
-import { setPage } from "./redux/features/pageSlice";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
@@ -69,44 +64,12 @@ const DetailsNoftication = ({ type }) => (
   </div>
 );
 
-const Msg = ({ picture, text, icon, name, type }) => (
-  <>
-    <div className="notification-box_header">
-      <span>New notification</span>
-    </div>
-    <div className="notification-box_container">
-      <div className="notification-picture mr-[10px]">
-        <img className="noftification-avatar" src={picture} alt="" />
-        {type !== "react" ? (
-          <div className="absolute bottom-2 right-0 w-5 h-5">
-            <i className={`notification_${type}_icon`}></i>
-          </div>
-        ) : (
-          <img
-            className="absolute bottom-2 right-0 w-5 h-5"
-            src={`../../../reacts/${icon}.svg`}
-            alt=""
-          />
-        )}
-      </div>
-      <div className="notification-information">
-        <div className="notification-text">
-          <span>{name}</span> {text}
-        </div>
-        <span className="notification-time">a few second ago</span>
-      </div>
-    </div>
-  </>
-);
-
-
 function App() {
   const [visible, setVisible] = useState(false);
   const [onlineUser, setOnlineUsers] = useState([]);
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { page } = useSelector((state) => ({ ...state.pageSite }));
   const userId = user?.id;
-  // const [socketRef, setSocketRef] = useState(null);
   const [sharePostPopUp, setsharePostPopUp] = useState(false);
   const [isProfile, setIsProfile] = useState(false);
   const [postShare, setPostShare] = useState({});
@@ -114,28 +77,14 @@ function App() {
 
   useEffect(() => {
     if (user?.token) {
-      dispatch(getAllPosts({ userToken: user?.token }));
+      // dispatch(getAllPosts({ userToken: user?.token }));
       dispatch(getNotification({ userToken: user?.token }));
-      dispatch(getConversations({ userToken: user?.token }));
+      // dispatch(getConversations({ userToken: user?.token }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  //  process.env.REACT_APP_BACKEND_URL
-  // "http://localhost:8900/"
-
-  // useEffect(() => {
-  //   console.log(socket);
-  // }, []);
-
-  // useEffect(() =>{
-  //   console.log(socketRef);
-  // },[])
-
   useEffect(() => {
-    // const newSocket = io(process.env.REACT_APP_BACKEND_URL, {
-    //   transports: ["polling"],
-    // });
     if (user) {
       socketRef.emit("joinUser", user.id);
 
@@ -194,31 +143,21 @@ function App() {
 
   useEffect(() => {
     if (socketRef) {
-      socketRef.on("startPostCommentTyping", (data) => {
-        dispatch(handleAddUserTypingPost(data));
+      socketRef.on("startPostCommentTyping", () => {
+        dispatch(handleAddUserTypingPost(true));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, []);
 
   useEffect(() => {
     if (socketRef) {
-      socketRef.on("stopPostCommentTyping", (data) => {
-        dispatch(handleRemoveUserTypingPost(data));
+      socketRef.on("stopPostCommentTyping", () => {
+        dispatch(handleRemoveUserTypingPost(false));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
-
-  // useEffect(() => {
-  //   socketRef?.emit("addUser", {
-  //     userId: user?.id,
-  //     userName: `${user?.first_name} ${user?.last_name}`,
-  //     picture: user?.picture,
-  //     timeJoin: new Date(),
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [socketRef, user]);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -228,37 +167,6 @@ function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, socketRef]);
-
-  // useEffect(() => {
-  //   const handleUnload = (event) => {
-  //     // Xử lý tắt trang ở đây
-  //     dispatch(setPage("home"));
-  //   };
-
-  //   window.addEventListener("beforeunload", handleUnload);
-
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleUnload);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   const handleUnload = (event) => {
-  //     const [navigation] = performance.getEntriesByType('navigation');
-  //     if (navigation.type === 'reload') {
-  //       console.log("Trang đã được tải lại");
-  //     } else {
-  //       dispatch(setPage("home"));
-  //       console.log("Người dùng đã đóng trang");
-  //     }
-  //   };
-
-  //   window.addEventListener('beforeunload', handleUnload);
-
-  //   return () => {
-  //     window.removeEventListener('beforeunload', handleUnload);
-  //   };
-  // }, []);
 
   const toastDetailsPost = (type) =>
     toast(<DetailsNoftication type={type} />, {
@@ -353,7 +261,6 @@ function App() {
                   setOnlineUsers={setOnlineUsers}
                   toastDetailsPost={toastDetailsPost}
                   setsharePostPopUp={setsharePostPopUp}
-                  // setVisibleDelPost={setVisibleDelPost}
                 />
               ) : null
             }

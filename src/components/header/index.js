@@ -6,7 +6,6 @@ import {
   Gaming,
   Home,
   HomeActive,
-  Logo,
   Market,
   Menu,
   Messenger,
@@ -25,6 +24,7 @@ import ChatBox from "../chatBox";
 import { getAllPosts } from "../../redux/features/postSlice";
 import {
   clearNewMessage,
+  getConversations,
   getNewFriendMessage,
   getNewMessage,
   removeChatBoxWaiting,
@@ -47,10 +47,8 @@ import NotificationPopUp from "../notificationPopUp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { setPage } from "../../redux/features/pageSlice";
-// import socketRef from "../../socket/socket";
-// import { useRouteMatch } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { getProfile, updateProfile } from "../../redux/features/profileSlice";
+import { updateProfile } from "../../redux/features/profileSlice";
 
 const Msg = ({ picture, text, icon, name, type }) => (
   <>
@@ -115,31 +113,13 @@ const bounce = cssTransition({
   exit: "animate__animated animate__bounceOutDown",
 });
 
-// const CloseButton = ({ closeToast }) => (
-//   <div className="small_circle" onClick={closeToast}>
-//     <i className="exit_icon"></i>
-//   </div>
-// );
-
 export default function Header({
   page,
   onlineUser,
   setOnlineUsers,
   socketRef,
 }) {
-  // const match = useRouteMatch([
-  //   "/",
-  //   "/friends",
-  //   "/profile",
-  //   "/details-notification/:postId",
-  // ]);
-
   const location = useLocation();
-
-  // const getCurrentPage = () => {
-
-  //   return 'Unknown';
-  // };
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { callState, callerUser } = useSelector((state) => ({ ...state.call }));
   const { newNotifications } = useSelector((state) => ({
@@ -201,6 +181,7 @@ export default function Header({
     } else if (path.startsWith("/details-notification")) {
       dispatch(setPage("details-notification"));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
   // Get message from socketRef io
@@ -219,64 +200,6 @@ export default function Header({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // useEffect(() => {
-  //   if (match) {
-  //     switch (match.path) {
-  //       case "/":
-  //         console.log("Current page: home");
-  //         break;
-  //       case "/friends":
-  //         console.log("Current page: friends");
-  //         break;
-  //       case "/profile":
-  //         console.log("Current page: profile");
-  //         break;
-  //       case "/details-notification/post":
-  //         console.log("Current page: details");
-  //         break;
-  //       default:
-  //         console.log("Unknown page");
-  //         break;
-  //     }
-  //   }
-  // }, [match]);
-
-  // useEffect(() => {
-  //   socketRef.on('broadcast', (data) => {
-  //     handleBroadcastEvents({data, socketRef, dispatch, user});
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
-  // useEffect(() => {
-  //   socketRef?.on("getNotification", (data) => {
-  //     //Cho nay chi can day vo state khong can call api
-  //     dispatch(getNotification({ userToken: user?.token }));
-  //     dispatch(getNewNotifications(data));
-
-  //     toast(
-  //       <Msg
-  //         picture={data?.picture}
-  //         text={data?.text}
-  //         icon={data?.icon}
-  //         name={data?.name}
-  //         type={data?.type}
-  //       />,
-  //       {
-  //         className: "notification_form",
-  //         toastClassName: "notification_toast",
-  //         bodyClassName: "notification_body",
-  //         position: "bottom-left",
-  //         hideProgressBar: true,
-  //         autoClose: 3000,
-  //         transition: bounce,
-  //       }
-  //     );
-  //   });
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   useEffect(() => {
     socketRef?.on("postNotification", (data) => {
@@ -330,30 +253,6 @@ export default function Header({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // useEffect(() => {
-  //   socketRef?.on("start typing message", (typingInfo) => {
-  //     if (typingInfo.senderId !== socketRef.id) {
-  //       const user = typingInfo.user;
-  //       setTypingUsers((users) => [...users, user]);
-  //     }
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
-  // const checkUsers = (users, user) => {
-  //   return users.filter((u) => u?.id !== user.id);
-  // };
-
-  // useEffect(() => {
-  //   socketRef?.on("stop typing message", (typingInfo) => {
-  //     if (typingInfo.senderId !== socketRef.id) {
-  //       const user = typingInfo.user;
-  //       setTypingUsers((users) => checkUsers(users, user));
-  //       // setShowTyping((users) => checkUsers(users, user));
-  //     }
-  //   });
-  // }, []);
 
   useEffect(() => {
     socketRef?.on("reactPostNotification", (data) => {
@@ -450,11 +349,70 @@ export default function Header({
   }, []);
 
   useEffect(() => {
+    socketRef?.on("deleteRequest", (data) => {
+      const pathCurrent = location.pathname;
+      const userName = data;
+      const friendPath = `/profile/${userName}`;
+      if (pathCurrent === friendPath) {
+        dispatch(
+          updateProfile({
+            userName,
+            token: user?.token,
+          })
+        );
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+
+  useEffect(() => {
+    socketRef?.on("unfriend", (data) => {
+      const pathCurrent = location.pathname;
+      const userName = data;
+      const friendPath = `/profile/${userName}`;
+
+      dispatch(getConversations({ userToken: user?.token }));
+      if (pathCurrent === friendPath) {
+        dispatch(
+          updateProfile({
+            userName,
+            token: user?.token,
+          })
+        );
+      }else if(pathCurrent === '/') {
+       //Xử lý load lại post ở new Feed ở đây, tạo hàm gọi api khác với getPosts 
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socketRef?.on("cancelRequest", (data) => {
+      const pathCurrent = location.pathname;
+      const userName = data;
+      const friendPath = `/profile/${userName}`;
+      if (pathCurrent === friendPath) {
+        dispatch(
+          updateProfile({
+            userName,
+            token: user?.token,
+          })
+        );
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     socketRef?.on("friendRequestAccepted", (data) => {
       const pathCurrent = location.pathname;
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
-
+      dispatch(getConversations({ userToken: user?.token }));
       const userName = data?.from?.username;
       const friendPath = `/profile/${userName}`;
       if (pathCurrent === friendPath) {
@@ -488,36 +446,6 @@ export default function Header({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // useEffect(() => {
-  //   console.log(socketRef)
-  //   socketRef?.current?.on("getNotification", (data) => {
-  //     console.log(data)
-  //     dispatch(getNotification({ userToken: user?.token }));
-  //     dispatch(getNewNotifications(data));
-
-  //     toast(
-  //       <Msg
-  //         picture={data?.picture}
-  //         text={data?.text}
-  //         icon={data?.icon}
-  //         name={data?.name}
-  //         type={data?.type}
-  //       />,
-  //       {
-  //         className: "notification_form",
-  //         toastClassName: "notification_toast",
-  //         bodyClassName: "notification_body",
-  //         position: "bottom-left",
-  //         hideProgressBar: true,
-  //         autoClose: 3000,
-  //         transition: bounce,
-  //       }
-  //     );
-  //   });
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
 
   useEffect(() => {
     if (user) {

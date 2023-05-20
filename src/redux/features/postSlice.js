@@ -79,14 +79,7 @@ export const deletePost = createAsyncThunk(
 export const createCommentPost = createAsyncThunk(
   "post/createComment",
   async (
-    {
-      postId,
-      getParentId,
-      comment,
-      image,
-      socketId,
-      token,
-    },
+    { postId, getParentId, comment, image, socketId, token },
     { rejectWithValue }
   ) => {
     try {
@@ -119,7 +112,7 @@ export const editCommentPost = createAsyncThunk(
 
 const initialState = {
   posts: [],
-  userTypingPosts: null,
+  userTypingPosts: false,
   error: "",
   loading: false,
   errorCreatePost: "",
@@ -176,13 +169,7 @@ export const postSlice = createSlice({
       state.userTypingPosts = action.payload;
     },
     handleRemoveUserTypingPost: (state, action) => {
-      // state.userTypingPosts = state.userTypingPosts.filter(
-      //   (p) => p !== action.payload
-      // );
-
-      // state.userTypingPosts = {
-
-      // }
+      state.userTypingPosts = action.payload;
     },
     getNewCommentPost: (state, action) => {
       const post = state.posts.find((p) => p._id === action.payload.postId);

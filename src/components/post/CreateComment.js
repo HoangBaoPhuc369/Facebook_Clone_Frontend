@@ -114,7 +114,6 @@ export default function CreateComment({
     };
   };
   const handleComment = async (e) => {
-    e.preventDefault();
     if (activeComment?.type === "editing") {
       if (commentImage !== "") {
         const img = dataURItoBlob(commentImage);
@@ -543,7 +542,7 @@ export default function CreateComment({
             ref={textRef}
             rows="1"
             className="textarea-comment focus:outline-none 
-            focus:ring-0"
+            focus:ring-0 whitespace-normal"
             onClick={() =>
               handleTriggerEdit
                 ? handleTriggerEdit()
@@ -556,8 +555,13 @@ export default function CreateComment({
             onKeyUp={(e) => {
               stopTyping();
               if (e.key === "Enter" && e.target.value !== "") {
-                
+                e.preventDefault();
                 handleComment(e);
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
               }
             }}
             onChange={(e) => setText(e.target.value)}

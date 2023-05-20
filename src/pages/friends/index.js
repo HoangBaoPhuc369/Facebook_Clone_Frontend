@@ -5,7 +5,7 @@ import Header from "../../components/header";
 import Card from "./Card";
 import "./style.css";
 import { getFriendsPage } from "../../redux/features/friendsSlice";
-export default function Friends({ socketRef }) {
+export default function Friends() {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { friends } = useSelector((state) => ({ ...state.friendSite }));
   const { type } = useParams();

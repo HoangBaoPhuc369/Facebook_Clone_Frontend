@@ -60,7 +60,9 @@ export default function DetailsNotifications({
           }}
         >
           {loadingPostDetails ? (
-            <PostSkeleton />
+            <div>
+              <PostSkeleton />
+            </div>
           ) : postDetails ? (
             <PostPopUp
               details

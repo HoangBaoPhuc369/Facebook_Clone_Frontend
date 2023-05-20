@@ -46,7 +46,13 @@ export default function Friendship({ friendshipp, profileId }) {
     // setFriendship({ ...friendship, requestSent: false, following: false });
     // await cancelRequest(profileid, user.token);
 
-    dispatch(cancelRequest({ profileId: profileId, token: user.token }));
+    dispatch(
+      cancelRequest({
+        profileId: profileId,
+        userName: profile?.username,
+        token: user.token,
+      })
+    );
   };
   const followHandler = async () => {
     // setFriendship({ ...friendship, following: true });
@@ -91,7 +97,13 @@ export default function Friendship({ friendshipp, profileId }) {
     //   requestReceived: false,
     // });
     // await unfriend(profileid, user.token);
-    dispatch(unfriend({ profileId: profileId, token: user.token }));
+    dispatch(
+      unfriend({
+        profileId: profileId,
+        userName: profile?.username,
+        token: user.token,
+      })
+    );
   };
   const deleteRequestHandler = async () => {
     // setFriendship({

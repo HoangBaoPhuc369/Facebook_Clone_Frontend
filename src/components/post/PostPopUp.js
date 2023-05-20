@@ -396,13 +396,7 @@ export default function PostPopUp({
           <div className="post_action_reaction_wrap">
             {check ? (
               check === "like" ? (
-                <div className="post_action_reaction_like_react">
-                  <img
-                    src={`../../../reacts/${check}.png`}
-                    alt=""
-                    className="like_react"
-                  />
-                </div>
+                <i className="like_icon_action"></i>
               ) : (
                 <img
                   src={`../../../reacts/${check}.svg`}
@@ -500,18 +494,18 @@ export default function PostPopUp({
                 />
               ))
           : null}
-          {/*  && !isTyping */}
-        {/* {isPostHaveTyping ? (
+
+        {userTypingPosts ? (
           <div className="comment-is-typing">
             <ThreeDotLoaderFlashing />
             <p className="text-sm font-medium">
               Some one is typing a comment...
             </p>
           </div>
-        ) : null} */}
+        ) : null}
       </div>
 
-      {!details ? <div className="min-h-[20vh]"></div> : null}
+      {/* {!details ? <div className="min-h-[20vh]"></div> : null} */}
 
       <div
         className={
