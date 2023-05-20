@@ -47,7 +47,10 @@ import NotificationPopUp from "../notificationPopUp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { setPage } from "../../redux/features/pageSlice";
-import socketRef from "../../socket/socket";
+// import socketRef from "../../socket/socket";
+// import { useRouteMatch } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { getProfile, updateProfile } from "../../redux/features/profileSlice";
 
 const Msg = ({ picture, text, icon, name, type }) => (
   <>
@@ -122,8 +125,21 @@ export default function Header({
   page,
   onlineUser,
   setOnlineUsers,
-  // socketRef,
+  socketRef,
 }) {
+  // const match = useRouteMatch([
+  //   "/",
+  //   "/friends",
+  //   "/profile",
+  //   "/details-notification/:postId",
+  // ]);
+
+  const location = useLocation();
+
+  // const getCurrentPage = () => {
+
+  //   return 'Unknown';
+  // };
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { callState, callerUser } = useSelector((state) => ({ ...state.call }));
   const { newNotifications } = useSelector((state) => ({
@@ -174,6 +190,19 @@ export default function Header({
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [closeArrivalMessage, setCloseArrivalMessage] = useState(false);
 
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === "/") {
+      dispatch(setPage("home"));
+    } else if (path === "/friends") {
+      dispatch(setPage("friends"));
+    } else if (path === "/profile") {
+      dispatch(setPage("profile"));
+    } else if (path.startsWith("/details-notification")) {
+      dispatch(setPage("details-notification"));
+    }
+  }, [location]);
+
   // Get message from socketRef io
   useEffect(() => {
     // socketRef = io("ws://localhost:8900", { transports: ["polling"] });
@@ -190,6 +219,28 @@ export default function Header({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // useEffect(() => {
+  //   if (match) {
+  //     switch (match.path) {
+  //       case "/":
+  //         console.log("Current page: home");
+  //         break;
+  //       case "/friends":
+  //         console.log("Current page: friends");
+  //         break;
+  //       case "/profile":
+  //         console.log("Current page: profile");
+  //         break;
+  //       case "/details-notification/post":
+  //         console.log("Current page: details");
+  //         break;
+  //       default:
+  //         console.log("Unknown page");
+  //         break;
+  //     }
+  //   }
+  // }, [match]);
 
   // useEffect(() => {
   //   socketRef.on('broadcast', (data) => {
@@ -305,18 +356,17 @@ export default function Header({
   // }, []);
 
   useEffect(() => {
-    socketRef?.on("getNotification", (data) => {
-      console.log(data);
+    socketRef?.on("reactPostNotification", (data) => {
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
 
       toast(
         <Msg
-          picture={data?.picture}
+          picture={data?.from?.picture}
           text={data?.text}
           icon={data?.icon}
-          name={data?.name}
-          type={data?.type}
+          name={data?.from?.first_name + " " + data?.from?.last_name}
+          type={data?.icon}
         />,
         {
           className: "notification_form",
@@ -334,16 +384,152 @@ export default function Header({
   }, []);
 
   useEffect(() => {
+    socketRef?.on("commentNotification", (data) => {
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+
+      toast(
+        <Msg
+          picture={data?.from?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.from?.first_name + " " + data?.from?.last_name}
+          type={data?.icon}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socketRef?.on("friendSentRequest", (data) => {
+      const pathCurrent = location.pathname;
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+      const userName = data?.from?.username;
+      const friendPath = `/profile/${userName}`;
+      if (pathCurrent === friendPath) {
+        dispatch(
+          updateProfile({
+            userName,
+            token: user?.token,
+          })
+        );
+      }
+      toast(
+        <Msg
+          picture={data?.from?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.from?.first_name + " " + data?.from?.last_name}
+          type={data?.icon}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socketRef?.on("friendRequestAccepted", (data) => {
+      const pathCurrent = location.pathname;
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+
+      const userName = data?.from?.username;
+      const friendPath = `/profile/${userName}`;
+      if (pathCurrent === friendPath) {
+        dispatch(
+          updateProfile({
+            userName,
+            token: user?.token,
+          })
+        );
+      }
+
+      toast(
+        <Msg
+          picture={data?.from?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.from?.first_name + " " + data?.from?.last_name}
+          type={data?.icon}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // useEffect(() => {
+  //   console.log(socketRef)
+  //   socketRef?.current?.on("getNotification", (data) => {
+  //     console.log(data)
+  //     dispatch(getNotification({ userToken: user?.token }));
+  //     dispatch(getNewNotifications(data));
+
+  //     toast(
+  //       <Msg
+  //         picture={data?.picture}
+  //         text={data?.text}
+  //         icon={data?.icon}
+  //         name={data?.name}
+  //         type={data?.type}
+  //       />,
+  //       {
+  //         className: "notification_form",
+  //         toastClassName: "notification_toast",
+  //         bodyClassName: "notification_body",
+  //         position: "bottom-left",
+  //         hideProgressBar: true,
+  //         autoClose: 3000,
+  //         transition: bounce,
+  //       }
+  //     );
+  //   });
+
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
+  useEffect(() => {
     if (user) {
       socketRef?.on("getUsers", (users) => {
-        const activeUsers = user.following.filter((f) =>
+        const activeUsers = user.friends.filter((f) =>
           users.some((u) => u.userId === f._id)
         );
 
         const activeUsersSocket = users.filter(
           (activeUser) =>
             activeUser.socketId !== socketRef?.id &&
-            user.following.some((u) => u._id === activeUser.userId)
+            user.friends.some((u) => u._id === activeUser.userId)
         );
         setOnlineUsers(activeUsers);
         dispatch(setActiveUsers(activeUsersSocket));
@@ -367,7 +553,10 @@ export default function Header({
   }, [arrivalMessage]);
 
   useEffect(() => {
-    if (arrivalMessage?.currentChatID === chatBox.currentChatBox) {
+    if (
+      arrivalMessage?.currentChatID === chatBox.currentChatBox &&
+      !chatBox.chatBoxVisible.includes(arrivalMessage?.currentChatID)
+    ) {
       socketRef?.emit("messageSeen", {
         message: arrivalMessage?.messages,
         currentChatId: arrivalMessage?.currentChatID,
@@ -465,7 +654,7 @@ export default function Header({
         </Link>
         <Link
           to="/friends"
-          onClick={() => dispatch(setPage("friends"))}
+          // onClick={() => dispatch(setPage("friends"))}
           className={`middle_icon ${page === "friends" ? "active" : "hover1"}`}
         >
           {page === "friends" ? <FriendsActive /> : <Friends color={color} />}
@@ -560,7 +749,7 @@ export default function Header({
           {/* <AllNotifications /> */}
         </div>
         <div
-          className={`circle_icon hover1 ${showUserMenu && "active_header"}`}
+          className={`avatar-icon-header ${showUserMenu && "active_header"}`}
           ref={usermenu}
         >
           <div
@@ -568,7 +757,7 @@ export default function Header({
               setShowUserMenu((prev) => !prev);
             }}
           >
-            <div style={{ transform: "translateY(2px)" }}>
+            <div>
               <img className="avatar-user" src={user?.picture} alt="" />
             </div>
           </div>

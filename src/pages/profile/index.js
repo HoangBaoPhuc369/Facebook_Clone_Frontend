@@ -72,7 +72,7 @@ export default function Profile({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, []);
 
   const profileTop = useRef(null);
   const leftSide = useRef(null);

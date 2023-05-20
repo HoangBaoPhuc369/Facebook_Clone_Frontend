@@ -73,43 +73,42 @@ export default function Post({
     setCheckSaved(res.checkSaved);
   };
 
-  const handleSendNotifications = (icon, type) => {
-    if (user?.id !== post?.user._id) {
-      const typeNotification =
-        type === "react"
-          ? post?.type === null
-            ? `reacted to your post: "${post?.text}."`
-            : `reacted to your photo.`
-          : type === "comment"
-          ? post?.type === null
-            ? " commented on your post."
-            : " commented on your photo."
-          : null;
+  // const handleSendNotifications = (icon, type) => {
+  //   if (user?.id !== post?.user._id) {
+  //     const typeNotification =
+  //       type === "react"
+  //         ? post?.type === null
+  //           ? `reacted to your post: "${post?.text}."`
+  //           : `reacted to your photo.`
+  //         : type === "comment"
+  //         ? post?.type === null
+  //           ? " commented on your post."
+  //           : " commented on your photo."
+  //         : null;
 
-      const notification = {
-        senderId: user?.id,
-        receiverId: post?.user._id,
-        icon: icon,
-        text: typeNotification,
-      };
-      const notificationSocket = {
-        senderId: user?.id,
-        receiverId: post?.user._id,
-        icon: icon,
-        text: typeNotification,
-        type: type,
-        picture: user?.picture,
-        name: user?.first_name + " " + user?.last_name,
-      };
-      // if (type === "react") {
-      //   dispatch(
-      //     createNotifications({ props: notification, token: user?.token })
-      //   );
-      // }
-      console.log(socketRef);
-      socketRef?.emit("sendNotification", notificationSocket);
-    }
-  };
+  //     const notification = {
+  //       senderId: user?.id,
+  //       receiverId: post?.user._id,
+  //       icon: icon,
+  //       text: typeNotification,
+  //     };
+  //     const notificationSocket = {
+  //       senderId: user?.id,
+  //       receiverId: post?.user._id,
+  //       icon: icon,
+  //       text: typeNotification,
+  //       type: type,
+  //       picture: user?.picture,
+  //       name: user?.first_name + " " + user?.last_name,
+  //     };
+  //     // if (type === "react") {
+  //     //   dispatch(
+  //     //     createNotifications({ props: notification, token: user?.token })
+  //     //   );
+  //     // }
+  //     // socketRef?.emit("sendNotification", notificationSocket);
+  //   }
+  // };
 
   const reactHandler = async (type) => {
     reactPost(post?._id, type, user.token);
@@ -133,7 +132,7 @@ export default function Post({
         setTotal((prev) => --prev);
       }
 
-      handleSendNotifications(type, "react");
+      // handleSendNotifications(type, "react");
     }
   };
 
@@ -559,7 +558,7 @@ export default function Post({
         open={openModalPost}
         socketRef={socketRef}
         toastDetailsPost={toastDetailsPost}
-        handleSendNotifications={handleSendNotifications}
+        // handleSendNotifications={handleSendNotifications}
         onClose={() => {
           document.documentElement.style.overflow = "auto";
           setOpenModalPost(false);

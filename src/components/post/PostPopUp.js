@@ -45,7 +45,7 @@ export default function PostPopUp({
     ...state.notification,
   }));
 
-  const isPostHaveTyping = userTypingPosts.some((p) => p === post?._id);
+  // const isPostHaveTyping = userTypingPosts.some((p) => p === post?._id);
 
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
@@ -104,44 +104,6 @@ export default function PostPopUp({
     setCheckSaved(res.checkSaved);
   };
 
-  const handleSendNotifications = (icon, type) => {
-    if (user?.id !== post?.user._id) {
-      
-      const typeNotification =
-        type === "react"
-          ? post?.type === null
-            ? `reacted to your post: "${post?.text}."`
-            : `reacted to your photo.`
-          : type === "comment"
-          ? post?.type === null
-            ? " commented on your post."
-            : " commented on your photo."
-          : null;
-
-      // const notification = {
-      //   senderId: user?.id,
-      //   receiverId: post?.user._id,
-      //   icon: icon,
-      //   text: typeNotification,
-      // };
-      const notificationSocket = {
-        senderId: user?.id,
-        receiverId: post?.user._id,
-        icon: icon,
-        text: typeNotification,
-        type: type,
-        picture: user?.picture,
-        name: user?.first_name + " " + user?.last_name,
-      };
-      // dispatch(
-      //   createNotifications({ props: notification, token: user?.token })
-      // );
-      console.log(notificationSocket);
-      console.log(socketRef);
-      socketRef?.emit("sendNotification", notificationSocket);
-    }
-  };
-
   const reactHandler = async (type) => {
     reactPost(post?._id, type, user.token);
     if (check === type) {
@@ -163,8 +125,6 @@ export default function PostPopUp({
         setReacts([...reacts, (reacts[index1].count = --reacts[index1].count)]);
         setTotal((prev) => --prev);
       }
-
-      handleSendNotifications(type, "react");
     }
   };
 
@@ -537,19 +497,18 @@ export default function PostPopUp({
                   showMoreRepliesThird={showMoreRepliesThird}
                   notificationsSelected={notificationsSelected}
                   setIsOpenUnhideComment={setIsOpenUnhideComment}
-                  handleSendNotifications={handleSendNotifications}
                 />
               ))
           : null}
           {/*  && !isTyping */}
-        {isPostHaveTyping ? (
+        {/* {isPostHaveTyping ? (
           <div className="comment-is-typing">
             <ThreeDotLoaderFlashing />
             <p className="text-sm font-medium">
               Some one is typing a comment...
             </p>
           </div>
-        ) : null}
+        ) : null} */}
       </div>
 
       {!details ? <div className="min-h-[20vh]"></div> : null}
@@ -571,7 +530,6 @@ export default function PostPopUp({
           postUserId={post?.user._id}
           cancelTyping={cancelTyping}
           stopTypingComment={stopTypingComment}
-          handleSendNotifications={handleSendNotifications}
         />
       </div>
 

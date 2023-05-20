@@ -22,7 +22,7 @@ export const handleBroadcastEvents = ({ data, socketRef, dispatch, user }) => {
       const activeUsers = data.activeUsers.filter(
         (activeUser) =>
           activeUser.socketId !== socketRef.current?.id &&
-          user.following.some(u => u._id === activeUser.userId)
+          user.friends.some(u => u._id === activeUser.userId)
       );
       store.dispatch(setActiveUsers(activeUsers));
       break;

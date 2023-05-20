@@ -17,7 +17,7 @@
   background: var(--bg-secondary);
   padding: 2rem;
   position: absolute;
-  top: 56px;
+  top: 0;
   left: 360px;
   right: 0;
   width: calc(100% - 360px);

@@ -6,7 +6,7 @@ export default function GridPosts() {
         style={{ justifyContent: "space-between" }}
       >
         <div className="left_header_grid">Posts</div>
-        <div className="flex">
+        <div className="flex gap-2">
           <div className="gray_btn">
             <i className="equalize_icon"></i>
           </div>

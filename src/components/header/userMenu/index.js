@@ -22,7 +22,8 @@ export default function UserMenu({ user, socket }) {
         <div>
           <Link
             to="/profile"
-            onClick={() => dispatch(setPage("profile"))}
+           
+            // onClick={() => dispatch(setPage("profile"))}
             className="mmenu_header hover3"
           >
             <img src={user?.picture} alt="" />

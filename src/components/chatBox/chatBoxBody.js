@@ -140,7 +140,7 @@ export default function ChatBoxBody({
               <span>Facebook</span>
             </div>
             <div className="chatBox_information-about">
-              {user?.following?.some((f) => f._id === friendChat._id) ? (
+              {user?.friends?.some((f) => f._id === friendChat._id) ? (
                 <span>You're friends on Facebook</span>
               ) : (
                 <span>You're not friends on Facebook</span>

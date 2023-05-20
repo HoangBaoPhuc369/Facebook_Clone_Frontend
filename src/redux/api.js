@@ -352,8 +352,19 @@ export const seenAllConversationsChat = (userToken) => {
       },
     }
   );
-}
- 
+};
+
+export const deliveredAllConversationsChat = (userToken) => {
+  return axios.patch(
+    `${process.env.REACT_APP_BACKEND_URL}/chat/delivered-all-conversations`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    }
+  );
+};
 
 // --------------------------NOTIFICATION API--------------------------------------
 export const createNotifications = (props, token) =>
@@ -389,3 +400,16 @@ export const seenNotification = (userToken, nofId) =>
       },
     }
   );
+
+// =================FRIEND PAGES ==================
+export const getFriendsPageInfos = (token) =>
+  axios.get(
+    `${process.env.REACT_APP_BACKEND_URL}/users/get-friends-page-infos`,
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+

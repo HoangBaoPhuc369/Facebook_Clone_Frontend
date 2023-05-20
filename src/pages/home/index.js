@@ -38,7 +38,7 @@ export default function Home({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, []);
 
   useEffect(() => {
     if (socketRef) {
@@ -47,7 +47,7 @@ export default function Home({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, []);
 
   const { user } = useSelector((state) => ({ ...state.auth }));
   const userId = user?.id;

@@ -21,14 +21,14 @@ export default function AllNotificationItem({
     <div
       className="all_notification_item hover1"
       onClick={() => {
-        dispatch(setPage(""));
+        // dispatch(setPage(""));
         dispatch(
           seenNotification({ userToken: user?.token, nofId: notification?._id })
         );
         dispatch(selecteNotification(notification));
         if (notification.isSystem) {
           navigate("/details-notification/system");
-          dispatch(setPage(""));
+          // dispatch(setPage(""));
         } else {
           navigate("/details-notification/post");
         }

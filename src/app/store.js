@@ -9,12 +9,14 @@ import Dashboard from "../redux/features/dashboardSlice";
 import Call from "../redux/features/callSlice";
 import Selected from "../redux/features/selectedSlice";
 import Page from "../redux/features/pageSlice";
+import Friends from "../redux/features/friendsSlice";
 
 export const store = configureStore({
   reducer: {
     pageSite: Page,
     call: Call,
     auth: AuthReducer,
+    friendSite: Friends,
     selected: Selected,
     theme: ThemeReducer,
     dashboard: Dashboard,

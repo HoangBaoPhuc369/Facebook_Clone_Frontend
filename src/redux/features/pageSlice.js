@@ -1,9 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  page: localStorage.getItem("pageSite")
-    ? JSON.parse(localStorage.getItem("pageSite"))
-    : "home",
+  page: "",
 };
 
 export const pageSlice = createSlice({
@@ -11,7 +9,6 @@ export const pageSlice = createSlice({
   initialState,
   reducers: {
     setPage: (state, action) => {
-      localStorage.setItem("pageSite", JSON.stringify(action.payload));
       state.page = action.payload;
     },
   },

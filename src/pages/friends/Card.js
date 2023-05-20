@@ -1,30 +1,39 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
   acceptRequest,
   cancelRequest,
   deleteRequest,
-} from "../../functions/user";
+} from "../../redux/features/friendsSlice";
 
-export default function Card({ userr, type, getData }) {
+export default function Card({ userr, type }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
-  const cancelRequestHandler = async (userId) => {
-    const res = await cancelRequest(userId, user.token);
-    if (res == "ok") {
-      getData();
-    }
+
+  const dispatch = useDispatch();
+
+  const cancelRequestHandler = (userId) => {
+    dispatch(
+      cancelRequest({
+        userId: userId,
+        token: user.token,
+      })
+    );
   };
-  const confirmHandler = async (userId) => {
-    const res = await acceptRequest(userId, user.token);
-    if (res == "ok") {
-      getData();
-    }
+  const confirmHandler = (userId) => {
+    dispatch(
+      acceptRequest({
+        userId: userId,
+        token: user.token,
+      })
+    );
   };
-  const deleteHandler = async (userId) => {
-    const res = await deleteRequest(userId, user.token);
-    if (res == "ok") {
-      getData();
-    }
+  const deleteHandler = (userId) => {
+    dispatch(
+      deleteRequest({
+        userId: userId,
+        token: user.token,
+      })
+    );
   };
   return (
     <div className="req_card">

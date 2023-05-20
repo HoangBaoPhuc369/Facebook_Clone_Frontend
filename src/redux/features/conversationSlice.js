@@ -92,11 +92,11 @@ export const seenAllMessageChat = createAsyncThunk(
   }
 );
 
-export const seenAllConversationsChat = createAsyncThunk(
-  "conversations/seenAllConversationsChat",
+export const deliveredAllConversationsChat = createAsyncThunk(
+  "conversations/deliveredAllConversationsChat",
   async ({ userToken }, { rejectWithValue }) => {
     try {
-      const { data } = await api.seenAllConversationsChat(userToken);
+      const { data } = await api.deliveredAllConversationsChat(userToken);
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -452,9 +452,9 @@ export const conversationSlice = createSlice({
     [seenAllMessageChat.rejected]: (state, action) => {
       console.log(action.payload?.message);
     },
-    //
+    // seenAllConversationsChat
 
-    [seenAllConversationsChat.fulfilled]: (state, action) => {
+    [deliveredAllConversationsChat.fulfilled]: (state, action) => {
       state.conversations = action.payload;
     },
   },

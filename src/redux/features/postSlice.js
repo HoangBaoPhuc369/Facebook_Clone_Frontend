@@ -86,7 +86,6 @@ export const createCommentPost = createAsyncThunk(
       image,
       socketId,
       token,
-      handleSendNotifications,
     },
     { rejectWithValue }
   ) => {
@@ -99,10 +98,6 @@ export const createCommentPost = createAsyncThunk(
         socketId,
         token
       );
-      if (data) {
-        // console.log(handleSendNotifications)
-        handleSendNotifications("comment", "comment");
-      }
       return { data: data.comments, postId };
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -111,7 +106,7 @@ export const createCommentPost = createAsyncThunk(
 );
 
 export const editCommentPost = createAsyncThunk(
-  "post/createComment",
+  "post/editCommentPost",
   async ({ id, postId, comment, image, token }, { rejectWithValue }) => {
     try {
       const { data } = await api.editComment(id, postId, comment, image, token);
@@ -124,7 +119,7 @@ export const editCommentPost = createAsyncThunk(
 
 const initialState = {
   posts: [],
-  userTypingPosts: [],
+  userTypingPosts: null,
   error: "",
   loading: false,
   errorCreatePost: "",
@@ -178,12 +173,16 @@ export const postSlice = createSlice({
       });
     },
     handleAddUserTypingPost: (state, action) => {
-      state.userTypingPosts = [action.payload, ...state.userTypingPosts];
+      state.userTypingPosts = action.payload;
     },
     handleRemoveUserTypingPost: (state, action) => {
-      state.userTypingPosts = state.userTypingPosts.filter(
-        (p) => p !== action.payload
-      );
+      // state.userTypingPosts = state.userTypingPosts.filter(
+      //   (p) => p !== action.payload
+      // );
+
+      // state.userTypingPosts = {
+
+      // }
     },
     getNewCommentPost: (state, action) => {
       const post = state.posts.find((p) => p._id === action.payload.postId);

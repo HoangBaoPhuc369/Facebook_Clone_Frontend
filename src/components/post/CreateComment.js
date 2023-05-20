@@ -39,7 +39,6 @@ export default function CreateComment({
   handleTriggerEdit,
   createRelySecondCm,
   setActiveComment = null,
-  handleSendNotifications,
   startTyping,
   stopTyping,
   cancelTyping,
@@ -362,7 +361,6 @@ export default function CreateComment({
                 image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
-                handleSendNotifications,
               })
             );
           } else if (details) {
@@ -374,7 +372,6 @@ export default function CreateComment({
                 image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
-                handleSendNotifications,
               })
             );
           } else {
@@ -386,7 +383,6 @@ export default function CreateComment({
                 image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
-                handleSendNotifications,
               })
             );
           }
@@ -425,7 +421,6 @@ export default function CreateComment({
               image: "",
               socketId: socketRef?.id,
               token: user.token,
-              handleSendNotifications,
             })
           );
         } else if (details) {
@@ -458,7 +453,6 @@ export default function CreateComment({
               image: "",
               socketId: socketRef?.id,
               token: user.token,
-              handleSendNotifications,
             })
           );
         } else {
@@ -492,7 +486,6 @@ export default function CreateComment({
               image: "",
               socketId: socketRef?.id,
               token: user.token,
-              handleSendNotifications,
             })
           );
         }
@@ -563,6 +556,7 @@ export default function CreateComment({
             onKeyUp={(e) => {
               stopTyping();
               if (e.key === "Enter" && e.target.value !== "") {
+                
                 handleComment(e);
               }
             }}

@@ -17,6 +17,7 @@ import {
   handleRemoveUserTypingPost,
 } from "./redux/features/postSlice";
 import {
+  deliveredAllConversationsChat,
   getConversations,
   seenAllConversationsChat,
   setConversation,
@@ -36,6 +37,8 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import Header from "./components/header";
 import socketRef from "./socket/socket";
 import { setPage } from "./redux/features/pageSlice";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
@@ -96,6 +99,7 @@ const Msg = ({ picture, text, icon, name, type }) => (
   </>
 );
 
+
 function App() {
   const [visible, setVisible] = useState(false);
   const [onlineUser, setOnlineUsers] = useState([]);
@@ -136,7 +140,7 @@ function App() {
       socketRef.emit("joinUser", user.id);
 
       dispatch(
-        seenAllConversationsChat({
+        deliveredAllConversationsChat({
           userToken: user?.token,
         })
       );
@@ -150,14 +154,14 @@ function App() {
     }
 
     socketRef?.on("getUsers", (users) => {
-      const activeUsers = user.following.filter((f) =>
+      const activeUsers = user.friends.filter((f) =>
         users.some((u) => u.userId === f._id)
       );
 
       const activeUsersSocket = users.filter(
         (activeUser) =>
           activeUser.socketId !== socketRef?.id &&
-          user.following.some((u) => u._id === activeUser.userId)
+          user.friends.some((u) => u._id === activeUser.userId)
       );
       setOnlineUsers(activeUsers);
       dispatch(setActiveUsers(activeUsersSocket));
@@ -171,15 +175,16 @@ function App() {
   useEffect(() => {
     if (socketRef) {
       socketRef.on("getUsers", (users) => {
-        const activeUsers = user.following.filter((f) =>
+        const activeUsers = user.friends.filter((f) =>
           users.some((u) => u.userId === f._id)
         );
 
         const activeUsersSocket = users.filter(
           (activeUser) =>
             activeUser.socketId !== socketRef?.id &&
-            user.following.some((u) => u._id === activeUser.userId)
+            user.friends.some((u) => u._id === activeUser.userId)
         );
+        // console.log(friends);
         setOnlineUsers(activeUsers);
         dispatch(setActiveUsers(activeUsersSocket));
       });
@@ -217,12 +222,12 @@ function App() {
 
   useEffect(() => {
     if (user) {
-      socketRef?.on("seenAllConversations", (data) => {
+      socketRef?.on("deliveredAllConversations", (data) => {
         dispatch(setConversation(data));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, socketRef]);
 
   // useEffect(() => {
   //   const handleUnload = (event) => {
@@ -237,23 +242,23 @@ function App() {
   //   };
   // }, []);
 
-  useEffect(() => {
-    const handleUnload = (event) => {
-      const [navigation] = performance.getEntriesByType('navigation');
-      if (navigation.type === 'reload') {
-        console.log("Trang đã được tải lại");
-      } else {
-        dispatch(setPage("home"));
-        console.log("Người dùng đã đóng trang");
-      }
-    };
+  // useEffect(() => {
+  //   const handleUnload = (event) => {
+  //     const [navigation] = performance.getEntriesByType('navigation');
+  //     if (navigation.type === 'reload') {
+  //       console.log("Trang đã được tải lại");
+  //     } else {
+  //       dispatch(setPage("home"));
+  //       console.log("Người dùng đã đóng trang");
+  //     }
+  //   };
 
-    window.addEventListener('beforeunload', handleUnload);
+  //   window.addEventListener('beforeunload', handleUnload);
 
-    return () => {
-      window.removeEventListener('beforeunload', handleUnload);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('beforeunload', handleUnload);
+  //   };
+  // }, []);
 
   const toastDetailsPost = (type) =>
     toast(<DetailsNoftication type={type} />, {

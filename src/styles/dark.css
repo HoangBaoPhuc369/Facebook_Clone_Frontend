@@ -297,7 +297,7 @@
   border: 2px solid var(--color-primary);
 }
 
-.dark .comment-notification {
+.dark .comment_wrap .comment-notification {
   background: #203f65 !important;
 }
 
@@ -314,7 +314,8 @@
 }
 
 .dark .like_icon_action {
-  filter: invert(20%) sepia(100%) saturate(7500%) hue-rotate(200deg) brightness(120%) !important;
+  filter: invert(20%) sepia(100%) saturate(7500%) hue-rotate(200deg)
+    brightness(120%) !important;
 }
 
 .dark .circle-online {
@@ -323,4 +324,8 @@
 
 .dark .menu_post_col {
   color: var(--color-primary);
+}
+
+.dark .active_header {
+  background: #263951;
 }

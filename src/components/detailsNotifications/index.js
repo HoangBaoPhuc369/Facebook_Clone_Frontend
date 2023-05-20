@@ -94,7 +94,7 @@ export default function DetailsNotifications({
                 </div>
                 <button
                   onClick={() => {
-                    dispatch(setPage("home"));
+                    // dispatch(setPage("home"));
                     navigate("/");
                   }}
                   className="bg-blue-600 h-10 px-10 rounded-md mt-4 text-white details-post-btn"
@@ -133,7 +133,7 @@ export default function DetailsNotifications({
                 </div>
                 <button
                   onClick={() => {
-                    dispatch(setPage("home"));
+                    // dispatch(setPage("home"));
                     navigate("/");
                   }}
                   className="bg-blue-600 h-10 px-10 rounded-md mt-4 text-white details-post-btn"

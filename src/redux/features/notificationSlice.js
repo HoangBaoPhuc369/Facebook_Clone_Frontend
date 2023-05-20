@@ -72,7 +72,6 @@ export const createCommentInDetailsPost = createAsyncThunk(
       image,
       socketId,
       token,
-      handleSendNotifications,
     },
     { rejectWithValue }
   ) => {
@@ -85,10 +84,6 @@ export const createCommentInDetailsPost = createAsyncThunk(
         socketId,
         token
       );
-      if (data) {
-        handleSendNotifications("comment", "comment");
-      }
-
       return { data: data.comments, postId };
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -177,7 +172,7 @@ export const notificationSlice = createSlice({
   initialState,
   reducers: {
     getNewNotifications: (state, action) => {
-      if (action.payload.senderId) {
+      if (action.payload.from._id) {
         state.newNotifications.push(action.payload.senderId);
       } else {
         state.newNotifications.push(action.payload._id);

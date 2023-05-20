@@ -19,6 +19,7 @@ import {
   follow,
   unFollow,
   unfriend,
+  updateProfile,
 } from "../../redux/features/profileSlice";
 export default function Friendship({ friendshipp, profileId }) {
   // const [friendship, setFriendship] = useState(friendshipp);
@@ -58,7 +59,7 @@ export default function Friendship({ friendshipp, profileId }) {
     // await unfollow(profileid, user.token);
     dispatch(unFollow({ profileId: profileId, token: user.token }));
   };
-  const acceptRequestHandler = async () => {
+  const acceptRequestHandler = () => {
     // setFriendship({
     //   ...friendship,
     //   friends: true,
@@ -66,10 +67,22 @@ export default function Friendship({ friendshipp, profileId }) {
     //   requestSent: false,
     //   requestReceived: false,
     // });
+    // dispatch(
+    //   updateProfile({
+    //     userName: profile?.username,
+    //     token: user?.token,
+    //   })
+    // );
     // await acceptRequest(profileid, user.token);
-    dispatch(acceptRequest({ profileId: profileId, token: user.token }));
+    dispatch(
+      acceptRequest({
+        profileId: profileId,
+        userName: profile?.username,
+        token: user.token,
+      })
+    );
   };
-  const unfriendHandler = async () => {
+  const unfriendHandler = () => {
     // setFriendship({
     //   ...friendship,
     //   friends: false,
@@ -110,7 +123,7 @@ export default function Friendship({ friendshipp, profileId }) {
                 <img src="../../../icons/editFriends.png" alt="" />
                 Edit Friend list
               </div>
-              {profile.friendship?.following ? (
+              {profile.friendship?.friends ? (
                 <div
                   className="open_cover_menu_item hover1"
                   onClick={() => unFollowHandler()}
@@ -166,13 +179,23 @@ export default function Friendship({ friendshipp, profileId }) {
               <div className="open_cover_menu" ref={menu1}>
                 <div
                   className="open_cover_menu_item hover1"
-                  onClick={() => acceptRequestHandler()}
+                  onClick={() => {
+                    acceptRequestHandler();
+                  }}
                 >
                   Confirm
                 </div>
                 <div
                   className="open_cover_menu_item hover1"
-                  onClick={() => deleteRequestHandler()}
+                  onClick={() => {
+                    deleteRequestHandler();
+                    dispatch(
+                      updateProfile({
+                        userName: profile?.username,
+                        token: user?.token,
+                      })
+                    );
+                  }}
                 >
                   Delete
                 </div>
@@ -193,7 +216,9 @@ export default function Friendship({ friendshipp, profileId }) {
             <span>Follow</span>
           </button>
         )}
-        <button className={profile.friendship?.friends ? "blue_btn" : "gray_btn"}>
+        <button
+          className={profile.friendship?.friends ? "blue_btn" : "gray_btn"}
+        >
           <img
             src="../../../icons/message.png"
             className={profile.friendship?.friends ? "invert" : ""}
