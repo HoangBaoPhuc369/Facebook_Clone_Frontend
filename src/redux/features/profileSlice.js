@@ -144,6 +144,7 @@ export const unfriend = createAsyncThunk(
     try {
       const { data } = await api.unfriend(profileId, token);
       const res = await api.getProfile(userName, token);
+
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);

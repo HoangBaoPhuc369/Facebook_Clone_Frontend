@@ -21,6 +21,7 @@ import {
   unfriend,
   updateProfile,
 } from "../../redux/features/profileSlice";
+import { getConversations } from "../../redux/features/conversationSlice";
 export default function Friendship({ friendshipp, profileId }) {
   // const [friendship, setFriendship] = useState(friendshipp);
 
@@ -65,7 +66,7 @@ export default function Friendship({ friendshipp, profileId }) {
     // await unfollow(profileid, user.token);
     dispatch(unFollow({ profileId: profileId, token: user.token }));
   };
-  const acceptRequestHandler = () => {
+  const acceptRequestHandler = async () => {
     // setFriendship({
     //   ...friendship,
     //   friends: true,
@@ -80,13 +81,15 @@ export default function Friendship({ friendshipp, profileId }) {
     //   })
     // );
     // await acceptRequest(profileid, user.token);
-    dispatch(
+    await dispatch(
       acceptRequest({
         profileId: profileId,
         userName: profile?.username,
         token: user.token,
       })
     );
+
+    await dispatch(getConversations({ userToken: user?.token }));
   };
   const unfriendHandler = () => {
     // setFriendship({

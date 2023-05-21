@@ -8,6 +8,8 @@
 .home_middle {
   margin-top: 75px;
   min-height: 100vh;
+  width: 100%;
+  max-width: 680px;
 }
 
 .background-secondary {
@@ -17,6 +19,7 @@
   .stories,
   .createPost,
   .post,
+  .story-wrapper,
   .send_verification {
     width: 79%;
   }
@@ -68,6 +71,7 @@
   .stories,
   .createPost,
   .post,
+  .story-wrapper,
   .send_verification {
     width: 100%;
   }
@@ -75,6 +79,7 @@
 @media (max-width: 960px) {
   .createPost,
   .post,
+  .story-wrapper,
   .send_verification {
     width: 100%;
   }
@@ -106,6 +111,7 @@
   }
   .createPost,
   .post,
+  .story-wrapper,
   .send_verification {
     width: 106%;
   }
@@ -154,6 +160,7 @@
   .stories,
   .createPost,
   .post,
+  .story-wrapper,
   .send_verification {
     width: 100%;
   }
@@ -163,10 +170,10 @@
   .stories {
     grid-template-columns: repeat(6, 14vw);
   }
-  .story,
+  /* .story,
   .create_story_card {
     height: 30vw;
-  }
+  } */
   .createPost_icon {
     font-size: 12px;
   }
@@ -184,6 +191,7 @@
   }
   .home_middle,
   .createPost,
+  .story-wrapper,
   .post {
     width: 98%;
     margin: 1rem auto;
@@ -194,7 +202,7 @@
   }
   .stories {
     grid-template-columns: repeat(5, 17vw);
-    padding-left: 10px;
+    /* padding-left: 10px; */
   }
   .home_middle {
     margin: 56px auto;

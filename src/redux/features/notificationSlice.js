@@ -301,7 +301,6 @@ export const notificationSlice = createSlice({
     },
     [createPostDetails.fulfilled]: (state, action) => {
       state.loadingSharePost = false;
-      console.log(action.payload);
       state.error = "";
     },
     [createPostDetails.rejected]: (state, action) => {

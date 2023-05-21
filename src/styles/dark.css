@@ -329,3 +329,19 @@
 .dark .active_header {
   background: #263951;
 }
+
+.dark .story-bottom {
+  background: var(--bg-primary);
+}
+
+.dark .plus_story {
+  border: 4px solid var(--bg-primary);
+}
+
+.dark .story-side {
+  color: var(--color-primary);
+}
+
+.dark .story-header {
+  border-bottom-color: #2f3031;
+}

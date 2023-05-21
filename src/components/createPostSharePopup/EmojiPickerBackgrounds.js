@@ -47,25 +47,6 @@ export default function EmojiPickerBackgrounds({
           <PostShare user={user} post={post} />
         </div>
       </div>
-
-      {/* <div className="post_emojis_wrap">
-        {picker && (
-          <div
-            className={`comment_emoji_picker ${
-              type2 ? "movepicker2" : "rlmove"
-            }`}
-          >
-            <Picker onEmojiClick={handleEmoji} />
-          </div>
-        )}
-
-        <i
-          className={`emoji_icon_large ${type2 ? "moveleft" : ""}`}
-          onClick={() => {
-            setPicker((prev) => !prev);
-          }}
-        ></i>
-      </div> */}
     </div>
   );
 }

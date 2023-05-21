@@ -516,11 +516,11 @@ export default function CreateComment({
         )}
 
         <div className="comment_input_wrap">
-          {picker && (
+          {/* {picker && (
             <div className="comment_emoji_picker">
               <Picker onEmojiClick={handleEmoji} />
             </div>
-          )}
+          )} */}
           <input
             type="file"
             hidden

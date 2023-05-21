@@ -330,19 +330,39 @@ export default function PostPopUp({
         </div>
       ) : post?.type === "share" ? (
         <>
-          <div className="post_text">{post?.text}</div>
-          <div className="px-[17px] w-full">
-            <div
-              className=" rounded-lg 
-              border-[1px] border-solid border-[#CED0D4]"
-            >
-              <PostShare user={user} post={post?.postRef} />
+          {post?.postRef ? (
+            <>
+              <div className="post_text">{post?.text}</div>
+              <div className="px-[17px] w-full">
+                <div
+                  className=" rounded-lg 
+                 border-[1px] border-solid border-[#CED0D4]"
+                >
+                  <PostShare user={user} post={post?.postRef} />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
+              <div className="px-3 py-4 flex">
+                <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi" />
+                <div>
+                  <div className="text-[15px] font-medium flex gap-2">
+                    This content isn't available right now
+                  </div>
+                  <p className="text-[13px] text-gray-500 negative-post-text">
+                    When this happens, it's usually because the owner only
+                    shared it with a small group of people, changed who can see
+                    it or it's been deleted.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </>
       ) : (
         <div className="post_cover_wrap">
-          <img src={post?.images ? post?.images[0]?.url : ""} alt="" />
+          <img src={post?.images ? post.images[0]?.url : ""} alt="" />
         </div>
       )}
 

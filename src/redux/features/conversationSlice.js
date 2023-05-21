@@ -11,11 +11,7 @@ export const getConversations = createAsyncThunk(
   async ({ userToken }, { rejectWithValue }) => {
     try {
       const { data } = await api.getConversations(userToken);
-      if (data) {
-        return data;
-      } else {
-        return null;
-      }
+      return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -380,7 +376,6 @@ export const conversationSlice = createSlice({
     setConversation: (state, action) => {
       state.conversations = action.payload;
     },
-    
   },
   extraReducers: {
     [getConversations.pending]: (state, action) => {
@@ -388,12 +383,12 @@ export const conversationSlice = createSlice({
     },
     [getConversations.fulfilled]: (state, action) => {
       state.loading = false;
-      state.conversations = action.payload;
+      state.conversations = [...action.payload];
       state.error = "";
     },
     [getConversations.rejected]: (state, action) => {
       state.loading = false;
-      state.error = action.payload?.message;
+      state.error = action.payload;
     },
 
     [sendMessageChat.fulfilled]: (state, action) => {

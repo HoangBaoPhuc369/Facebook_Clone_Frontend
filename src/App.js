@@ -21,9 +21,7 @@ import {
   getConversations,
   setConversation,
 } from "./redux/features/conversationSlice";
-import {
-  getNotification,
-} from "./redux/features/notificationSlice";
+import { getNotification } from "./redux/features/notificationSlice";
 import { io } from "socket.io-client";
 import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInParent";
 import Test from "./components/test";
@@ -79,7 +77,7 @@ function App() {
     if (user?.token) {
       // dispatch(getAllPosts({ userToken: user?.token }));
       dispatch(getNotification({ userToken: user?.token }));
-      // dispatch(getConversations({ userToken: user?.token }));
+      dispatch(getConversations({ userToken: user?.token }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
@@ -94,15 +92,15 @@ function App() {
         })
       );
 
-      socketRef?.emit("addUser", {
-        userId: user?.id,
-        userName: `${user?.first_name} ${user?.last_name}`,
-        picture: user?.picture,
-        timeJoin: new Date(),
-      });
+      // socketRef?.emit("addUser", {
+      //   userId: user?.id,
+      //   userName: `${user?.first_name} ${user?.last_name}`,
+      //   picture: user?.picture,
+      //   timeJoin: new Date(),
+      // });
     }
 
-    socketRef?.on("getUsers", (users) => {
+    socketRef?.on("getFriendsOnline", (users) => {
       const activeUsers = user.friends.filter((f) =>
         users.some((u) => u.userId === f._id)
       );
@@ -119,7 +117,7 @@ function App() {
     // setSocketRef(socketRef);
     handleWSSCallInParent(socketRef);
     return () => socketRef.close();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     if (socketRef) {
@@ -139,7 +137,7 @@ function App() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, []);
 
   useEffect(() => {
     if (socketRef) {

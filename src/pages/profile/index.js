@@ -80,8 +80,8 @@ export default function Profile({
   const [leftHeight, setLeftHeight] = useState();
   const [scrollHeight, setScrollHeight] = useState();
   useEffect(() => {
-    setHeight(profileTop.current.clientHeight + 269); // + 300 (height of the "you may know" component)
-    setLeftHeight(leftSide.current.clientHeight);
+    setHeight(profileTop?.current?.clientHeight + 269); // + 300 (height of the "you may know" component)
+    setLeftHeight(leftSide?.current?.clientHeight);
     window.addEventListener("scroll", getScroll, { passive: true });
     return () => {
       window.addEventListener("scroll", getScroll, { passive: true });
@@ -219,89 +219,91 @@ export default function Profile({
       <div className="profile_bottom">
         <div className="profile_container">
           <div className="bottom_container">
-            {/* <PplYouMayKnow /> */}
-            <div
-              className={`profile_grid ${
-                check && scrollHeight >= height && leftHeight > 1000
-                  ? "scrollFixed showLess"
-                  : check &&
-                    scrollHeight >= height &&
-                    leftHeight < 1000 &&
-                    "scrollFixed showMore"
-              }`}
-
-              // className="profile_grid"
-            >
-              <div className="profile_left" ref={leftSide}>
-                {loading ? (
-                  <>
-                    <div className="profile_card">
-                      <div className="profile_card_header">Intro</div>
-                      <div className="sekelton_loader">
-                        <HashLoader color="#1876f2" />
-                      </div>
-                    </div>
-                    <div className="profile_card">
-                      <div className="profile_card_header">
-                        Photos
-                        <div className="profile_header_link">
-                          See all photos
+            {!loading ? (
+              <div
+                className={`profile_grid ${
+                  check && scrollHeight >= height && leftHeight > 1000
+                    ? "scrollFixed showLess"
+                    : check &&
+                      scrollHeight >= height &&
+                      leftHeight < 1000 &&
+                      "scrollFixed showMore"
+                }`}
+              >
+                <div className="profile_left" ref={leftSide}>
+                  {/* {loading ? (
+                    <>
+                      <div className="profile_card">
+                        <div className="profile_card_header">Intro</div>
+                        <div className="sekelton_loader">
+                          <HashLoader color="#1876f2" />
                         </div>
                       </div>
-                      <div className="sekelton_loader">
-                        <HashLoader color="#1876f2" />
-                      </div>
-                    </div>
-                    <div className="profile_card">
-                      <div className="profile_card_header">
-                        Friends
-                        <div className="profile_header_link">
-                          See all friends
+                      <div className="profile_card">
+                        <div className="profile_card_header">
+                          Photos
+                          <div className="profile_header_link">
+                            See all photos
+                          </div>
+                        </div>
+                        <div className="sekelton_loader">
+                          <HashLoader color="#1876f2" />
                         </div>
                       </div>
-                      <div className="sekelton_loader">
-                        <HashLoader color="#1876f2" />
+                      <div className="profile_card">
+                        <div className="profile_card_header">
+                          Friends
+                          <div className="profile_header_link">
+                            See all friends
+                          </div>
+                        </div>
+                        <div className="sekelton_loader">
+                          <HashLoader color="#1876f2" />
+                        </div>
                       </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <Intro detailss={profile.details} visitor={visitor} />
-                    <Photos
-                      username={userName}
-                      token={user.token}
-                      photos={photos}
-                    />
-                    <Friends friends={profile.friends} />
-                  </>
-                )}
-                <div className="relative_fb_copyright">
-                  <Link to="/">Privacy </Link>
-                  <span>. </span>
-                  <Link to="/">Terms </Link>
-                  <span>. </span>
-                  <Link to="/">Advertising </Link>
-                  <span>. </span>
-                  <Link to="/">
-                    Ad Choices <i className="ad_choices_icon"></i>{" "}
-                  </Link>
-                  <span>. </span>
-                  <Link to="/"></Link>Cookies <span>. </span>
-                  <Link to="/">More </Link>
-                  <span>. </span> <br />
-                  Meta © 2022
-                </div>
-              </div>
-              <div className="profile_right">
-                {!visitor && (
-                  <CreatePost user={user} profile setVisible={setVisible} />
-                )}
-                <GridPosts />
-                {loading ? (
-                  <div className="skeleton_loader">
-                    <PostSkeleton />
+                    </>
+                  ) : (
+                    <>
+                     
+                    </>
+                  )} */}
+                  <Intro detailss={profile.details} visitor={visitor} />
+                  <Photos
+                    username={userName}
+                    token={user.token}
+                    photos={photos}
+                  />
+                  <Friends friends={profile.friends} />
+                  <div className="relative_fb_copyright">
+                    <Link to="/">Privacy </Link>
+                    <span>. </span>
+                    <Link to="/">Terms </Link>
+                    <span>. </span>
+                    <Link to="/">Advertising </Link>
+                    <span>. </span>
+                    <Link to="/">
+                      Ad Choices <i className="ad_choices_icon"></i>{" "}
+                    </Link>
+                    <span>. </span>
+                    <Link to="/"></Link>Cookies <span>. </span>
+                    <Link to="/">More </Link>
+                    <span>. </span> <br />
+                    Meta © 2022
                   </div>
-                ) : (
+                </div>
+                <div className="profile_right">
+                  {!visitor && (
+                    <CreatePost user={user} profile setVisible={setVisible} />
+                  )}
+                  <GridPosts />
+                  {/* {loading ? (
+                    <div className="skeleton_loader">
+                      <PostSkeleton />
+                    </div>
+                  ) : (
+                    
+                  )} */}
+
                   <div className="posts">
                     {profile.posts && profile.posts.length ? (
                       profile.posts.map((post) => (
@@ -321,9 +323,9 @@ export default function Profile({
                       <div className="no_posts">No posts available</div>
                     )}
                   </div>
-                )}
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </div>

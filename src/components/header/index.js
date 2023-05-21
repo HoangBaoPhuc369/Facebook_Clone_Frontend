@@ -49,6 +49,7 @@ import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { setPage } from "../../redux/features/pageSlice";
 import { useLocation } from "react-router-dom";
 import { updateProfile } from "../../redux/features/profileSlice";
+import { getFriendsInformation } from "../../redux/features/authSlice";
 
 const Msg = ({ picture, text, icon, name, type }) => (
   <>
@@ -366,14 +367,15 @@ export default function Header({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   useEffect(() => {
     socketRef?.on("unfriend", (data) => {
       const pathCurrent = location.pathname;
       const userName = data;
       const friendPath = `/profile/${userName}`;
-
+      console.log(userName);
+      dispatch(getFriendsInformation({ token: user?.token }));
       dispatch(getConversations({ userToken: user?.token }));
+
       if (pathCurrent === friendPath) {
         dispatch(
           updateProfile({
@@ -381,8 +383,8 @@ export default function Header({
             token: user?.token,
           })
         );
-      }else if(pathCurrent === '/') {
-       //Xử lý load lại post ở new Feed ở đây, tạo hàm gọi api khác với getPosts 
+      } else if (pathCurrent === "/") {
+        //Xử lý load lại post ở new Feed ở đây, tạo hàm gọi api khác với getPosts
       }
     });
 
@@ -410,9 +412,12 @@ export default function Header({
   useEffect(() => {
     socketRef?.on("friendRequestAccepted", (data) => {
       const pathCurrent = location.pathname;
+
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
       dispatch(getConversations({ userToken: user?.token }));
+      dispatch(getFriendsInformation({ token: user?.token }));
+
       const userName = data?.from?.username;
       const friendPath = `/profile/${userName}`;
       if (pathCurrent === friendPath) {
@@ -448,23 +453,21 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    if (user) {
-      socketRef?.on("getUsers", (users) => {
-        const activeUsers = user.friends.filter((f) =>
-          users.some((u) => u.userId === f._id)
-        );
+    socketRef?.on("getUsers", (users) => {
+      const activeUsers = user?.friends.filter((f) =>
+        users.some((u) => u.userId === f._id)
+      );
 
-        const activeUsersSocket = users.filter(
-          (activeUser) =>
-            activeUser.socketId !== socketRef?.id &&
-            user.friends.some((u) => u._id === activeUser.userId)
-        );
-        setOnlineUsers(activeUsers);
-        dispatch(setActiveUsers(activeUsersSocket));
-      });
-    }
+      const activeUsersSocket = users.filter(
+        (activeUser) =>
+          activeUser.socketId !== socketRef?.id &&
+          user?.friends.some((u) => u._id === activeUser.userId)
+      );
+      setOnlineUsers(activeUsers);
+      dispatch(setActiveUsers(activeUsersSocket));
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     socketRef?.emit("messageDelivered", {
