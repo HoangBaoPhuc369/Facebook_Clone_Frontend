@@ -8,18 +8,20 @@ import "./style.css";
 export default function Stories({ user }) {
   return (
     <div className="story-wrapper">
-      <div className="w-full h-[72px] px-[15px] flex mb-4 border-b-[1px] border-solid story-header">
-        <div className="h-full w-full flex justify-center items-center gap-2
-         border-b-[3.5px] border-[#1876f2]">
+      <div className="w-full h-[72px] px-[18px] flex mb-4 border-b-[1px] border-solid story-header">
+        <div
+          className="h-full w-full flex justify-center items-center gap-2
+         border-b-[3.5px] border-[#1876f2]"
+        >
           <StoryIcon width="20px" className="text-[#1876f2]" />
           <p className="font-medium text-[#1876f2]">Stories</p>
-        </div> 
+        </div>
         <div className="h-full w-full flex justify-center items-center gap-2">
           <ReelsIcon width="20px" className="text-[#65676b]" />
           <p className="font-medium text-[#65676b]">Reels</p>
         </div>
       </div>
-      <div className="px-[15px] py-[10px]">
+      <div className="pt-[10px] pr-[15px] pb-4 pl-[15px]">
         <div className="stories">
           {/* <div className="create_story_card">
             <img src={user?.picture} alt="" className="create_story_img" />

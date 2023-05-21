@@ -189,7 +189,6 @@ export default function Header({
   useEffect(() => {
     // socketRef = io("ws://localhost:8900", { transports: ["polling"] });
     socketRef?.on("getMessage", ({ messages, currentChatID }) => {
-      console.log();
       const message = { messages, currentChatID };
       dispatch(
         getNewFriendMessage({
@@ -486,8 +485,9 @@ export default function Header({
   useEffect(() => {
     if (
       arrivalMessage?.currentChatID === chatBox.currentChatBox &&
-      !chatBox.chatBoxVisible.includes(arrivalMessage?.currentChatID)
+      !chatBox.chatBoxWaiting.includes(arrivalMessage?.currentChatID)
     ) {
+      console.log(arrivalMessage?.messages)
       socketRef?.emit("messageSeen", {
         message: arrivalMessage?.messages,
         currentChatId: arrivalMessage?.currentChatID,

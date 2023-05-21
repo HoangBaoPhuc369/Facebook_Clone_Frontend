@@ -23,12 +23,6 @@ import {
 } from "../../redux/features/profileSlice";
 import { getConversations } from "../../redux/features/conversationSlice";
 export default function Friendship({ friendshipp, profileId }) {
-  // const [friendship, setFriendship] = useState(friendshipp);
-
-  // useEffect(() => {
-  //   setFriendship(friendshipp);
-  // }, [friendshipp]);
-
   const dispatch = useDispatch();
   const [friendsMenu, setFriendsMenu] = useState(false);
   const [respondMenu, setRespondMenu] = useState(false);
@@ -39,14 +33,9 @@ export default function Friendship({ friendshipp, profileId }) {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { profile } = useSelector((state) => ({ ...state.profile }));
   const addFriendHandler = () => {
-    // setFriendship({ ...friendship, requestSent: true, following: true });
-    // await addFriend(profileid, user.token);
     dispatch(addFriend({ profileId: profileId, token: user.token }));
   };
   const cancelRequestHandler = () => {
-    // setFriendship({ ...friendship, requestSent: false, following: false });
-    // await cancelRequest(profileid, user.token);
-
     dispatch(
       cancelRequest({
         profileId: profileId,
@@ -56,31 +45,12 @@ export default function Friendship({ friendshipp, profileId }) {
     );
   };
   const followHandler = async () => {
-    // setFriendship({ ...friendship, following: true });
-    // await follow(profileid, user.token);
-
     dispatch(follow({ profileId: profileId, token: user.token }));
   };
   const unFollowHandler = async () => {
-    // setFriendship({ ...friendship, following: false });
-    // await unfollow(profileid, user.token);
     dispatch(unFollow({ profileId: profileId, token: user.token }));
   };
   const acceptRequestHandler = async () => {
-    // setFriendship({
-    //   ...friendship,
-    //   friends: true,
-    //   following: true,
-    //   requestSent: false,
-    //   requestReceived: false,
-    // });
-    // dispatch(
-    //   updateProfile({
-    //     userName: profile?.username,
-    //     token: user?.token,
-    //   })
-    // );
-    // await acceptRequest(profileid, user.token);
     await dispatch(
       acceptRequest({
         profileId: profileId,
@@ -91,32 +61,19 @@ export default function Friendship({ friendshipp, profileId }) {
 
     await dispatch(getConversations({ userToken: user?.token }));
   };
-  const unfriendHandler = () => {
-    // setFriendship({
-    //   ...friendship,
-    //   friends: false,
-    //   following: false,
-    //   requestSent: false,
-    //   requestReceived: false,
-    // });
-    // await unfriend(profileid, user.token);
-    dispatch(
+  const unfriendHandler = async () => {
+    await dispatch(
       unfriend({
         profileId: profileId,
         userName: profile?.username,
         token: user.token,
       })
     );
+
+    await dispatch(getConversations({ userToken: user?.token }));
   };
+
   const deleteRequestHandler = async () => {
-    // setFriendship({
-    //   ...friendship,
-    //   friends: false,
-    //   following: false,
-    //   requestSent: false,
-    //   requestReceived: false,
-    // });
-    // await deleteRequest(profileid, user.token);
     dispatch(deleteRequest({ profileId: profileId, token: user.token }));
   };
 

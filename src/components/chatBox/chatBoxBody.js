@@ -25,7 +25,7 @@ export default function ChatBoxBody({
 
   const [showTyping, setShowTyping] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const [getLastSeenMessage, SetGetLastSeenMessage] = useState(null);
+  const [getLastSeenMessage, setGetLastSeenMessage] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -53,7 +53,7 @@ export default function ChatBoxBody({
 
   useEffect(() => {
     const lastSeenMessage = messagesChat.filter((m) => m.status === "seen");
-    SetGetLastSeenMessage(lastSeenMessage[lastSeenMessage.length - 1]?._id);
+    setGetLastSeenMessage(lastSeenMessage[lastSeenMessage.length - 1]?._id);
   }, [messagesChat]);
 
   const checkUsers = (users, user) => {
@@ -70,8 +70,8 @@ export default function ChatBoxBody({
   const startTypingMessage = () => {
     if (!socket) return;
     socket.emit("start typing message", {
-      senderId: socket.id,
-      receiverId: friendChat._id,
+      senderId: socket.id, //socket của người gửi
+      receiverId: friendChat._id, // id của người nhận
       user: user.id,
     });
   };
@@ -156,6 +156,7 @@ export default function ChatBoxBody({
           <div key={i}>
             <Message
               index={i}
+              user={user}
               message={message}
               friendChat={friendChat}
               typingUsers={typingUsers}

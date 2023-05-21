@@ -1,19 +1,18 @@
-import * as webRTCHandler from '../webRTC/webRTCHandler';
+import * as webRTCHandler from "../webRTC/webRTCHandler";
 import { store } from "./../../app/store";
-import { getSocket, setActiveUsers } from "../../redux/features/dashboardSlice";
+import { setActiveUsers } from "../../redux/features/dashboardSlice";
 
 const broadcastEventTypes = {
   ACTIVE_USERS: "ACTIVE_USERS",
   GROUP_CALL_ROOMS: "GROUP_CALL_ROOMS",
 };
 
-
 export const handleWSSCallInParent = (newSocket) => {
   // listeners related with direct call
-  newSocket.on('call-other', (data) => {
+  newSocket?.on("call-other", (data) => {
+    console.log(data);
     webRTCHandler.handlePreOfferInParent(data);
   });
-
 };
 
 export const handleBroadcastEvents = ({ data, socketRef, dispatch, user }) => {
@@ -22,7 +21,7 @@ export const handleBroadcastEvents = ({ data, socketRef, dispatch, user }) => {
       const activeUsers = data.activeUsers.filter(
         (activeUser) =>
           activeUser.socketId !== socketRef.current?.id &&
-          user.friends.some(u => u._id === activeUser.userId)
+          user.friends.some((u) => u._id === activeUser.userId)
       );
       store.dispatch(setActiveUsers(activeUsers));
       break;

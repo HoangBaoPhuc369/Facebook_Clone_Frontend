@@ -37,6 +37,7 @@ a {
   --blue-color-third: #252f3c;
   --green-color: #42b72a;
   --light-blue-color: #e7f3ff;
+  --dark-blue-color: rgba(45, 136, 255, 0.2);;
   --border-color: #ccced2;
   --shadow-1: rgba(0, 0, 0, 0.2);
   --shadow-2: rgba(0, 0, 0, 0.1);

@@ -24,7 +24,7 @@
   filter: invert(100%);
 }
 .dark .active_header {
-  background: var(--light-blue-color) !important;
+  background: var(--dark-blue-color) !important;
 }
 .dark .active_header svg {
   fill: var(--blue-color) !important;
@@ -344,4 +344,8 @@
 
 .dark .story-header {
   border-bottom-color: #2f3031;
+}
+
+.dark .all_messenger_group_header {
+  background: var(--dark-blue-color);
 }

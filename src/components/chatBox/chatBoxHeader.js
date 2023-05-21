@@ -61,12 +61,11 @@ export default function ChatBoxHeader({
     const userCall = currentChat.members.find((u) => u._id === friendChat._id);
     // if (activeUser) {
     // }
-    console.log(userCall);
     const roomId = currentChat?._id;
     const type = "host";
     const username = `${user.first_name} ${user.last_name}`;
     const videoCallWindow = window.open(
-      `http://localhost:3001/?roomId=${roomId}&username=${username}&type=${type}`,
+      `${process.env.REACT_APP_VIDEO_CALL_URL}/?roomId=${roomId}&username=${username}&type=${type}`,
       "Video Call",
       `
       width=${w / systemZoom}, 
@@ -87,7 +86,7 @@ export default function ChatBoxHeader({
       picture: user.picture,
       roomId: roomId,
     };
-    socket.emit("call-other", data);
+    socket?.emit("call-other", data);
   };
   const handleCallPressed = () => {
     // dispatch(getCallUser(activeUser));

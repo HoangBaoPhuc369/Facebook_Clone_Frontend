@@ -175,7 +175,7 @@ export default function Profile({
                     width={120}
                     containerClassName="avatar-skeleton"
                   />
-                  <div className="flex">
+                  <div className="flex gap-[10px]">
                     <Skeleton
                       height="36px"
                       width={120}

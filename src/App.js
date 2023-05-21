@@ -32,6 +32,8 @@ import DetailsNotifications from "./components/detailsNotifications";
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import Header from "./components/header";
 import socketRef from "./socket/socket";
+import * as webRTCHandler from "./utils/webRTC/webRTCHandler";
+// ../webRTC/webRTCHandler
 
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
@@ -91,13 +93,6 @@ function App() {
           userToken: user?.token,
         })
       );
-
-      // socketRef?.emit("addUser", {
-      //   userId: user?.id,
-      //   userName: `${user?.first_name} ${user?.last_name}`,
-      //   picture: user?.picture,
-      //   timeJoin: new Date(),
-      // });
     }
 
     socketRef?.on("getFriendsOnline", (users) => {
@@ -118,6 +113,13 @@ function App() {
     handleWSSCallInParent(socketRef);
     return () => socketRef.close();
   }, []);
+
+  useEffect(() =>{
+    socketRef?.on("call-other", (data) => {
+      console.log(data);
+      webRTCHandler.handlePreOfferInParent(data);
+    });
+  }, [])
 
   useEffect(() => {
     if (socketRef) {

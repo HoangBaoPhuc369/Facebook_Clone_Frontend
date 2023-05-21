@@ -334,7 +334,6 @@ export const conversationSlice = createSlice({
 
     getNewMessage: (state, action) => {
       const checkMsg = state.newMessage.some((m) => m === action.payload);
-      console.log(checkMsg);
       if (action.payload && !checkMsg) {
         state.newMessage.push(action.payload);
         localStorage.setItem(
