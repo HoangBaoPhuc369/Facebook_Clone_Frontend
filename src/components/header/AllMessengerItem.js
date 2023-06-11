@@ -70,7 +70,8 @@ export default function AllMessengerItem({
           )}
         </div>
         <div className="all_messenger-arrival-message">
-          {getNewMessage?.status === "delivered" ? (
+          {getNewMessage?.status === "delivered" &&
+          getNewMessage?.sender !== user.id ? (
             <div className="all_messenger-arrival-message-status"></div>
           ) : getNewMessage?.status === "seen" ? (
             <img

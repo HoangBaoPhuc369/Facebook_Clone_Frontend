@@ -18,15 +18,15 @@ export default function RegisterInput({ placeholder, bottom, ...props }) {
     <div className="input_wrap register_input_wrap">
       <input
         className={meta.touched && meta.error ? "input_error_border" : ""}
-        style={{
-          width: `${
-            view1 && (field.name === "first_name" || field.name === "last_name")
-              ? "100%"
-              : view1 && (field.name === "email" || field.name === "password")
-              ? "370px"
-              : "300px"
-          }`,
-        }}
+        // style={{
+        //   width: `${
+        //     view1 && (field.name === "first_name" || field.name === "last_name")
+        //       ? "100%"
+        //       : view1 && (field.name === "email" || field.name === "password")
+        //       ? "400px"
+        //       : "300px"
+        //   }`,
+        // }}
         type={field.type}
         name={field.name}
         placeholder={placeholder}

@@ -1115,6 +1115,7 @@
   -webkit-user-select: none;
   user-select: none;
   color: var(--color-primary);
+  padding-bottom: 1rem;
 }
 
 .post-share_cover_wrap {

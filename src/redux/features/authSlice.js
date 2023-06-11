@@ -4,18 +4,12 @@ import * as api from "../api";
 
 export const login = createAsyncThunk(
   "auth/login",
-  async ({ formValue, navigate, socket }, { rejectWithValue }) => {
+  async ({ formValue, navigate }, { rejectWithValue }) => {
     try {
       const { data } = await api.userLogin(formValue);
-      // if (data) {
-      //   socket?.emit("addUser", {
-      //     userId: data?.id,
-      //     userName: `${data?.first_name} ${data?.last_name}`,
-      //     picture: data?.picture,
-      //     timeJoin: new Date(),
-      //   });
-      // }
-
+      if (data) {
+        window.location.reload();
+      }
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);

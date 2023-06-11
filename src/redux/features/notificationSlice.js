@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
 import * as api from "../api";
 
 export const createNotifications = createAsyncThunk(
@@ -65,14 +64,7 @@ export const editCommentInDetailsPost = createAsyncThunk(
 export const createCommentInDetailsPost = createAsyncThunk(
   "notification/details/createComment",
   async (
-    {
-      postId,
-      getParentId,
-      comment,
-      image,
-      socketId,
-      token,
-    },
+    { postId, getParentId, comment, image, socketId, token },
     { rejectWithValue }
   ) => {
     try {
@@ -152,9 +144,9 @@ export const createPostDetails = createAsyncThunk(
 
 const initialState = {
   notifications: null,
-  newNotifications: Cookies.get("notification")
-    ? JSON.parse(Cookies.get("notification"))
-    : [],
+  newNotifications: localStorage.getItem("newNotification")
+    ? JSON.parse(localStorage.getItem("newNotification"))
+    : null,
   notificationsSelected: localStorage.getItem("notificationsSelected")
     ? JSON.parse(localStorage.getItem("notificationsSelected"))
     : null,
@@ -172,16 +164,26 @@ export const notificationSlice = createSlice({
   initialState,
   reducers: {
     getNewNotifications: (state, action) => {
-      if (action.payload.from._id) {
-        state.newNotifications.push(action.payload.senderId);
-      } else {
-        state.newNotifications.push(action.payload._id);
-      }
-      Cookies.set("notification", JSON.stringify([...state.newNotifications]));
+      console.log(action.payload);
+      // if (action.payload.from._id) {
+
+      // } else {
+      //   state.newNotifications = [
+      //     action.payload._id,
+      //     ...state.newNotifications,
+      //   ];
+      // }
+      state.newNotifications = [action.payload._id, ...state.newNotifications];
+      console.log(action.payload._id);
+
+      localStorage.setItem(
+        "newNotification",
+        JSON.stringify([...state.newNotifications])
+      );
     },
     clearNewNotifications: (state, action) => {
-      state.newNotifications = [];
-      Cookies.set("notification", JSON.stringify([]));
+      state.newNotifications = null;
+      localStorage.setItem("newNotification", JSON.stringify(null));
     },
     selecteNotification: (state, action) => {
       state.notificationsSelected = action.payload;

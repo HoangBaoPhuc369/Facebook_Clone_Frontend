@@ -243,29 +243,31 @@ export default function Post({
         </div>
       </div>
       {post?.hidePost ? (
-        <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
-          <div className="px-3 py-4 flex">
-            <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi" />
-            <div>
-              <div className="text-[15px] font-medium flex gap-2">
-                We hide something you posted
-              </div>
-              <p className="text-[13px] text-gray-500 negative-post-text">
-                We covered the post because it doesn't follow the
-                <span className="ml-1 text-blue-500 hover:underline hover:cursor-pointer">
-                  Net Friend Community Standard
-                </span>
-              </p>
+        <>
+          <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
+            <div className="px-3 py-4 flex">
+              <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi" />
+              <div>
+                <div className="text-[15px] font-medium flex gap-2">
+                  We hide something you posted
+                </div>
+                <p className="text-[13px] text-gray-500 negative-post-text">
+                  We covered the post because it doesn't follow the
+                  <span className="ml-1 text-blue-500 hover:underline hover:cursor-pointer">
+                    Net Friend Community Standard
+                  </span>
+                </p>
 
-              <div
-                onClick={() => setIsOpenNegativePost(true)}
-                className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
-              >
-                Unhide
+                <div
+                  onClick={() => setIsOpenNegativePost(true)}
+                  className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
+                >
+                  Unhide
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       ) : post?.background ? (
         <div
           className="post_bg"

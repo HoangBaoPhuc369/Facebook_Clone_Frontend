@@ -44,14 +44,14 @@
   border-right: 10px solid transparent;
   border-left: 10px solid transparent;
   position: absolute;
-  bottom: -10px;
+  bottom: -9px;
 }
 .error_arrow_bottom {
   border-bottom: 10px solid #b94a48;
   border-right: 10px solid transparent;
   border-left: 10px solid transparent;
   position: absolute;
-  top: -10px;
+  top: -8px;
 }
 .input_error_desktop {
   position: absolute;
@@ -64,6 +64,6 @@
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
   position: absolute;
-  right: -10px;
+  right: -9px;
   top: 13px;
 }

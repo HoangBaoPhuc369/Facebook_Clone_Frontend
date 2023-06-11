@@ -50,7 +50,7 @@ export default function LoginInput({ placeholder, bottom, ...props }) {
             ? "input_error input_error_desktop"
             : "input_error"
           }
-          style={{ transform: "translateY(2px)" }}
+          style={{ transform: "translateY(-1px)" }}
         >
           {meta.touched && meta.error && <ErrorMessage name={field.name} />}
           {meta.touched && meta.error && (

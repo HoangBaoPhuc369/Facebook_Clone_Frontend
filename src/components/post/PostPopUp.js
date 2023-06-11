@@ -525,7 +525,7 @@ export default function PostPopUp({
         ) : null}
       </div>
 
-      {/* {!details ? <div className="min-h-[20vh]"></div> : null} */}
+      {!details ? <div className="min-h-[20vh]"></div> : null}
 
       <div
         className={
