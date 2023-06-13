@@ -146,7 +146,7 @@ const initialState = {
   notifications: null,
   newNotifications: localStorage.getItem("newNotification")
     ? JSON.parse(localStorage.getItem("newNotification"))
-    : null,
+    : [],
   notificationsSelected: localStorage.getItem("notificationsSelected")
     ? JSON.parse(localStorage.getItem("notificationsSelected"))
     : null,
@@ -165,24 +165,15 @@ export const notificationSlice = createSlice({
   reducers: {
     getNewNotifications: (state, action) => {
       console.log(action.payload);
-      // if (action.payload.from._id) {
-
-      // } else {
-      //   state.newNotifications = [
-      //     action.payload._id,
-      //     ...state.newNotifications,
-      //   ];
-      // }
       state.newNotifications = [action.payload._id, ...state.newNotifications];
-      console.log(action.payload._id);
-
+      console.log(state.newNotifications);
       localStorage.setItem(
         "newNotification",
         JSON.stringify([...state.newNotifications])
       );
     },
     clearNewNotifications: (state, action) => {
-      state.newNotifications = null;
+      state.newNotifications = [];
       localStorage.setItem("newNotification", JSON.stringify(null));
     },
     selecteNotification: (state, action) => {

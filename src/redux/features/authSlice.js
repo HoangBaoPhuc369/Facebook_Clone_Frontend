@@ -8,6 +8,7 @@ export const login = createAsyncThunk(
     try {
       const { data } = await api.userLogin(formValue);
       if (data) {
+        // navigate("/");
         window.location.reload();
       }
       return data;

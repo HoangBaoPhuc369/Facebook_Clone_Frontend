@@ -31,6 +31,11 @@ export default function ChatBoxBody({
 
   const { isTyping, startTyping, stopTyping, cancelTyping } = useTyping();
 
+  const checkUsers = (users, user) => {
+    console.log(users);
+    return users.filter((u) => u?.id !== user.id);
+  };
+
   useEffect(() => {
     socket?.on("stop typing message", (typingInfo) => {
       if (typingInfo.senderId !== socket.id) {
@@ -56,14 +61,11 @@ export default function ChatBoxBody({
     setGetLastSeenMessage(lastSeenMessage[lastSeenMessage.length - 1]?._id);
   }, [messagesChat]);
 
-  const checkUsers = (users, user) => {
-    return users.filter((u) => u?.id !== user.id);
-  };
-
   useEffect(() => {
     typingUsers &&
       currentChat?.members.some((m) => m._id === typingUsers[0]) &&
       setShowTyping(() => [typingUsers]);
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typingUsers]);
 

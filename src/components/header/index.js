@@ -231,7 +231,7 @@ export default function Header({
 
   useEffect(() => {
     socketRef?.on("toxicNotification", async (data) => {
-      await toast(
+      toast(
         <ReportNoftication
           icon="../../../icons/logo_fake.png"
           text={data.text}
@@ -247,8 +247,8 @@ export default function Header({
         }
       );
 
-      await dispatch(getNotification({ userToken: user?.token }));
-      await dispatch(getNewNotifications(data));
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

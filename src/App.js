@@ -104,7 +104,6 @@ function App() {
   useEffect(() => {
     if (user) {
       socketRef.current.emit("joinUser", user.id);
-
       dispatch(
         deliveredAllConversationsChat({
           userToken: user?.token,
@@ -114,7 +113,16 @@ function App() {
 
     // setSocketRef(socketRef);
     handleWSSCallInParent(socketRef.current);
-  }, [user, socketRef?.current?.id]);
+  }, [user, socketRef]);
+
+  // const isReloadedRef = useRef(false);
+
+  // useEffect(() => {
+  //   if (user && !isReloadedRef.current) {
+  //     isReloadedRef.current = true;
+  //     window.location.reload();
+  //   }
+  // }, [user]);
 
   useEffect(() => {
     socketRef.current?.on("getFriendsOnline", (users) => {
