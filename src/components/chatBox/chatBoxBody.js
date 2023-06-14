@@ -32,8 +32,13 @@ export default function ChatBoxBody({
   const { isTyping, startTyping, stopTyping, cancelTyping } = useTyping();
 
   const checkUsers = (users, user) => {
-    console.log(users);
-    return users.filter((u) => u?.id !== user.id);
+    console.log("users", users);
+    console.log("user", user);
+    console.log(
+      "filter",
+      users.filter((u) => u !== user)
+    );
+    return users.filter((u) => u !== user);
   };
 
   useEffect(() => {
@@ -50,7 +55,13 @@ export default function ChatBoxBody({
     socket?.on("start typing message", (typingInfo) => {
       if (typingInfo.senderId !== socket.id) {
         const user = typingInfo.user;
-        setTypingUsers((users) => [...users, user]);
+        setTypingUsers((users) => {
+          if (!users.includes(user)) {
+            return [...users, user];
+          } else {
+            return users;
+          }
+        });
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -62,10 +73,14 @@ export default function ChatBoxBody({
   }, [messagesChat]);
 
   useEffect(() => {
+    // typingUsers &&
+    //   currentChat?.members.some((m) => m._id === typingUsers[0]) &&
+    //   setShowTyping(() => [typingUsers]);
+
     typingUsers &&
-      currentChat?.members.some((m) => m._id === typingUsers[0]) &&
-      setShowTyping(() => [typingUsers]);
-    
+      currentChat?.members.some((m) => typingUsers?.some((c) => c === m._id)) &&
+      setShowTyping(() => [...typingUsers]);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typingUsers]);
 
@@ -169,18 +184,24 @@ export default function ChatBoxBody({
           </div>
         ))}
 
-        {showTyping.map((userId, index) => (
-          <div
-            key={messagesChat.length + index}
-            ref={scrollTypingRef}
-            className="chat-typing"
-          >
-            <img src={friendChat?.picture} className="chat-typing-img" alt="" />
-            <div className="details">
-              <DotLoader />
-            </div>
-          </div>
-        ))}
+        {showTyping && showTyping.length > 0
+          ? showTyping.map((userId, index) => (
+              <div
+                key={messagesChat.length + index}
+                ref={scrollTypingRef}
+                className="chat-typing"
+              >
+                <img
+                  src={friendChat?.picture}
+                  className="chat-typing-img"
+                  alt=""
+                />
+                <div className="details">
+                  <DotLoader />
+                </div>
+              </div>
+            ))
+          : null}
 
         <div className="chatBox-scroll" ref={scrollRef}></div>
       </div>
