@@ -218,7 +218,10 @@ export default function Profile({
       </div>
       <div className="profile_bottom">
         <div className="profile_container">
-          <div className="bottom_container">
+          <div
+            className="bottom_container"
+            style={{ padding: `${loading ? "0px" : "10px 2.2rem"}` }}
+          >
             {!loading ? (
               <div
                 className={`profile_grid ${
@@ -231,42 +234,6 @@ export default function Profile({
                 }`}
               >
                 <div className="profile_left" ref={leftSide}>
-                  {/* {loading ? (
-                    <>
-                      <div className="profile_card">
-                        <div className="profile_card_header">Intro</div>
-                        <div className="sekelton_loader">
-                          <HashLoader color="#1876f2" />
-                        </div>
-                      </div>
-                      <div className="profile_card">
-                        <div className="profile_card_header">
-                          Photos
-                          <div className="profile_header_link">
-                            See all photos
-                          </div>
-                        </div>
-                        <div className="sekelton_loader">
-                          <HashLoader color="#1876f2" />
-                        </div>
-                      </div>
-                      <div className="profile_card">
-                        <div className="profile_card_header">
-                          Friends
-                          <div className="profile_header_link">
-                            See all friends
-                          </div>
-                        </div>
-                        <div className="sekelton_loader">
-                          <HashLoader color="#1876f2" />
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                     
-                    </>
-                  )} */}
                   <Intro detailss={profile.details} visitor={visitor} />
                   <Photos
                     username={userName}
@@ -296,14 +263,6 @@ export default function Profile({
                     <CreatePost user={user} profile setVisible={setVisible} />
                   )}
                   <GridPosts />
-                  {/* {loading ? (
-                    <div className="skeleton_loader">
-                      <PostSkeleton />
-                    </div>
-                  ) : (
-                    
-                  )} */}
-
                   <div className="posts">
                     {profile.posts && profile.posts.length ? (
                       profile.posts.map((post) => (

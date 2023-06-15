@@ -452,23 +452,6 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    socketRef?.on("getUsers", (users) => {
-      const activeUsers = user?.friends.filter((f) =>
-        users.some((u) => u.userId === f._id)
-      );
-
-      const activeUsersSocket = users.filter(
-        (activeUser) =>
-          activeUser.socketId !== socketRef?.id &&
-          user?.friends.some((u) => u._id === activeUser.userId)
-      );
-      setOnlineUsers(activeUsers);
-      dispatch(setActiveUsers(activeUsersSocket));
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     socketRef?.emit("messageDelivered", {
       message: arrivalMessage?.messages,
       currentChatId: arrivalMessage?.currentChatID,

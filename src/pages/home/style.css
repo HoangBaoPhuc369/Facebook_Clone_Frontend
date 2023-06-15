@@ -128,10 +128,7 @@
   .stories {
     grid-template-columns: repeat(6, 18.5%);
   }
-  .story_profile_name,
-  .story_create_text {
-    display: none;
-  }
+
   .create_story_card {
     filter: brightness(96%);
   }

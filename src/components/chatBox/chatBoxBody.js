@@ -32,12 +32,12 @@ export default function ChatBoxBody({
   const { isTyping, startTyping, stopTyping, cancelTyping } = useTyping();
 
   const checkUsers = (users, user) => {
-    console.log("users", users);
-    console.log("user", user);
-    console.log(
-      "filter",
-      users.filter((u) => u !== user)
-    );
+    // console.log("users", users);
+    // console.log("user", user);
+    // console.log(
+    //   "filter",
+    //   users.filter((u) => u !== user)
+    // );
     return users.filter((u) => u !== user);
   };
 
@@ -80,7 +80,7 @@ export default function ChatBoxBody({
     typingUsers &&
       currentChat?.members.some((m) => typingUsers?.some((c) => c === m._id)) &&
       setShowTyping(() => [...typingUsers]);
-
+    console.log([...typingUsers]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typingUsers]);
 
@@ -185,22 +185,27 @@ export default function ChatBoxBody({
         ))}
 
         {showTyping && showTyping.length > 0
-          ? showTyping.map((userId, index) => (
-              <div
-                key={messagesChat.length + index}
-                ref={scrollTypingRef}
-                className="chat-typing"
-              >
-                <img
-                  src={friendChat?.picture}
-                  className="chat-typing-img"
-                  alt=""
-                />
-                <div className="details">
-                  <DotLoader />
-                </div>
-              </div>
-            ))
+          ? showTyping.map((userId, index) => {
+              if (currentChat.members.some((m) => m?._id === userId)) {
+                return (
+                  <div
+                    key={messagesChat.length + index}
+                    ref={scrollTypingRef}
+                    className="chat-typing"
+                  >
+                    <img
+                      src={friendChat?.picture}
+                      className="chat-typing-img"
+                      alt=""
+                    />
+                    <div className="details">
+                      <DotLoader />
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })
           : null}
 
         <div className="chatBox-scroll" ref={scrollRef}></div>

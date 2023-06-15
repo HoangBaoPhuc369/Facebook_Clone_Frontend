@@ -126,6 +126,7 @@ function App() {
 
   useEffect(() => {
     socketRef.current?.on("getFriendsOnline", (users) => {
+      console.log(users);
       const activeUsers = user.friends.filter((f) =>
         users.some((u) => u.userId === f._id)
       );
@@ -135,7 +136,6 @@ function App() {
           activeUser.socketId !== socketRef.current?.id &&
           user.friends.some((u) => u._id === activeUser.userId)
       );
-      console.log(activeUsers);
       setOnlineUsers(activeUsers);
       dispatch(setActiveUsers(activeUsersSocket));
     });
@@ -147,25 +147,26 @@ function App() {
     });
   }, [user]);
 
-  useEffect(() => {
-    if (socketRef.current) {
-      socketRef.current.on("getUsers", (users) => {
-        const activeUsers = user.friends.filter((f) =>
-          users.some((u) => u.userId === f._id)
-        );
+  // useEffect(() => {
+  //   if (socketRef.current) {
+  //     socketRef.current.on("getUsers", (users) => {
+  //       console.log(users);
+  //       const activeUsers = user.friends.filter((f) =>
+  //         users.some((u) => u.userId === f._id)
+  //       );
 
-        const activeUsersSocket = users.filter(
-          (activeUser) =>
-            activeUser.socketId !== socketRef.current?.id &&
-            user.friends.some((u) => u._id === activeUser.userId)
-        );
-        // console.log(friends);
-        setOnlineUsers(activeUsers);
-        dispatch(setActiveUsers(activeUsersSocket));
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //       const activeUsersSocket = users.filter(
+  //         (activeUser) =>
+  //           activeUser.socketId !== socketRef.current?.id &&
+  //           user.friends.some((u) => u._id === activeUser.userId)
+  //       );
+  //       // console.log(friends);
+  //       setOnlineUsers(activeUsers);
+  //       dispatch(setActiveUsers(activeUsersSocket));
+  //     });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     if (socketRef.current) {
@@ -207,13 +208,13 @@ function App() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user) {
-      navigate("/");
-    } else {
-      navigate("/login");
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     navigate("/");
+  //   } else {
+  //     navigate("/login");
+  //   }
+  // }, [user]);
 
   return (
     <div className={`relative ${user?.theme === "dark" ? "dark" : "light"}`}>
@@ -237,105 +238,105 @@ function App() {
       ) : null}
 
       <Routes>
-        {/* <Route element={<LoggedInRoutes socketRef={socketRef} />}>
-          
-        </Route> */}
+        <Route element={<LoggedInRoutes socketRef={socketRef} />}>
+          <Route
+            path="/profile"
+            element={
+              socketRef ? (
+                <Profile
+                  socketRef={socketRef.current}
+                  setVisible={setVisible}
+                  onlineUser={onlineUser}
+                  setPostShare={setPostShare}
+                  setIsProfile={setIsProfile}
+                  setOnlineUsers={setOnlineUsers}
+                  toastDetailsPost={toastDetailsPost}
+                  setsharePostPopUp={setsharePostPopUp}
+                />
+              ) : null
+            }
+            exact
+          />
+          <Route
+            path="/profile/:username"
+            element={
+              socketRef.current ? (
+                <Profile
+                  socketRef={socketRef.current}
+                  setVisible={setVisible}
+                  onlineUser={onlineUser}
+                  setIsProfile={setIsProfile}
+                  setPostShare={setPostShare}
+                  setOnlineUsers={setOnlineUsers}
+                  toastDetailsPost={toastDetailsPost}
+                  setsharePostPopUp={setsharePostPopUp}
+                />
+              ) : null
+            }
+            exact
+          />
+          <Route
+            path="/friends"
+            element={
+              socketRef.current ? (
+                <Friends socketRef={socketRef.current} />
+              ) : null
+            }
+            exact
+          />
+          <Route
+            path="/friends/:type"
+            element={
+              socketRef.current ? (
+                <Friends socketRef={socketRef.current} />
+              ) : null
+            }
+            exact
+          />
+          <Route
+            path="/"
+            element={
+              socketRef.current ? (
+                <Home
+                  socketRef={socketRef.current}
+                  onlineUser={onlineUser}
+                  setVisible={setVisible}
+                  setIsProfile={setIsProfile}
+                  setPostShare={setPostShare}
+                  setOnlineUsers={setOnlineUsers}
+                  toastDetailsPost={toastDetailsPost}
+                  setsharePostPopUp={setsharePostPopUp}
+                />
+              ) : null
+            }
+            exact
+          />
+          <Route path="/activate/:token" element={<Activate />} exact />
+
+          <Route
+            path="/details-notification/:type"
+            element={
+              <DetailsNotifications
+                socketRef={socketRef.current}
+                onlineUser={onlineUser}
+                setOnlineUsers={setOnlineUsers}
+                toastDetailsPost={toastDetailsPost}
+              />
+            }
+            exact
+          />
+        </Route>
 
         {/* Khi đã ở trong app và bị mất user thì mới vô component này */}
-        {/* <Route element={<NotLoggedInRoutes socketRef={socketRef.current} />}>
-          
-        </Route> */}
+        <Route element={<NotLoggedInRoutes socketRef={socketRef.current} />}>
+          <Route
+            path="/login"
+            element={<Login socketRef={socketRef.current} />}
+            exact
+          />
+        </Route>
 
-        <Route
-          path="/profile"
-          element={
-            socketRef ? (
-              <Profile
-                socketRef={socketRef.current}
-                setVisible={setVisible}
-                onlineUser={onlineUser}
-                setPostShare={setPostShare}
-                setIsProfile={setIsProfile}
-                setOnlineUsers={setOnlineUsers}
-                toastDetailsPost={toastDetailsPost}
-                setsharePostPopUp={setsharePostPopUp}
-              />
-            ) : null
-          }
-          exact
-        />
-        <Route
-          path="/profile/:username"
-          element={
-            socketRef.current ? (
-              <Profile
-                socketRef={socketRef.current}
-                setVisible={setVisible}
-                onlineUser={onlineUser}
-                setIsProfile={setIsProfile}
-                setPostShare={setPostShare}
-                setOnlineUsers={setOnlineUsers}
-                toastDetailsPost={toastDetailsPost}
-                setsharePostPopUp={setsharePostPopUp}
-              />
-            ) : null
-          }
-          exact
-        />
-        <Route
-          path="/friends"
-          element={
-            socketRef.current ? <Friends socketRef={socketRef.current} /> : null
-          }
-          exact
-        />
-        <Route
-          path="/friends/:type"
-          element={
-            socketRef.current ? <Friends socketRef={socketRef.current} /> : null
-          }
-          exact
-        />
-        <Route
-          path="/"
-          element={
-            socketRef.current ? (
-              <Home
-                socketRef={socketRef.current}
-                onlineUser={onlineUser}
-                setVisible={setVisible}
-                setIsProfile={setIsProfile}
-                setPostShare={setPostShare}
-                setOnlineUsers={setOnlineUsers}
-                toastDetailsPost={toastDetailsPost}
-                setsharePostPopUp={setsharePostPopUp}
-              />
-            ) : null
-          }
-          exact
-        />
-        <Route path="/activate/:token" element={<Activate />} exact />
-        <Route
-          path="/details-notification/:type"
-          element={
-            <DetailsNotifications
-              socketRef={socketRef.current}
-              onlineUser={onlineUser}
-              setOnlineUsers={setOnlineUsers}
-              toastDetailsPost={toastDetailsPost}
-            />
-          }
-          exact
-        />
-
-        <Route
-          path="/login"
-          element={<Login socketRef={socketRef.current} />}
-          exact
-        />
         <Route path="/reset" element={<Reset />} />
-
-        <Route path="/test-ui" element={<Test />} />
       </Routes>
 
       <div id="modal" className="relative"></div>
