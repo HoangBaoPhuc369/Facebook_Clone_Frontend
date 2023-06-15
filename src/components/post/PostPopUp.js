@@ -338,7 +338,7 @@ export default function PostPopUp({
                   className=" rounded-lg 
                  border-[1px] border-solid border-[#CED0D4]"
                 >
-                  <PostShare user={user} post={post?.postRef} />
+                  <PostShare user={user} post={post?.postRef} postParentId={post?._id} />
                 </div>
               </div>
             </>

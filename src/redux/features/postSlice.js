@@ -7,6 +7,7 @@ import {
   replaceComment,
   showNegativeComment,
   showNegativePost,
+  showNegativePostShare,
 } from "../helpers/handlePosts";
 
 export const getAllPosts = createAsyncThunk(
@@ -158,6 +159,12 @@ export const postSlice = createSlice({
         postId: action.payload,
       });
     },
+    viewNegativePostShare: (state, action) => {
+      showNegativePostShare({
+        posts: state.posts,
+        postId: action.payload,
+      });
+    },
     deleteCommentInFeed: (state, action) => {
       replaceComment({
         posts: state.posts,
@@ -259,6 +266,7 @@ export const {
   viewNegativePost,
   getNewCommentPost,
   deleteCommentInFeed,
+  viewNegativePostShare,
   editCommentPostLoading,
   handleAddUserTypingPost,
   createCommentPostLoading,

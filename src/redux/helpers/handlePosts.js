@@ -17,6 +17,13 @@ export const showNegativePost = (props) => {
   }
 };
 
+export const showNegativePostShare = (props) => {
+  const findPost = props.posts?.find((p) => p._id === props.postId);
+  if (findPost) {
+    findPost.postRef.hidePost = false;
+  }
+};
+
 export const createComment = (props) => {
   const findPost = props.posts?.find((p) => p._id === props.postId);
   if (findPost) {
