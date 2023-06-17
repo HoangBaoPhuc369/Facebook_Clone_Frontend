@@ -37,11 +37,13 @@ a {
   --blue-color-third: #252f3c;
   --green-color: #42b72a;
   --light-blue-color: #e7f3ff;
+  --dark-blue-color: rgba(45, 136, 255, 0.2);;
   --border-color: #ccced2;
   --shadow-1: rgba(0, 0, 0, 0.2);
   --shadow-2: rgba(0, 0, 0, 0.1);
   --shadow-3: rgba(0, 0, 0, 0.3);
   --shadow-inset: rgba(255, 255, 255, 0.05);
+  /* */
 }
 
 /*----Buttons----*/
@@ -160,7 +162,7 @@ a {
   align-items: center;
   justify-content: center;
   margin-right: 11px;
-  background: var(--bg-third);
+  background: var(--bg-third) !important;
   cursor: pointer;
 }
 /*---Circles------*/
@@ -191,4 +193,3 @@ a {
   }
 }
 /* ========================= */
-

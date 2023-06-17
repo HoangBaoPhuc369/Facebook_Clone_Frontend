@@ -5,13 +5,10 @@ import ChatBoxHeader from "./chatBoxHeader";
 import { useDispatch } from "react-redux";
 import {
   clearMessageDelivered,
-  clearMessageSuccess,
   deliveredMessageChat,
   seenAllMessageChat,
   seenMessageChat,
   setCurrentChatBox,
-  setDeliveredMessage,
-  setSeenMessage,
 } from "../../redux/features/conversationSlice";
 import ChatBoxBody from "./chatBoxBody";
 

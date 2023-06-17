@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import Cookies from "js-cookie";
 import * as api from "../api";
 
 export const createNotifications = createAsyncThunk(
@@ -65,15 +64,7 @@ export const editCommentInDetailsPost = createAsyncThunk(
 export const createCommentInDetailsPost = createAsyncThunk(
   "notification/details/createComment",
   async (
-    {
-      postId,
-      getParentId,
-      comment,
-      image,
-      socketId,
-      token,
-      handleSendNotifications,
-    },
+    { postId, getParentId, comment, image, socketId, token },
     { rejectWithValue }
   ) => {
     try {
@@ -85,10 +76,6 @@ export const createCommentInDetailsPost = createAsyncThunk(
         socketId,
         token
       );
-      if (data) {
-        handleSendNotifications("comment", "comment");
-      }
-
       return { data: data.comments, postId };
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -157,8 +144,8 @@ export const createPostDetails = createAsyncThunk(
 
 const initialState = {
   notifications: null,
-  newNotifications: Cookies.get("notification")
-    ? JSON.parse(Cookies.get("notification"))
+  newNotifications: localStorage.getItem("newNotification")
+    ? JSON.parse(localStorage.getItem("newNotification"))
     : [],
   notificationsSelected: localStorage.getItem("notificationsSelected")
     ? JSON.parse(localStorage.getItem("notificationsSelected"))
@@ -177,16 +164,17 @@ export const notificationSlice = createSlice({
   initialState,
   reducers: {
     getNewNotifications: (state, action) => {
-      if (action.payload.senderId) {
-        state.newNotifications.push(action.payload.senderId);
-      } else {
-        state.newNotifications.push(action.payload._id);
-      }
-      Cookies.set("notification", JSON.stringify([...state.newNotifications]));
+      console.log([action.payload._id, ...state.newNotifications]);
+      state.newNotifications = [action.payload._id, ...state.newNotifications];
+      console.log(state.newNotifications);
+      localStorage.setItem(
+        "newNotification",
+        JSON.stringify([action.payload._id, ...state.newNotifications])
+      );
     },
     clearNewNotifications: (state, action) => {
       state.newNotifications = [];
-      Cookies.set("notification", JSON.stringify([]));
+      localStorage.setItem("newNotification", JSON.stringify(null));
     },
     selecteNotification: (state, action) => {
       state.notificationsSelected = action.payload;
@@ -234,10 +222,9 @@ export const notificationSlice = createSlice({
   },
   extraReducers: {
     [getNotification.pending]: (state, action) => {
-      state.loading = true;
     },
     [getNotification.fulfilled]: (state, action) => {
-      state.loading = false;
+      console.log(action.payload);
       state.notifications = action.payload;
       state.error = "";
     },
@@ -306,7 +293,6 @@ export const notificationSlice = createSlice({
     },
     [createPostDetails.fulfilled]: (state, action) => {
       state.loadingSharePost = false;
-      console.log(action.payload);
       state.error = "";
     },
     [createPostDetails.rejected]: (state, action) => {

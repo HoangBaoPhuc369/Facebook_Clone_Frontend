@@ -7,5 +7,5 @@ export default function LoggedInRoutes({ socketRef }) {
   // if (user) {
   //   socketRef.emit("joinUser", user.id);
   // }
-  return user ? <Outlet /> : <Login socketRef={socketRef} />;
+  return user ? <Outlet /> : <Login />;
 }

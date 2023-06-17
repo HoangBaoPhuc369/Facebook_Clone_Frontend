@@ -68,6 +68,11 @@ export default function ChatBoxBottom({
                   handleSendMessage(e);
                 }
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                }
+              }}
             />
 
             <div className="face_icon circle_hover_cover hover1">

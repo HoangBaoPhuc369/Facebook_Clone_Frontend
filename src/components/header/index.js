@@ -6,7 +6,6 @@ import {
   Gaming,
   Home,
   HomeActive,
-  Logo,
   Market,
   Menu,
   Messenger,
@@ -25,10 +24,12 @@ import ChatBox from "../chatBox";
 import { getAllPosts } from "../../redux/features/postSlice";
 import {
   clearNewMessage,
+  getConversations,
   getNewFriendMessage,
   getNewMessage,
   removeChatBoxWaiting,
   seenAllMessageChat,
+  setChatBox,
   setDeliveredMessage,
   setSeenMessage,
 } from "../../redux/features/conversationSlice";
@@ -46,6 +47,9 @@ import NotificationPopUp from "../notificationPopUp";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { setPage } from "../../redux/features/pageSlice";
+import { useLocation } from "react-router-dom";
+import { updateProfile } from "../../redux/features/profileSlice";
+import { getFriendsInformation } from "../../redux/features/authSlice";
 
 const Msg = ({ picture, text, icon, name, type }) => (
   <>
@@ -110,18 +114,13 @@ const bounce = cssTransition({
   exit: "animate__animated animate__bounceOutDown",
 });
 
-// const CloseButton = ({ closeToast }) => (
-//   <div className="small_circle" onClick={closeToast}>
-//     <i className="exit_icon"></i>
-//   </div>
-// );
-
 export default function Header({
   page,
   onlineUser,
   setOnlineUsers,
   socketRef,
 }) {
+  const location = useLocation();
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { callState, callerUser } = useSelector((state) => ({ ...state.call }));
   const { newNotifications } = useSelector((state) => ({
@@ -172,11 +171,24 @@ export default function Header({
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [closeArrivalMessage, setCloseArrivalMessage] = useState(false);
 
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === "/") {
+      dispatch(setPage("home"));
+    } else if (path === "/friends") {
+      dispatch(setPage("friends"));
+    } else if (path === "/profile") {
+      dispatch(setPage("profile"));
+    } else if (path.startsWith("/details-notification")) {
+      dispatch(setPage("details-notification"));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
+
   // Get message from socketRef io
   useEffect(() => {
     // socketRef = io("ws://localhost:8900", { transports: ["polling"] });
     socketRef?.on("getMessage", ({ messages, currentChatID }) => {
-      console.log();
       const message = { messages, currentChatID };
       dispatch(
         getNewFriendMessage({
@@ -189,48 +201,8 @@ export default function Header({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // useEffect(() => {
-  //   socketRef.on('broadcast', (data) => {
-  //     handleBroadcastEvents({data, socketRef, dispatch, user});
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
-  // useEffect(() => {
-  //   socketRef?.on("getNotification", (data) => {
-  //     //Cho nay chi can day vo state khong can call api
-  //     dispatch(getNotification({ userToken: user?.token }));
-  //     dispatch(getNewNotifications(data));
-
-  //     toast(
-  //       <Msg
-  //         picture={data?.picture}
-  //         text={data?.text}
-  //         icon={data?.icon}
-  //         name={data?.name}
-  //         type={data?.type}
-  //       />,
-  //       {
-  //         className: "notification_form",
-  //         toastClassName: "notification_toast",
-  //         bodyClassName: "notification_body",
-  //         position: "bottom-left",
-  //         hideProgressBar: true,
-  //         autoClose: 3000,
-  //         transition: bounce,
-  //       }
-  //     );
-  //   });
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
   useEffect(() => {
     socketRef?.on("postNotification", (data) => {
-      //Cho nay chi can day vo state khong can call api
-      dispatch(getNotification({ userToken: user?.token }));
-      dispatch(getNewNotifications(data));
-
       toast(
         <Msg
           picture={data?.from.picture}
@@ -249,16 +221,16 @@ export default function Header({
           transition: bounce,
         }
       );
+      //Cho nay chi can day vo state khong can call api
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    socketRef?.on("toxicNotification", (data) => {
-      dispatch(getNotification({ userToken: user?.token }));
-      dispatch(getNewNotifications(data));
-
+    socketRef?.on("toxicNotification", async (data) => {
       toast(
         <ReportNoftication
           icon="../../../icons/logo_fake.png"
@@ -274,52 +246,212 @@ export default function Header({
           transition: bounce,
         }
       );
+
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // useEffect(() => {
-  //   socketRef?.on("start typing message", (typingInfo) => {
-  //     if (typingInfo.senderId !== socketRef.id) {
-  //       const user = typingInfo.user;
-  //       setTypingUsers((users) => [...users, user]);
-  //     }
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    socketRef?.on("reactPostNotification", (data) => {
+      toast(
+        <Msg
+          picture={data?.from?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.from?.first_name + " " + data?.from?.last_name}
+          type={data?.icon}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
 
-  // const checkUsers = (users, user) => {
-  //   return users.filter((u) => u?.id !== user.id);
-  // };
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+    });
 
-  // useEffect(() => {
-  //   socketRef?.on("stop typing message", (typingInfo) => {
-  //     if (typingInfo.senderId !== socketRef.id) {
-  //       const user = typingInfo.user;
-  //       setTypingUsers((users) => checkUsers(users, user));
-  //       // setShowTyping((users) => checkUsers(users, user));
-  //     }
-  //   });
-  // }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    if (user) {
-      socketRef?.on("getUsers", (users) => {
-        const activeUsers = user.following.filter((f) =>
-          users.some((u) => u.userId === f._id)
-        );
+    socketRef?.on("commentNotification", (data) => {
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
 
-        const activeUsersSocket = users.filter(
-          (activeUser) =>
-            activeUser.socketId !== socketRef?.id &&
-            user.following.some((u) => u._id === activeUser.userId)
-        );
-        setOnlineUsers(activeUsers);
-        dispatch(setActiveUsers(activeUsersSocket));
-      });
-    }
+      toast(
+        <Msg
+          picture={data?.from?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.from?.first_name + " " + data?.from?.last_name}
+          type={data?.icon}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
+    });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, []);
+
+  useEffect(() => {
+    socketRef?.on("friendSentRequest", (data) => {
+      const pathCurrent = location.pathname;
+      const userName = data?.from?.username;
+      const friendPath = `/profile/${userName}`;
+
+      toast(
+        <Msg
+          picture={data?.from?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.from?.first_name + " " + data?.from?.last_name}
+          type={data?.icon}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
+
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+
+      if (pathCurrent === friendPath) {
+        dispatch(
+          updateProfile({
+            userName,
+            token: user?.token,
+          })
+        );
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socketRef?.on("deleteRequest", (data) => {
+      const pathCurrent = location.pathname;
+      const userName = data;
+      const friendPath = `/profile/${userName}`;
+      if (pathCurrent === friendPath) {
+        dispatch(
+          updateProfile({
+            userName,
+            token: user?.token,
+          })
+        );
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socketRef?.on("unfriend", (data) => {
+      const pathCurrent = location.pathname;
+      const userName = data;
+      const friendPath = `/profile/${userName}`;
+      console.log(userName);
+      dispatch(getFriendsInformation({ token: user?.token }));
+      dispatch(getConversations({ userToken: user?.token }));
+
+      if (pathCurrent === friendPath) {
+        dispatch(
+          updateProfile({
+            userName,
+            token: user?.token,
+          })
+        );
+      } else if (pathCurrent === "/") {
+        //Xử lý load lại post ở new Feed ở đây, tạo hàm gọi api khác với getPosts
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socketRef?.on("cancelRequest", (data) => {
+      const pathCurrent = location.pathname;
+      const userName = data;
+      const friendPath = `/profile/${userName}`;
+      if (pathCurrent === friendPath) {
+        dispatch(
+          updateProfile({
+            userName,
+            token: user?.token,
+          })
+        );
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    socketRef?.on("friendRequestAccepted", (data) => {
+      toast(
+        <Msg
+          picture={data?.from?.picture}
+          text={data?.text}
+          icon={data?.icon}
+          name={data?.from?.first_name + " " + data?.from?.last_name}
+          type={data?.icon}
+        />,
+        {
+          className: "notification_form",
+          toastClassName: "notification_toast",
+          bodyClassName: "notification_body",
+          position: "bottom-left",
+          hideProgressBar: true,
+          autoClose: 3000,
+          transition: bounce,
+        }
+      );
+
+      const pathCurrent = location.pathname;
+
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+      dispatch(getConversations({ userToken: user?.token }));
+      dispatch(getFriendsInformation({ token: user?.token }));
+
+      const userName = data?.from?.username;
+      const friendPath = `/profile/${userName}`;
+      if (pathCurrent === friendPath) {
+        dispatch(
+          updateProfile({
+            userName,
+            token: user?.token,
+          })
+        );
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     socketRef?.emit("messageDelivered", {
@@ -336,7 +468,11 @@ export default function Header({
   }, [arrivalMessage]);
 
   useEffect(() => {
-    if (arrivalMessage?.currentChatID === chatBox.currentChatBox) {
+    if (
+      arrivalMessage?.currentChatID === chatBox.currentChatBox &&
+      !chatBox.chatBoxWaiting.includes(arrivalMessage?.currentChatID)
+    ) {
+      console.log(arrivalMessage?.messages);
       socketRef?.emit("messageSeen", {
         message: arrivalMessage?.messages,
         currentChatId: arrivalMessage?.currentChatID,
@@ -350,6 +486,18 @@ export default function Header({
       );
     } else if (arrivalMessage?.currentChatID) {
       dispatch(getNewMessage(arrivalMessage?.currentChatID));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arrivalMessage]);
+
+  useEffect(() => {
+    if (
+      arrivalMessage?.currentChatID !== chatBox.currentChatBox &&
+      !chatBox.chatBoxVisible.includes(
+        arrivalMessage?.currentChatID && arrivalMessage?.currentChat
+      )
+    ) {
+      dispatch(setChatBox(arrivalMessage?.currentChatID));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [arrivalMessage]);
@@ -376,21 +524,6 @@ export default function Header({
         currentChatId: currentChatId,
       });
     }
-  };
-
-  const getAllMessageDelivery = (conversations) => {
-    let count = 0;
-    if (conversations) {
-      for (let i = 0; i < conversations?.length; i++) {
-        let lastSubItem =
-          conversations[i]?.messages[conversations[i]?.messages.length - 1];
-        if (lastSubItem.status === "delivered") {
-          count++;
-        }
-      }
-      return count;
-    }
-    return count;
   };
 
   //================================================================
@@ -430,14 +563,14 @@ export default function Header({
           className={`middle_icon ${page === "home" ? "active" : "hover1"}`}
           onClick={() => {
             dispatch(getAllPosts({ userToken: user.token }));
-            dispatch(setPage("home"));
+            // dispatch(setPage("home"));
           }}
         >
           {page === "home" ? <HomeActive /> : <Home color={color} />}
         </Link>
         <Link
           to="/friends"
-          onClick={() => dispatch(setPage("friends"))}
+          // onClick={() => dispatch(setPage("friends"))}
           className={`middle_icon ${page === "friends" ? "active" : "hover1"}`}
         >
           {page === "friends" ? <FriendsActive /> : <Friends color={color} />}
@@ -500,11 +633,16 @@ export default function Header({
             handleRemoveWaitingMessage={handleRemoveWaitingMessage}
           />
 
-          {newMessage.length > 0 ? (
+          {newMessage?.length > 0 ? (
             <div className="right_notification">{newMessage.length}</div>
           ) : null}
         </div>
-        <div className="circle_icon hover1" ref={notificationRef}>
+        <div
+          className={`circle_icon hover1 ${
+            showAllNotification ? "active_header" : ""
+          }`}
+          ref={notificationRef}
+        >
           <div
             className="icon_wrapper"
             onClick={() => {
@@ -514,7 +652,7 @@ export default function Header({
           >
             <Notifications />
           </div>
-          {newNotifications.length > 0 && (
+          {newNotifications?.length > 0 && (
             <div className="right_notification">{newNotifications.length}</div>
           )}
 
@@ -527,7 +665,7 @@ export default function Header({
           {/* <AllNotifications /> */}
         </div>
         <div
-          className={`circle_icon hover1 ${showUserMenu && "active_header"}`}
+          className={`avatar-icon-header ${showUserMenu && "active_header"}`}
           ref={usermenu}
         >
           <div
@@ -535,7 +673,7 @@ export default function Header({
               setShowUserMenu((prev) => !prev);
             }}
           >
-            <div style={{ transform: "translateY(2px)" }}>
+            <div>
               <img className="avatar-user" src={user?.picture} alt="" />
             </div>
           </div>

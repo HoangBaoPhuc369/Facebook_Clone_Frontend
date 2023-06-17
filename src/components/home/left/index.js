@@ -14,7 +14,7 @@ export default function LeftHome({ user }) {
     <div className="left_home scrollbar">
       <Link
         to="/profile"
-        onClick={() => dispatch(setPage("profile"))}
+        // onClick={() => dispatch(setPage("profile"))}
         className="left_link hover2"
       >
         <img src={user?.picture} alt="" />

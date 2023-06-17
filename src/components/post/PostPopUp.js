@@ -45,7 +45,7 @@ export default function PostPopUp({
     ...state.notification,
   }));
 
-  const isPostHaveTyping = userTypingPosts.some((p) => p === post?._id);
+  // const isPostHaveTyping = userTypingPosts.some((p) => p === post?._id);
 
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
@@ -104,44 +104,6 @@ export default function PostPopUp({
     setCheckSaved(res.checkSaved);
   };
 
-  const handleSendNotifications = (icon, type) => {
-    if (user?.id !== post?.user._id) {
-      
-      const typeNotification =
-        type === "react"
-          ? post?.type === null
-            ? `reacted to your post: "${post?.text}."`
-            : `reacted to your photo.`
-          : type === "comment"
-          ? post?.type === null
-            ? " commented on your post."
-            : " commented on your photo."
-          : null;
-
-      // const notification = {
-      //   senderId: user?.id,
-      //   receiverId: post?.user._id,
-      //   icon: icon,
-      //   text: typeNotification,
-      // };
-      const notificationSocket = {
-        senderId: user?.id,
-        receiverId: post?.user._id,
-        icon: icon,
-        text: typeNotification,
-        type: type,
-        picture: user?.picture,
-        name: user?.first_name + " " + user?.last_name,
-      };
-      // dispatch(
-      //   createNotifications({ props: notification, token: user?.token })
-      // );
-      console.log(notificationSocket);
-      console.log(socketRef);
-      socketRef?.emit("sendNotification", notificationSocket);
-    }
-  };
-
   const reactHandler = async (type) => {
     reactPost(post?._id, type, user.token);
     if (check === type) {
@@ -163,8 +125,6 @@ export default function PostPopUp({
         setReacts([...reacts, (reacts[index1].count = --reacts[index1].count)]);
         setTotal((prev) => --prev);
       }
-
-      handleSendNotifications(type, "react");
     }
   };
 
@@ -370,19 +330,39 @@ export default function PostPopUp({
         </div>
       ) : post?.type === "share" ? (
         <>
-          <div className="post_text">{post?.text}</div>
-          <div className="px-[17px] w-full">
-            <div
-              className=" rounded-lg 
-              border-[1px] border-solid border-[#CED0D4]"
-            >
-              <PostShare user={user} post={post?.postRef} />
+          {post?.postRef ? (
+            <>
+              <div className="post_text">{post?.text}</div>
+              <div className="px-[17px] w-full">
+                <div
+                  className=" rounded-lg 
+                 border-[1px] border-solid border-[#CED0D4]"
+                >
+                  <PostShare user={user} post={post?.postRef} postParentId={post?._id} />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
+              <div className="px-3 py-4 flex">
+                <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi" />
+                <div>
+                  <div className="text-[15px] font-medium flex gap-2">
+                    This content isn't available right now
+                  </div>
+                  <p className="text-[13px] text-gray-500 negative-post-text">
+                    When this happens, it's usually because the owner only
+                    shared it with a small group of people, changed who can see
+                    it or it's been deleted.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </>
       ) : (
         <div className="post_cover_wrap">
-          <img src={post?.images ? post?.images[0]?.url : ""} alt="" />
+          <img src={post?.images ? post.images[0]?.url : ""} alt="" />
         </div>
       )}
 
@@ -436,13 +416,7 @@ export default function PostPopUp({
           <div className="post_action_reaction_wrap">
             {check ? (
               check === "like" ? (
-                <div className="post_action_reaction_like_react">
-                  <img
-                    src={`../../../reacts/${check}.png`}
-                    alt=""
-                    className="like_react"
-                  />
-                </div>
+                <i className="like_icon_action"></i>
               ) : (
                 <img
                   src={`../../../reacts/${check}.svg`}
@@ -537,12 +511,11 @@ export default function PostPopUp({
                   showMoreRepliesThird={showMoreRepliesThird}
                   notificationsSelected={notificationsSelected}
                   setIsOpenUnhideComment={setIsOpenUnhideComment}
-                  handleSendNotifications={handleSendNotifications}
                 />
               ))
           : null}
 
-        {isPostHaveTyping && !isTyping ? (
+        {userTypingPosts ? (
           <div className="comment-is-typing">
             <ThreeDotLoaderFlashing />
             <p className="text-sm font-medium">
@@ -571,7 +544,6 @@ export default function PostPopUp({
           postUserId={post?.user._id}
           cancelTyping={cancelTyping}
           stopTypingComment={stopTypingComment}
-          handleSendNotifications={handleSendNotifications}
         />
       </div>
 

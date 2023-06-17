@@ -4,7 +4,6 @@ import CommentOptions from "./CommentOptions";
 import useClickOutside from "./../../helpers/clickOutside";
 import { formatTime } from "../../functions/formatTime";
 import { VscReply } from "react-icons/vsc";
-import { useSelector } from "react-redux";
 
 export default function Comment({
   user,
@@ -33,7 +32,6 @@ export default function Comment({
   showMoreReplies,
   // countRepliesThird,
   // showMoreRepliesThird,
-  handleSendNotifications,
   setIsOpenUnhideComment,
   socketRef,
   startTyping,
@@ -260,7 +258,6 @@ export default function Comment({
                 setActiveComment={setActiveComment}
                 stopTypingComment={stopTypingComment}
                 handleTriggerEdit={handleTriggerEdit}
-                handleSendNotifications={handleSendNotifications}
                 activeComment={isEditing ? activeComment : undefined}
               />
             )}
@@ -371,7 +368,6 @@ export default function Comment({
               showMoreRepliesThird={showMoreRepliesThird}
               notificationsSelected={notificationsSelected}
               setIsOpenUnhideComment={setIsOpenUnhideComment}
-              handleSendNotifications={handleSendNotifications}
             />
           ))}
 
@@ -400,7 +396,6 @@ export default function Comment({
             handleTrigger={handleTrigger}
             stopTypingComment={stopTypingComment}
             getParentId={isReplying ? parentId : ""}
-            handleSendNotifications={handleSendNotifications}
             activeComment={isReplying ? activeComment : undefined}
           />
         </div>
@@ -444,7 +439,6 @@ export default function Comment({
               showMoreRepliesThird={showMoreRepliesThird}
               notificationsSelected={notificationsSelected}
               setIsOpenUnhideComment={setIsOpenUnhideComment}
-              handleSendNotifications={handleSendNotifications}
             />
           ))}
 
@@ -480,7 +474,6 @@ export default function Comment({
                 ? parentIdSecond
                 : undefined
             }
-            handleSendNotifications={handleSendNotifications}
             activeComment={
               isReplying || comment?._id === activeComment?.parentId
                 ? activeComment

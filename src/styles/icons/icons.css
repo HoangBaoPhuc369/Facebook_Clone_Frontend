@@ -408,6 +408,18 @@
   display: inline-block;
   filter: invert(40%);
 }
+
+.like_icon_action {
+  background-image: url("../../../public/icons/icons5.png");
+  background-position: 0 -224px;
+  background-size: auto;
+  width: 18px;
+  height: 18px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  filter: invert(20%) sepia(100%) saturate(7500%) hue-rotate(200deg)
+    brightness(140%);
+}
 .like_icon_fill {
   background-image: url("../../../public/icons/icons5.png");
   background-position: 0px -232px;
@@ -816,11 +828,11 @@
 }
 
 .notification_friend_icon {
-  height: 30px;
-  width: 30px;
+  height: 28px;
+  width: 28px;
   background-image: url(../../../public/icons/notificationIcon.png);
-  background-position: 0px -930px;
-  background-size: 30px 1980px;
+  background-position: 0px -899px;
+  background-size: auto;
   background-repeat: no-repeat;
   display: inline-block;
 }

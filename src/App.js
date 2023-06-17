@@ -1,4 +1,4 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Login from "./pages/login";
 import Profile from "./pages/profile";
 import Home from "./pages/home";
@@ -12,20 +12,15 @@ import { useState } from "react";
 import Friends from "./pages/friends";
 import { useEffect } from "react";
 import {
-  getAllPosts,
   handleAddUserTypingPost,
   handleRemoveUserTypingPost,
 } from "./redux/features/postSlice";
 import {
+  deliveredAllConversationsChat,
   getConversations,
-  seenAllConversationsChat,
   setConversation,
 } from "./redux/features/conversationSlice";
-import {
-  getNewNotifications,
-  getNotification,
-} from "./redux/features/notificationSlice";
-import { io } from "socket.io-client";
+import { getNotification } from "./redux/features/notificationSlice";
 import { handleWSSCallInParent } from "./utils/wssConnection/wssConnectionInParent";
 import Test from "./components/test";
 import { setActiveUsers } from "./redux/features/dashboardSlice";
@@ -34,7 +29,9 @@ import CreatePostSharePopup from "./components/createPostSharePopup";
 import DetailsNotifications from "./components/detailsNotifications";
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import Header from "./components/header";
-import socketRef from "./socket/socket";
+import * as webRTCHandler from "./utils/webRTC/webRTCHandler";
+import { io } from "socket.io-client";
+import { useRef } from "react";
 
 const bounce = cssTransition({
   enter: "animate__animated animate__bounceInUp",
@@ -65,193 +62,129 @@ const DetailsNoftication = ({ type }) => (
   </div>
 );
 
-const Msg = ({ picture, text, icon, name, type }) => (
-  <>
-    <div className="notification-box_header">
-      <span>New notification</span>
-    </div>
-    <div className="notification-box_container">
-      <div className="notification-picture mr-[10px]">
-        <img className="noftification-avatar" src={picture} alt="" />
-        {type !== "react" ? (
-          <div className="absolute bottom-2 right-0 w-5 h-5">
-            <i className={`notification_${type}_icon`}></i>
-          </div>
-        ) : (
-          <img
-            className="absolute bottom-2 right-0 w-5 h-5"
-            src={`../../../reacts/${icon}.svg`}
-            alt=""
-          />
-        )}
-      </div>
-      <div className="notification-information">
-        <div className="notification-text">
-          <span>{name}</span> {text}
-        </div>
-        <span className="notification-time">a few second ago</span>
-      </div>
-    </div>
-  </>
-);
-
 function App() {
   const [visible, setVisible] = useState(false);
   const [onlineUser, setOnlineUsers] = useState([]);
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { page } = useSelector((state) => ({ ...state.pageSite }));
   const userId = user?.id;
-  // const [socketRef, setSocketRef] = useState(null);
   const [sharePostPopUp, setsharePostPopUp] = useState(false);
   const [isProfile, setIsProfile] = useState(false);
   const [postShare, setPostShare] = useState({});
   const dispatch = useDispatch();
 
+  const socketRef = useRef(null);
+  useEffect(() => {
+    socketRef.current = io(process.env.REACT_APP_BACKEND_URL, {
+      transports: ["websocket"],
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, []);
+
   useEffect(() => {
     if (user?.token) {
-      dispatch(getAllPosts({ userToken: user?.token }));
+      // dispatch(getAllPosts({ userToken: user?.token }));
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getConversations({ userToken: user?.token }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
-  //  process.env.REACT_APP_BACKEND_URL
-  // "http://localhost:8900/"
-
-  // useEffect(() => {
-  //   console.log(socket);
-  // }, []);
-
-  // useEffect(() =>{
-  //   console.log(socketRef);
-  // },[])
-
   useEffect(() => {
-    // const newSocket = io(process.env.REACT_APP_BACKEND_URL, {
-    //   transports: ["polling"],
-    // });
     if (user) {
-      socketRef.emit("joinUser", user.id);
-
+      socketRef.current.emit("joinUser", user.id);
       dispatch(
-        seenAllConversationsChat({
+        deliveredAllConversationsChat({
           userToken: user?.token,
         })
       );
-
-      socketRef?.emit("addUser", {
-        userId: user?.id,
-        userName: `${user?.first_name} ${user?.last_name}`,
-        picture: user?.picture,
-        timeJoin: new Date(),
-      });
     }
 
-    socketRef?.on("getUsers", (users) => {
-      const activeUsers = user.following.filter((f) =>
+    // setSocketRef(socketRef);
+    handleWSSCallInParent(socketRef.current);
+  }, [user]);
+
+  // const isReloadedRef = useRef(false);
+
+  // useEffect(() => {
+  //   if (user && !isReloadedRef.current) {
+  //     isReloadedRef.current = true;
+  //     window.location.reload();
+  //   }
+  // }, [user]);
+
+  useEffect(() => {
+    socketRef.current?.on("getFriendsOnline", (users) => {
+      const activeUsers = user.friends.filter((f) =>
         users.some((u) => u.userId === f._id)
       );
 
       const activeUsersSocket = users.filter(
         (activeUser) =>
-          activeUser.socketId !== socketRef?.id &&
-          user.following.some((u) => u._id === activeUser.userId)
+          activeUser.socketId !== socketRef.current?.id &&
+          user.friends.some((u) => u._id === activeUser.userId)
       );
+      console.log(activeUsers);
       setOnlineUsers(activeUsers);
       dispatch(setActiveUsers(activeUsersSocket));
     });
+  }, []);
 
-    // setSocketRef(socketRef);
-    handleWSSCallInParent(socketRef);
-    return () => socketRef.close();
+  useEffect(() => {
+    socketRef.current?.on("call-other", (data) => {
+      webRTCHandler.handlePreOfferInParent(data);
+    });
   }, [user]);
 
   useEffect(() => {
-    if (socketRef) {
-      socketRef.on("getUsers", (users) => {
-        const activeUsers = user.following.filter((f) =>
+    if (socketRef.current) {
+      socketRef.current.on("getUsers", (users) => {
+        const activeUsers = user.friends.filter((f) =>
           users.some((u) => u.userId === f._id)
         );
 
         const activeUsersSocket = users.filter(
           (activeUser) =>
-            activeUser.socketId !== socketRef?.id &&
-            user.following.some((u) => u._id === activeUser.userId)
+            activeUser.socketId !== socketRef.current?.id &&
+            user.friends.some((u) => u._id === activeUser.userId)
         );
+        // console.log(friends);
         setOnlineUsers(activeUsers);
         dispatch(setActiveUsers(activeUsersSocket));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, []);
 
   useEffect(() => {
-    if (socketRef) {
-      socketRef.on("startPostCommentTyping", (data) => {
-        dispatch(handleAddUserTypingPost(data));
+    if (socketRef.current) {
+      socketRef.current.on("startPostCommentTyping", () => {
+        dispatch(handleAddUserTypingPost(true));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, []);
 
   useEffect(() => {
-    if (socketRef) {
-      socketRef.on("stopPostCommentTyping", (data) => {
-        dispatch(handleRemoveUserTypingPost(data));
+    if (socketRef.current) {
+      socketRef.current.on("stopPostCommentTyping", () => {
+        dispatch(handleRemoveUserTypingPost(false));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
-
-  // useEffect(() => {
-  //   socketRef?.emit("addUser", {
-  //     userId: user?.id,
-  //     userName: `${user?.first_name} ${user?.last_name}`,
-  //     picture: user?.picture,
-  //     timeJoin: new Date(),
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [socketRef, user]);
+  }, []);
 
   useEffect(() => {
     if (user) {
-      socketRef?.on("seenAllConversations", (data) => {
+      socketRef.current?.on("deliveredAllConversations", (data) => {
         dispatch(setConversation(data));
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  useEffect(() => {
-    console.log(socketRef);
-    socketRef?.on("getNotification", (data) => {
-      console.log(data);
-      dispatch(getNotification({ userToken: user?.token }));
-      dispatch(getNewNotifications(data));
-
-      toast(
-        <Msg
-          picture={data?.picture}
-          text={data?.text}
-          icon={data?.icon}
-          name={data?.name}
-          type={data?.type}
-        />,
-        {
-          className: "notification_form",
-          toastClassName: "notification_toast",
-          bodyClassName: "notification_body",
-          position: "bottom-left",
-          hideProgressBar: true,
-          autoClose: 3000,
-          transition: bounce,
-        }
-      );
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, [user, socketRef]);
 
   const toastDetailsPost = (type) =>
     toast(<DetailsNoftication type={type} />, {
@@ -272,13 +205,14 @@ function App() {
         post={postShare}
         profile={isProfile}
         openSharePost={sharePostPopUp}
+        toastDetailsPost={toastDetailsPost}
         setOpenSharePost={setsharePostPopUp}
       />
 
-      {socketRef && user ? (
+      {socketRef.current && user ? (
         <Header
           page={page}
-          socketRef={socketRef}
+          socketRef={socketRef.current}
           onlineUser={onlineUser}
           setOnlineUsers={setOnlineUsers}
         />
@@ -291,7 +225,7 @@ function App() {
             element={
               socketRef ? (
                 <Profile
-                  socketRef={socketRef}
+                  socketRef={socketRef.current}
                   setVisible={setVisible}
                   onlineUser={onlineUser}
                   setPostShare={setPostShare}
@@ -307,9 +241,9 @@ function App() {
           <Route
             path="/profile/:username"
             element={
-              socketRef ? (
+              socketRef.current ? (
                 <Profile
-                  socketRef={socketRef}
+                  socketRef={socketRef.current}
                   setVisible={setVisible}
                   onlineUser={onlineUser}
                   setIsProfile={setIsProfile}
@@ -324,20 +258,28 @@ function App() {
           />
           <Route
             path="/friends"
-            element={socketRef ? <Friends socketRef={socketRef} /> : null}
+            element={
+              socketRef.current ? (
+                <Friends socketRef={socketRef.current} />
+              ) : null
+            }
             exact
           />
           <Route
             path="/friends/:type"
-            element={socketRef ? <Friends socketRef={socketRef} /> : null}
+            element={
+              socketRef.current ? (
+                <Friends socketRef={socketRef.current} />
+              ) : null
+            }
             exact
           />
           <Route
             path="/"
             element={
-              socketRef ? (
+              socketRef.current ? (
                 <Home
-                  socketRef={socketRef}
+                  socketRef={socketRef.current}
                   onlineUser={onlineUser}
                   setVisible={setVisible}
                   setIsProfile={setIsProfile}
@@ -345,7 +287,6 @@ function App() {
                   setOnlineUsers={setOnlineUsers}
                   toastDetailsPost={toastDetailsPost}
                   setsharePostPopUp={setsharePostPopUp}
-                  // setVisibleDelPost={setVisibleDelPost}
                 />
               ) : null
             }
@@ -356,7 +297,7 @@ function App() {
             path="/details-notification/:type"
             element={
               <DetailsNotifications
-                socketRef={socketRef}
+                socketRef={socketRef.current}
                 onlineUser={onlineUser}
                 setOnlineUsers={setOnlineUsers}
                 toastDetailsPost={toastDetailsPost}
@@ -367,13 +308,14 @@ function App() {
         </Route>
 
         {/* Khi đã ở trong app và bị mất user thì mới vô component này */}
-        <Route element={<NotLoggedInRoutes socketRef={socketRef} />}>
+        <Route element={<NotLoggedInRoutes socketRef={socketRef.current} />}>
           <Route
             path="/login"
-            element={<Login socketRef={socketRef} />}
+            element={<Login socketRef={socketRef.current} />}
             exact
           />
         </Route>
+
         <Route path="/reset" element={<Reset />} />
 
         <Route path="/test-ui" element={<Test />} />

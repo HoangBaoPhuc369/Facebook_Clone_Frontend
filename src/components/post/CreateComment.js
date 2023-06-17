@@ -39,7 +39,6 @@ export default function CreateComment({
   handleTriggerEdit,
   createRelySecondCm,
   setActiveComment = null,
-  handleSendNotifications,
   startTyping,
   stopTyping,
   cancelTyping,
@@ -115,7 +114,6 @@ export default function CreateComment({
     };
   };
   const handleComment = async (e) => {
-    e.preventDefault();
     if (activeComment?.type === "editing") {
       if (commentImage !== "") {
         const img = dataURItoBlob(commentImage);
@@ -362,7 +360,6 @@ export default function CreateComment({
                 image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
-                handleSendNotifications,
               })
             );
           } else if (details) {
@@ -374,7 +371,6 @@ export default function CreateComment({
                 image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
-                handleSendNotifications,
               })
             );
           } else {
@@ -386,7 +382,6 @@ export default function CreateComment({
                 image: imgComment[0].url,
                 socketId: socketRef?.id,
                 token: user.token,
-                handleSendNotifications,
               })
             );
           }
@@ -425,7 +420,6 @@ export default function CreateComment({
               image: "",
               socketId: socketRef?.id,
               token: user.token,
-              handleSendNotifications,
             })
           );
         } else if (details) {
@@ -458,7 +452,6 @@ export default function CreateComment({
               image: "",
               socketId: socketRef?.id,
               token: user.token,
-              handleSendNotifications,
             })
           );
         } else {
@@ -492,7 +485,6 @@ export default function CreateComment({
               image: "",
               socketId: socketRef?.id,
               token: user.token,
-              handleSendNotifications,
             })
           );
         }
@@ -503,7 +495,7 @@ export default function CreateComment({
         // handleSendNotifications("comment", "comment");
       }
     }
-    // cancelTyping();
+    cancelTyping();
   };
 
   return (
@@ -524,11 +516,11 @@ export default function CreateComment({
         )}
 
         <div className="comment_input_wrap">
-          {picker && (
+          {/* {picker && (
             <div className="comment_emoji_picker">
               <Picker onEmojiClick={handleEmoji} />
             </div>
-          )}
+          )} */}
           <input
             type="file"
             hidden
@@ -549,7 +541,8 @@ export default function CreateComment({
             value={text}
             ref={textRef}
             rows="1"
-            className="textarea-comment focus:outline-none focus:ring-0"
+            className="textarea-comment focus:outline-none 
+            focus:ring-0 whitespace-normal"
             onClick={() =>
               handleTriggerEdit
                 ? handleTriggerEdit()
@@ -560,12 +553,15 @@ export default function CreateComment({
             // onInput={handleInput}
             onKeyPress={startTyping}
             onKeyUp={(e) => {
-              // stopTyping();
+              stopTyping();
+              if (e.key === "Enter" && e.target.value !== "") {
+                e.preventDefault();
+                handleComment(e);
+              }
             }}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && e.target.value !== "") {
-                handleComment(e);
-                stopTypingComment();
+              if (e.key === "Enter") {
+                e.preventDefault();
               }
             }}
             onChange={(e) => setText(e.target.value)}

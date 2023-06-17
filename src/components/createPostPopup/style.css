@@ -9,7 +9,7 @@
   min-height: 228px;
   width: 500px;
   border-radius: 5px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .css-1jt58b5 {
@@ -117,12 +117,12 @@
 }
 .comment_emoji_picker {
   position: absolute;
-  right: 19px;
-  top: 40px;
+  right: 3rem;
+  top: 14px;
   z-index: 99;
 }
 .rlmove {
-  right: -7rem;
+  right: 3rem;
 }
 .addtoyourpost {
   display: flex;

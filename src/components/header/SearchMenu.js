@@ -85,7 +85,7 @@ export default function SearchMenu({ color, setShowSearchMenu, token }) {
           />
         </div>
       </div>
-      {results == "" && (
+      {results === "" && (
         <div className="search_history_header">
           <span>Recent searches</span>
           <a>Edit</a>
@@ -93,7 +93,7 @@ export default function SearchMenu({ color, setShowSearchMenu, token }) {
       )}
       <div className="search_history scrollbar">
         {searchHistory &&
-          results == "" &&
+          results === "" &&
           searchHistory
             .sort((a, b) => {
               return new Date(b.createdAt) - new Date(a.createdAt);
@@ -103,7 +103,10 @@ export default function SearchMenu({ color, setShowSearchMenu, token }) {
                 <Link
                   className="flex items-center gap-3"
                   to={`/profile/${user.user.username}`}
-                  onClick={() => addToSearchHistoryHandler(user.user._id)}
+                  onClick={() => {
+                    addToSearchHistoryHandler(user.user._id);
+                    setShowSearchMenu(false);
+                  }}
                 >
                   <img src={user.user.picture} alt="" />
                   <span>
@@ -125,7 +128,10 @@ export default function SearchMenu({ color, setShowSearchMenu, token }) {
             <Link
               to={`/profile/${user.username}`}
               className="search_user_item hover1"
-              onClick={() => addToSearchHistoryHandler(user._id)}
+              onClick={() => {
+                addToSearchHistoryHandler(user._id);
+                setShowSearchMenu(false);
+              }}
               key={user._id}
             >
               <img src={user.picture} alt="" />

@@ -1,14 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { HashLoader } from "react-spinners";
 import CreatePost from "../../components/createPost";
-import Header from "../../components/header";
 import LeftHome from "../../components/home/left";
 import RightHome from "../../components/home/right";
 import SendVerification from "../../components/home/sendVerification";
 import Stories from "../../components/home/stories";
 import Post from "../../components/post";
-import { getConversations } from "../../redux/features/conversationSlice";
 import {
   getAllPosts,
   getNewCommentPost,
@@ -38,7 +35,7 @@ export default function Home({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, []);
 
   useEffect(() => {
     if (socketRef) {
@@ -47,7 +44,7 @@ export default function Home({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socketRef]);
+  }, []);
 
   const { user } = useSelector((state) => ({ ...state.auth }));
   const userId = user?.id;
@@ -55,18 +52,12 @@ export default function Home({
 
   useEffect(() => {
     dispatch(getAllPosts({ userToken: user.token }));
-    dispatch(getConversations({ userToken: user.token }));
+    // dispatch(getConversations({ userToken: user.token }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   return (
     <div className="background-secondary">
-      {/* <Header
-        page="home"
-        socketRef={socketRef}
-        onlineUser={onlineUser}
-        setOnlineUsers={setOnlineUsers}
-      /> */}
       <LeftHome user={user} />
 
       <RightHome onlineUser={onlineUser} />
@@ -77,7 +68,10 @@ export default function Home({
           {user.verified === false && <SendVerification user={user} />}
           <CreatePost user={user} setVisible={setVisible} />
           {loading ? (
-            <PostSkeleton />
+            <>
+              <PostSkeleton style1 />
+              <PostSkeleton style1 />
+            </>
           ) : (
             <div className="posts">
               {posts.map((post, i) => (

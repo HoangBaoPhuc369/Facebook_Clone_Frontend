@@ -1,4 +1,4 @@
-import {useRef, useState } from "react";
+import { useRef, useState } from "react";
 import "./style.css";
 import EmojiPickerBackgrounds from "./EmojiPickerBackgrounds";
 import AddToYourPost from "./AddToYourPost";
@@ -19,8 +19,12 @@ import { FaUserFriends } from "react-icons/fa";
 import { HiLockClosed } from "react-icons/hi";
 import { setSelectedAudience } from "../../redux/features/selectedSlice";
 
-
-export default function CreatePostPopup({ visible, setVisible, profile }) {
+export default function CreatePostPopup({
+  visible,
+  setVisible,
+  profile,
+  toastDetailsPost,
+}) {
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { errorCreatePost, loadingCreatePost } = useSelector((state) => ({
     ...state.newFeed,
@@ -61,6 +65,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             user: user.id,
             whoCanSee: selectAudience,
             token: user.token,
+            toastDetailsPost,
           })
         );
       } else {
@@ -73,6 +78,7 @@ export default function CreatePostPopup({ visible, setVisible, profile }) {
             user: user.id,
             whoCanSee: selectAudience,
             token: user.token,
+            toastDetailsPost,
           })
         );
       }

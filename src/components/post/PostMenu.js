@@ -41,9 +41,9 @@ export default function PostMenu({
     images.map((img) => saveAs(img.url, "image.jpg"));
   };
   const deleteHandler = () => {
-    if (!profile) {
+    if (profile) {
       dispatch(
-        deletePost({
+        deletePostProfile({
           postId,
           token,
           toastDetailsPost: toastDetailsPost,
@@ -73,7 +73,7 @@ export default function PostMenu({
       // );
     } else {
       dispatch(
-        deletePostProfile({
+        deletePost({
           postId,
           token,
           toastDetailsPost: toastDetailsPost,

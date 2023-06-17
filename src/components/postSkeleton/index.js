@@ -2,7 +2,7 @@ import Skeleton from "react-loading-skeleton";
 
 import "./style.css";
 
-const PostSkeleton = () => {
+const PostSkeleton = ({ style1 }) => {
   return (
     <div className="post">
       <div className="flex px-[15px] py-[10px] gap-[10px]">
@@ -16,7 +16,10 @@ const PostSkeleton = () => {
           </div>
         </div>
       </div>
-      <div className="post-footer">
+      <div
+        className="post-footer"
+        style={{ padding: `${style1 ? "80px 16px 16px" : "174px 16px 16px"}` }}
+      >
         <div className="post-actions">
           <div className="post-action">
             <Skeleton

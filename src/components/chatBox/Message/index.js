@@ -7,6 +7,7 @@ import "../style.css";
 
 export default function Message({
   index,
+  user,
   message,
   ownUser,
   friendChat,
@@ -14,6 +15,10 @@ export default function Message({
   getLastSeenMessage,
 }) {
   const checkSeenMessage = message?._id === getLastSeenMessage;
+
+  const checkLastMsg =
+    user?.id === messagesChat[messagesChat.length - 1]?.sender;
+
   const checkMessageBottomExits =
     messagesChat[index + 1]?.sender !== message?.sender;
   const checkChildrenLeft =
@@ -46,12 +51,19 @@ export default function Message({
           <div className={`message-sent ${checkChildrenRight}`}>
             <div className="message-sent-text">{message?.text}</div>
             <div className="message-sent-status">
-              {checkSeenMessage ? (
-                <img src={friendChat?.picture} alt="" />
-              ) : message?.status === "delivered" ? (
-                <FontAwesomeIcon icon={faCircleCheck} className="delivered" />
-              ) : message?.status === "unseen" ? (
-                <FontAwesomeIcon icon={faCheckCircle} />
+              {checkLastMsg ? (
+                <>
+                  {checkSeenMessage ? (
+                    <img src={friendChat?.picture} alt="" />
+                  ) : message?.status === "delivered" ? (
+                    <FontAwesomeIcon
+                      icon={faCircleCheck}
+                      className="delivered"
+                    />
+                  ) : message?.status === "unseen" ? (
+                    <FontAwesomeIcon icon={faCheckCircle} />
+                  ) : null}
+                </>
               ) : null}
             </div>
           </div>
@@ -78,7 +90,7 @@ export default function Message({
               </div>
             </div>
           </div>
-          <div className="message-sent-status">
+          <div className="message-receive-status">
             {checkMessageBottomExits &&
             (checkSeenMessage || message?.status === "delivered") ? (
               <img src={friendChat?.picture} alt="" />

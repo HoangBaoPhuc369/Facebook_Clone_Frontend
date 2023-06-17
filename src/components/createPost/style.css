@@ -6,6 +6,16 @@
   width: 100%;
   cursor: pointer;
 }
+
+.story-wrapper {
+  background: var(--bg-primary);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px var(--shadow-1);
+  margin: 1.1rem 0;
+  width: 100%;
+  /* padding: 10px 0 10px 15px; */
+}
+
 .createPost_header {
   display: flex;
   align-items: center;

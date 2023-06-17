@@ -1,5 +1,8 @@
 import AllMessengerItem from "./AllMessengerItem";
-import { setChatBox } from "../../redux/features/conversationSlice";
+import {
+  setChatBox,
+  setCurrentChatBox,
+} from "../../redux/features/conversationSlice";
 import { useDispatch } from "react-redux";
 
 export default function AllMessenger({
@@ -15,7 +18,6 @@ export default function AllMessenger({
   setCloseArrivalMessage,
   handleRemoveWaitingMessage,
 }) {
-  
   const dispatch = useDispatch();
   return (
     <div className="all_messenger" style={{ display: display }}>
@@ -25,7 +27,11 @@ export default function AllMessenger({
           <div className="all_messenger_content">
             <div className="all_messenger_search">
               <i className="amm_s_ic"></i>
-              <input className="focus:ring-0" type="text" placeholder="Search Messenger" />
+              <input
+                className="focus:ring-0"
+                type="text"
+                placeholder="Search Messenger"
+              />
             </div>
             <div className="all_messenger_group">
               <div className="all_messenger_group_header">Inbox</div>
@@ -36,6 +42,7 @@ export default function AllMessenger({
                       dispatch(setChatBox(c._id));
                       setShowAllMessenger((prev) => !prev);
                       setScrollBottom((prev) => !prev);
+                      dispatch(setCurrentChatBox(c._id));
                     }}
                   >
                     <AllMessengerItem

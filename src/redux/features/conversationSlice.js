@@ -11,11 +11,7 @@ export const getConversations = createAsyncThunk(
   async ({ userToken }, { rejectWithValue }) => {
     try {
       const { data } = await api.getConversations(userToken);
-      if (data) {
-        return data;
-      } else {
-        return null;
-      }
+      return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -92,11 +88,11 @@ export const seenAllMessageChat = createAsyncThunk(
   }
 );
 
-export const seenAllConversationsChat = createAsyncThunk(
-  "conversations/seenAllConversationsChat",
+export const deliveredAllConversationsChat = createAsyncThunk(
+  "conversations/deliveredAllConversationsChat",
   async ({ userToken }, { rejectWithValue }) => {
     try {
-      const { data } = await api.seenAllConversationsChat(userToken);
+      const { data } = await api.deliveredAllConversationsChat(userToken);
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -127,7 +123,12 @@ export const conversationSlice = createSlice({
   initialState,
   reducers: {
     setChatBox: (state, action) => {
-      if (action.payload !== state.chatBox.currentChatBox) {
+      if (
+        action.payload !== state.chatBox.currentChatBox &&
+        !state.chatBox.chatBoxVisible.includes(action.payload) &&
+        action.payload !== null &&
+        action.payload !== undefined
+      ) {
         if (state.chatBox.currentChatBox === null) {
           state.chatBox.currentChatBox = action.payload;
           state.chatBox.chatBoxVisible = [
@@ -162,9 +163,6 @@ export const conversationSlice = createSlice({
                 ...state.chatBox.chatBoxVisible,
               ];
             }
-            // else {
-            //   state.chatBox = { ...state.chatBox };
-            // }
           } else {
             const getChatBoxMinimized = state.chatBox.chatBoxVisible.pop();
 
@@ -195,9 +193,6 @@ export const conversationSlice = createSlice({
           }
         }
       }
-      // else {
-      //   state.chatBox = { ...state.chatBox };
-      // }
     },
     removeChatBox: (state, action) => {
       if (state.chatBox.chatBoxVisible.length > 1) {
@@ -331,13 +326,14 @@ export const conversationSlice = createSlice({
         status: "seen",
       });
 
-      state.newMessage = state.newMessage.filter((m) => m !== action.payload.currentChatId);
+      state.newMessage = state.newMessage.filter(
+        (m) => m !== action.payload.currentChatId
+      );
       localStorage.setItem("newMessage", JSON.stringify([...state.newMessage]));
     },
 
     getNewMessage: (state, action) => {
       const checkMsg = state.newMessage.some((m) => m === action.payload);
-      console.log(checkMsg);
       if (action.payload && !checkMsg) {
         state.newMessage.push(action.payload);
         localStorage.setItem(
@@ -365,13 +361,16 @@ export const conversationSlice = createSlice({
       if (index > -1) {
         state.chatBox.chatBoxWaiting.splice(index, 1);
       }
-      Cookies.set(
-        "chatBox",
-        JSON.stringify({
-          ...state.chatBox,
-          chatBoxWaiting: [...state.chatBox.chatBoxWaiting],
-        })
-      );
+
+      if (state.chatBox.chatBoxWaiting.length > 0) {
+        Cookies.set(
+          "chatBox",
+          JSON.stringify({
+            ...state.chatBox,
+            chatBoxWaiting: [...state.chatBox.chatBoxWaiting],
+          })
+        );
+      }
     },
     setConversation: (state, action) => {
       state.conversations = action.payload;
@@ -383,12 +382,12 @@ export const conversationSlice = createSlice({
     },
     [getConversations.fulfilled]: (state, action) => {
       state.loading = false;
-      state.conversations = action.payload;
+      state.conversations = [...action.payload];
       state.error = "";
     },
     [getConversations.rejected]: (state, action) => {
       state.loading = false;
-      state.error = action.payload?.message;
+      state.error = action.payload;
     },
 
     [sendMessageChat.fulfilled]: (state, action) => {
@@ -447,9 +446,9 @@ export const conversationSlice = createSlice({
     [seenAllMessageChat.rejected]: (state, action) => {
       console.log(action.payload?.message);
     },
-    //
+    // seenAllConversationsChat
 
-    [seenAllConversationsChat.fulfilled]: (state, action) => {
+    [deliveredAllConversationsChat.fulfilled]: (state, action) => {
       state.conversations = action.payload;
     },
   },

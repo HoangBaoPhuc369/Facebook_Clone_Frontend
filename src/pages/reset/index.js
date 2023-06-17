@@ -39,7 +39,7 @@ export default function Reset() {
         <img src="../../../icons/facebook.svg" alt="" />
         {user ? (
           <div className="right_reset">
-            <Link to="/profile" onClick={() => dispatch(setPage("profile"))}>
+            <Link to="/profile">
               <img src={user.picture} alt="" />
             </Link>
             <button

@@ -7,7 +7,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { setPage } from "../../redux/features/pageSlice";
 
 export default function AllNotificationItem({
   user,
@@ -21,18 +20,20 @@ export default function AllNotificationItem({
     <div
       className="all_notification_item hover1"
       onClick={() => {
+        // dispatch(setPage(""));
         dispatch(
           seenNotification({ userToken: user?.token, nofId: notification?._id })
         );
         dispatch(selecteNotification(notification));
         if (notification.isSystem) {
           navigate("/details-notification/system");
-          dispatch(setPage(""));
+          // dispatch(setPage(""));
+        } else if (notification.icon === "friend") {
+          navigate(`/profile/${notification?.from?.username}`);
         } else {
           navigate("/details-notification/post");
         }
         setShowAllNotification(false);
-        dispatch(setPage(""));
       }}
     >
       <div className="all_notification_item_chat">

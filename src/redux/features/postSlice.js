@@ -7,6 +7,7 @@ import {
   replaceComment,
   showNegativeComment,
   showNegativePost,
+  showNegativePostShare,
 } from "../helpers/handlePosts";
 
 export const getAllPosts = createAsyncThunk(
@@ -79,15 +80,7 @@ export const deletePost = createAsyncThunk(
 export const createCommentPost = createAsyncThunk(
   "post/createComment",
   async (
-    {
-      postId,
-      getParentId,
-      comment,
-      image,
-      socketId,
-      token,
-      handleSendNotifications,
-    },
+    { postId, getParentId, comment, image, socketId, token },
     { rejectWithValue }
   ) => {
     try {
@@ -99,10 +92,6 @@ export const createCommentPost = createAsyncThunk(
         socketId,
         token
       );
-      if (data) {
-        // console.log(handleSendNotifications)
-        handleSendNotifications("comment", "comment");
-      }
       return { data: data.comments, postId };
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -111,7 +100,7 @@ export const createCommentPost = createAsyncThunk(
 );
 
 export const editCommentPost = createAsyncThunk(
-  "post/createComment",
+  "post/editCommentPost",
   async ({ id, postId, comment, image, token }, { rejectWithValue }) => {
     try {
       const { data } = await api.editComment(id, postId, comment, image, token);
@@ -124,7 +113,7 @@ export const editCommentPost = createAsyncThunk(
 
 const initialState = {
   posts: [],
-  userTypingPosts: [],
+  userTypingPosts: false,
   error: "",
   loading: false,
   errorCreatePost: "",
@@ -170,6 +159,12 @@ export const postSlice = createSlice({
         postId: action.payload,
       });
     },
+    viewNegativePostShare: (state, action) => {
+      showNegativePostShare({
+        posts: state.posts,
+        postId: action.payload,
+      });
+    },
     deleteCommentInFeed: (state, action) => {
       replaceComment({
         posts: state.posts,
@@ -178,12 +173,10 @@ export const postSlice = createSlice({
       });
     },
     handleAddUserTypingPost: (state, action) => {
-      state.userTypingPosts = [action.payload, ...state.userTypingPosts];
+      state.userTypingPosts = action.payload;
     },
     handleRemoveUserTypingPost: (state, action) => {
-      state.userTypingPosts = state.userTypingPosts.filter(
-        (p) => p !== action.payload
-      );
+      state.userTypingPosts = action.payload;
     },
     getNewCommentPost: (state, action) => {
       const post = state.posts.find((p) => p._id === action.payload.postId);
@@ -229,7 +222,7 @@ export const postSlice = createSlice({
       state.errorCreatePost = "";
     },
     [deletePost.rejected]: (state, action) => {
-      state.errorCreatePost = action.payload.message;
+      state.errorCreatePost = action.payload;
     },
     [createCommentPost.pending]: (state, action) => {
       state.loadingCommentPost = true;
@@ -273,6 +266,7 @@ export const {
   viewNegativePost,
   getNewCommentPost,
   deleteCommentInFeed,
+  viewNegativePostShare,
   editCommentPostLoading,
   handleAddUserTypingPost,
   createCommentPostLoading,

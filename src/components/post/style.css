@@ -872,6 +872,8 @@
   display: flex;
 }
 
+
+
 .comment_wrap_comment {
   /* max-width: 90%; */
   background: var(--bg-forth);
@@ -1049,9 +1051,10 @@
 }
 
 /* ==========Post Pop Up ============== */
+/* 100vh */
 .post-popup {
   position: relative;
-  min-height: 100vh;
+  min-height: 400px;
   width: 100%;
   background: var(--bg-primary);
   -webkit-user-select: none;
@@ -1112,6 +1115,7 @@
   -webkit-user-select: none;
   user-select: none;
   color: var(--color-primary);
+  padding-bottom: 1rem;
 }
 
 .post-share_cover_wrap {
@@ -1128,6 +1132,10 @@
 .bottom-radius-post {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
+}
+
+.comment-notification {
+  background: #e7f3ff;
 }
 
 /*------Post menu------*/

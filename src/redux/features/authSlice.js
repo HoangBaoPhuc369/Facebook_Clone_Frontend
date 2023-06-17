@@ -4,16 +4,12 @@ import * as api from "../api";
 
 export const login = createAsyncThunk(
   "auth/login",
-  async ({ formValue, navigate, socket }, { rejectWithValue }) => {
+  async ({ formValue, navigate }, { rejectWithValue }) => {
     try {
       const { data } = await api.userLogin(formValue);
       if (data) {
-        socket?.emit("addUser", {
-          userId: data?.id,
-          userName: `${data?.first_name} ${data?.last_name}`,
-          picture: data?.picture,
-          timeJoin: new Date(),
-        });
+        // navigate("/");
+        window.location.reload();
       }
       return data;
     } catch (err) {
@@ -50,10 +46,23 @@ export const active = createAsyncThunk(
 );
 
 export const changeTheme = createAsyncThunk(
-  "theme/changeTheme",
+  "auth/changeTheme",
   async ({ theme, userToken }, { rejectWithValue }) => {
     try {
       const { data } = await api.changeTheme(theme, userToken);
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const getFriendsInformation = createAsyncThunk(
+  "auth/getFriendsInformation",
+  async ({ token }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.getFriendsPageInfos(token);
+      console.log(data);
       return data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -143,6 +152,14 @@ export const authSlice = createSlice({
           ...state.user,
         })
       );
+    },
+
+    [getFriendsInformation.fulfilled]: (state, action) => {
+      state.user.friends = action.payload.friends;
+      state.error = null;
+    },
+    [getFriendsInformation.rejected]: (state, action) => {
+      state.error = action.payload;
     },
   },
 });

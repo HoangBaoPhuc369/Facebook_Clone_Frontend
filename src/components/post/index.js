@@ -15,6 +15,7 @@ import {
 } from "../../redux/features/profileSlice";
 import ModalCustom from "../Modal";
 import {
+  handleRemoveUserTypingPost,
   viewNegativeCommentInPost,
   viewNegativePost,
 } from "../../redux/features/postSlice";
@@ -56,13 +57,6 @@ export default function Post({
 
   useEffect(() => {
     getPostReacts();
-    // return () => {
-    //   setReacts();
-    //   setCheck();
-    //   setTotal(0);
-    //   setCheckSaved();
-    // };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post]);
 
   const getPostReacts = async () => {
@@ -71,41 +65,6 @@ export default function Post({
     setCheck(res.check);
     setTotal(res.total);
     setCheckSaved(res.checkSaved);
-  };
-
-  const handleSendNotifications = (icon, type) => {
-    if (user?.id !== post?.user._id) {
-      const typeNotification =
-        type === "react"
-          ? post?.type === null
-            ? `reacted to your post: "${post?.text}."`
-            : `reacted to your photo.`
-          : type === "comment"
-          ? post?.type === null
-            ? " commented on your post."
-            : " commented on your photo."
-          : null;
-
-      // const notification = {
-      //   senderId: user?.id,
-      //   receiverId: post?.user._id,
-      //   icon: icon,
-      //   text: typeNotification,
-      // };
-      const notificationSocket = {
-        senderId: user?.id,
-        receiverId: post?.user._id,
-        icon: icon,
-        text: typeNotification,
-        type: type,
-        picture: user?.picture,
-        name: user?.first_name + " " + user?.last_name,
-      };
-      // dispatch(
-      //   createNotifications({ props: notification, token: user?.token })
-      // );
-      socketRef?.emit("sendNotification", notificationSocket);
-    }
   };
 
   const reactHandler = async (type) => {
@@ -129,8 +88,6 @@ export default function Post({
         setReacts([...reacts, (reacts[index1].count = --reacts[index1].count)]);
         setTotal((prev) => --prev);
       }
-
-      handleSendNotifications(type, "react");
     }
   };
 
@@ -168,10 +125,9 @@ export default function Post({
 
   const handleOpenModalPost = () => {
     document.documentElement.style.overflow = "hidden";
+    socketRef.emit("joinPostComment", post?._id);
     setOpenModalPost(true);
   };
-
-  const handleClose = () => {};
 
   return (
     <div className="post" style={{ width: `${profile && "100%"}` }}>
@@ -239,29 +195,31 @@ export default function Post({
         </div>
       </div>
       {post?.hidePost ? (
-        <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
-          <div className="px-3 py-4 flex">
-            <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi"/>
-            <div>
-              <div className="text-[15px] font-medium flex gap-2">
-                We hide something you posted
-              </div>
-              <p className="text-[13px] text-gray-500 negative-post-text">
-                We covered the post because it doesn't follow the
-                <span className="ml-1 text-blue-500 hover:underline hover:cursor-pointer">
-                  Net Friend Community Standard
-                </span>
-              </p>
-  
-              <div
-                onClick={() => setIsOpenNegativePost(true)}
-                className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
-              >
-                Unhide
+        <>
+          <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
+            <div className="px-3 py-4 flex">
+              <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi" />
+              <div>
+                <div className="text-[15px] font-medium flex gap-2">
+                  We hide something you posted
+                </div>
+                <p className="text-[13px] text-gray-500 negative-post-text">
+                  We covered the post because it doesn't follow the
+                  <span className="ml-1 text-blue-500 hover:underline hover:cursor-pointer">
+                    Net Friend Community Standard
+                  </span>
+                </p>
+
+                <div
+                  onClick={() => setIsOpenNegativePost(true)}
+                  className="text-sm font-medium text-gray-500 mt-2 hover:underline hover:cursor-pointer w-14 negative-post-btn"
+                >
+                  Unhide
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       ) : post?.background ? (
         <div
           className="post_bg"
@@ -323,11 +281,27 @@ export default function Post({
                   className=" rounded-lg 
                  border-[1px] border-solid border-[#CED0D4]"
                 >
-                  <PostShare user={user} post={post?.postRef} />
+                  <PostShare user={user} post={post?.postRef} postParentId={post?._id} />
                 </div>
               </div>
             </>
-          ) : null}
+          ) : (
+            <div className="mx-4 border border-solid border-gray-500 shadow-sm rounded-2xl">
+              <div className="px-3 py-4 flex">
+                <HiLockClosed className="mt-1 mr-3 w-10 h-10 icon-lock-hi" />
+                <div>
+                  <div className="text-[15px] font-medium flex gap-2">
+                    This content isn't available right now
+                  </div>
+                  <p className="text-[13px] text-gray-500 negative-post-text">
+                    When this happens, it's usually because the owner only
+                    shared it with a small group of people, changed who can see
+                    it or it's been deleted.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <div className="post_cover_wrap">
@@ -387,13 +361,7 @@ export default function Post({
           <div className="post_action_reaction_wrap">
             {check ? (
               check === "like" ? (
-                <div className="post_action_reaction_like_react">
-                  <img
-                    src={`../../../reacts/${check}.png`}
-                    alt=""
-                    className="like_react"
-                  />
-                </div>
+                <i className="like_icon_action"></i>
               ) : (
                 <img
                   src={`../../../reacts/${check}.svg`}
@@ -562,9 +530,12 @@ export default function Post({
         open={openModalPost}
         socketRef={socketRef}
         toastDetailsPost={toastDetailsPost}
-        handleSendNotifications={handleSendNotifications}
+        // handleSendNotifications={handleSendNotifications}
         onClose={() => {
           document.documentElement.style.overflow = "auto";
+          socketRef?.emit("leavePostCommentTyping", post?._id);
+          socketRef.emit("leavePostComment", post?._id);
+          dispatch(handleRemoveUserTypingPost(false));
           setOpenModalPost(false);
         }}
       />
