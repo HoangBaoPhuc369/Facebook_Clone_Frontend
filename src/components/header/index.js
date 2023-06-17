@@ -283,6 +283,9 @@ export default function Header({
 
   useEffect(() => {
     socketRef?.on("commentNotification", (data) => {
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
+
       toast(
         <Msg
           picture={data?.from?.picture}
@@ -301,9 +304,6 @@ export default function Header({
           transition: bounce,
         }
       );
-
-      dispatch(getNotification({ userToken: user?.token }));
-      dispatch(getNewNotifications(data));
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -311,6 +311,10 @@ export default function Header({
 
   useEffect(() => {
     socketRef?.on("friendSentRequest", (data) => {
+      const pathCurrent = location.pathname;
+      const userName = data?.from?.username;
+      const friendPath = `/profile/${userName}`;
+
       toast(
         <Msg
           picture={data?.from?.picture}
@@ -330,11 +334,9 @@ export default function Header({
         }
       );
 
-      const pathCurrent = location.pathname;
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
-      const userName = data?.from?.username;
-      const friendPath = `/profile/${userName}`;
+
       if (pathCurrent === friendPath) {
         dispatch(
           updateProfile({

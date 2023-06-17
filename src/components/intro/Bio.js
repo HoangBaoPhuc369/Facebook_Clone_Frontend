@@ -10,6 +10,11 @@ export default function Bio({
   setShow,
   rel,
 }) {
+  const handleClick = () => {
+    updateDetails();
+    setShow(false);
+  };
+
   return (
     <div className="add_bio_wrap">
       {rel ? (
@@ -42,17 +47,13 @@ export default function Bio({
         <div className="flex flex_right">
           <button
             className="gray_btn"
-            onClick={() => (!detail ? setShowBio(false) : setShow(false))}
+            onClick={() =>
+              !detail ? setShowBio((prev) => !prev) : setShow((prev) => !prev)
+            }
           >
             Cancel
           </button>
-          <button
-            className="blue_btn"
-            onClick={() => {
-              setShow(false);
-              updateDetails();
-            }}
-          >
+          <button className="blue_btn" onClick={() => handleClick()}>
             Save
           </button>
         </div>

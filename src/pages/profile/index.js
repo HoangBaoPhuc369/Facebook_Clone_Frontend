@@ -17,18 +17,14 @@ import { useMediaQuery } from "react-responsive";
 import CreatePostPopup from "../../components/createPostPopup";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { HashLoader } from "react-spinners";
 import {
   getNewCommentPostProfile,
   getNewPostProfile,
   getProfile,
 } from "../../redux/features/profileSlice";
 import ProfilePictureInfos from "./ProfilePictureInfos";
-import PostSkeleton from "../../components/postSkeleton";
 export default function Profile({
   socketRef,
-  onlineUser,
-  setOnlineUsers,
   setPostShare,
   setIsProfile,
   setsharePostPopUp,
@@ -57,20 +53,17 @@ export default function Profile({
   }, [userName]);
 
   useEffect(() => {
-    if (socketRef) {
-      socketRef.on("newComment", (data) => {
-        dispatch(getNewCommentPostProfile(data));
-      });
-    }
+    socketRef?.on("newComment", (data) => {
+      console.log(data);
+      dispatch(getNewCommentPostProfile(data));
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (socketRef) {
-      socketRef.on("newPost", (data) => {
-        dispatch(getNewPostProfile(data));
-      });
-    }
+    socketRef?.on("newPost", (data) => {
+      dispatch(getNewPostProfile(data));
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

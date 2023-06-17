@@ -164,12 +164,12 @@ export const notificationSlice = createSlice({
   initialState,
   reducers: {
     getNewNotifications: (state, action) => {
-      console.log(action.payload);
+      console.log([action.payload._id, ...state.newNotifications]);
       state.newNotifications = [action.payload._id, ...state.newNotifications];
       console.log(state.newNotifications);
       localStorage.setItem(
         "newNotification",
-        JSON.stringify([...state.newNotifications])
+        JSON.stringify([action.payload._id, ...state.newNotifications])
       );
     },
     clearNewNotifications: (state, action) => {
@@ -222,10 +222,9 @@ export const notificationSlice = createSlice({
   },
   extraReducers: {
     [getNotification.pending]: (state, action) => {
-      state.loading = true;
     },
     [getNotification.fulfilled]: (state, action) => {
-      state.loading = false;
+      console.log(action.payload);
       state.notifications = action.payload;
       state.error = "";
     },
