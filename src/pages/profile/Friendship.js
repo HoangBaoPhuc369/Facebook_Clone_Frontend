@@ -12,7 +12,6 @@ import { useSelector } from "react-redux";
 // } from "../../functions/user";
 import { useDispatch } from "react-redux";
 import {
-  acceptRequest,
   addFriend,
   cancelRequest,
   deleteRequest,
@@ -22,7 +21,11 @@ import {
   updateProfile,
 } from "../../redux/features/profileSlice";
 import { getConversations } from "../../redux/features/conversationSlice";
-export default function Friendship({ friendshipp, profileId }) {
+import * as api from "../../redux/api";
+import { updateFriends } from "../../redux/features/authSlice";
+import { clearNewFriendRequest } from "../../redux/features/notificationSlice";
+
+export default function Friendship({ profileId }) {
   const dispatch = useDispatch();
   const [friendsMenu, setFriendsMenu] = useState(false);
   const [respondMenu, setRespondMenu] = useState(false);
@@ -51,30 +54,46 @@ export default function Friendship({ friendshipp, profileId }) {
     dispatch(unFollow({ profileId: profileId, token: user.token }));
   };
   const acceptRequestHandler = async () => {
-    await dispatch(
-      acceptRequest({
-        profileId: profileId,
-        userName: profile?.username,
-        token: user.token,
-      })
-    );
+    try {
+      const res = await api.acceptRequest(profileId, user.token);
+      if (res.data) {
+        dispatch(
+          updateProfile({
+            userName: profile?.username,
+            token: user.token,
+          })
+        );
 
-    await dispatch(getConversations({ userToken: user?.token }));
+        dispatch(updateFriends(res.data.friends));
+        dispatch(getConversations({ userToken: user?.token }));
+        dispatch(clearNewFriendRequest());
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   const unfriendHandler = async () => {
-    await dispatch(
-      unfriend({
-        profileId: profileId,
-        userName: profile?.username,
-        token: user.token,
-      })
-    );
+    try {
+      const res = await api.unfriend(profileId, user.token);
+      if (res.data) {
+        dispatch(
+          unfriend({
+            userName: profile?.username,
+            token: user.token,
+          })
+        );
 
-    await dispatch(getConversations({ userToken: user?.token }));
+        dispatch(updateFriends(res.data.friends));
+        dispatch(getConversations({ userToken: user?.token }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const deleteRequestHandler = async () => {
     dispatch(deleteRequest({ profileId: profileId, token: user.token }));
+    dispatch(clearNewFriendRequest());
   };
 
   return (

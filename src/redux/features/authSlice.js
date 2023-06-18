@@ -59,11 +59,10 @@ export const changeTheme = createAsyncThunk(
 
 export const getFriendsInformation = createAsyncThunk(
   "auth/getFriendsInformation",
-  async ({ token }, { rejectWithValue }) => {
+  async ({ token, socketRef, userId }, { rejectWithValue }) => {
     try {
       const { data } = await api.getFriendsPageInfos(token);
-      console.log(data);
-      return data;
+      return { data: data, socketRef: socketRef, userId: userId };
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -96,6 +95,15 @@ export const authSlice = createSlice({
         JSON.stringify({
           ...state.user,
           picture: action.payload,
+        })
+      );
+    },
+    updateFriends: (state, action) => {
+      state.user.friends = action.payload;
+      Cookies.set(
+        "user",
+        JSON.stringify({
+          ...state.user,
         })
       );
     },
@@ -155,7 +163,19 @@ export const authSlice = createSlice({
     },
 
     [getFriendsInformation.fulfilled]: (state, action) => {
-      state.user.friends = action.payload.friends;
+      state.user.friends = action.payload.data.friends;
+      Cookies.set(
+        "user",
+        JSON.stringify({
+          ...state.user,
+        })
+      );
+
+      const socket = action.payload.socketRef;
+      const id = action.payload.userId;
+      setTimeout(() => {
+        socket?.emit("getFriendsOnline", id);
+      }, 3000);
       state.error = null;
     },
     [getFriendsInformation.rejected]: (state, action) => {
@@ -165,6 +185,6 @@ export const authSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { setLogout, updatePicture } = authSlice.actions;
+export const { setLogout, updatePicture, updateFriends } = authSlice.actions;
 
 export default authSlice.reducer;

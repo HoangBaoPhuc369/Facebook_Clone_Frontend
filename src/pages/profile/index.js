@@ -53,17 +53,29 @@ export default function Profile({
   }, [userName]);
 
   useEffect(() => {
-    socketRef?.on("newComment", (data) => {
-      console.log(data);
+    const handleNewComment = (data) => {
       dispatch(getNewCommentPostProfile(data));
-    });
+    };
+
+    socketRef?.on("newComment", handleNewComment);
+
+    return () => {
+      socketRef?.off("newComment", handleNewComment);
+    };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    socketRef?.on("newPost", (data) => {
+    const handleNewPost = (data) => {
       dispatch(getNewPostProfile(data));
-    });
+    };
+
+    socketRef?.on("newPost", handleNewPost);
+
+    return () => {
+      socketRef?.off("newPost", handleNewPost);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

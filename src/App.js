@@ -79,6 +79,10 @@ function App() {
       transports: ["websocket"],
     });
 
+    socketRef.current.on("connect", () => {
+      console.log("Đã kết nối đến máy chủ Socket.IO", socketRef.current.id);
+    });
+
     return () => {
       socketRef.current.disconnect();
     };
@@ -86,7 +90,6 @@ function App() {
 
   useEffect(() => {
     if (user?.token) {
-      // dispatch(getAllPosts({ userToken: user?.token }));
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getConversations({ userToken: user?.token }));
     }
@@ -107,41 +110,9 @@ function App() {
     handleWSSCallInParent(socketRef.current);
   }, [user]);
 
-  // const isReloadedRef = useRef(false);
-
-  // useEffect(() => {
-  //   if (user && !isReloadedRef.current) {
-  //     isReloadedRef.current = true;
-  //     window.location.reload();
-  //   }
-  // }, [user]);
-
   useEffect(() => {
     socketRef.current?.on("getFriendsOnline", (users) => {
-      const activeUsers = user.friends.filter((f) =>
-        users.some((u) => u.userId === f._id)
-      );
-
-      const activeUsersSocket = users.filter(
-        (activeUser) =>
-          activeUser.socketId !== socketRef.current?.id &&
-          user.friends.some((u) => u._id === activeUser.userId)
-      );
-      console.log(activeUsers);
-      setOnlineUsers(activeUsers);
-      dispatch(setActiveUsers(activeUsersSocket));
-    });
-  }, []);
-
-  useEffect(() => {
-    socketRef.current?.on("call-other", (data) => {
-      webRTCHandler.handlePreOfferInParent(data);
-    });
-  }, [user]);
-
-  useEffect(() => {
-    if (socketRef.current) {
-      socketRef.current.on("getUsers", (users) => {
+      if (user) {
         const activeUsers = user.friends.filter((f) =>
           users.some((u) => u.userId === f._id)
         );
@@ -151,13 +122,18 @@ function App() {
             activeUser.socketId !== socketRef.current?.id &&
             user.friends.some((u) => u._id === activeUser.userId)
         );
-        // console.log(friends);
+
         setOnlineUsers(activeUsers);
         dispatch(setActiveUsers(activeUsersSocket));
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      }
+    });
+  }, [user]);
+
+  useEffect(() => {
+    socketRef.current?.on("call-other", (data) => {
+      webRTCHandler.handlePreOfferInParent(data);
+    });
+  }, [user]);
 
   useEffect(() => {
     if (socketRef.current) {
@@ -223,7 +199,7 @@ function App() {
           <Route
             path="/profile"
             element={
-              socketRef ? (
+              socketRef.current ? (
                 <Profile
                   socketRef={socketRef.current}
                   setVisible={setVisible}

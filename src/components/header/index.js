@@ -35,7 +35,9 @@ import {
 } from "../../redux/features/conversationSlice";
 import AllNotifications from "./AllNotifications";
 import {
+  clearNewFriendRequest,
   clearNewNotifications,
+  getNewFriendRequest,
   getNewNotifications,
   getNotification,
 } from "../../redux/features/notificationSlice";
@@ -51,6 +53,8 @@ import { useLocation } from "react-router-dom";
 import { updateProfile } from "../../redux/features/profileSlice";
 import { getFriendsInformation } from "../../redux/features/authSlice";
 
+const iconsReact = ["like", "love", "haha", "sad", "angry", "wow"];
+
 const Msg = ({ picture, text, icon, name, type }) => (
   <>
     <div className="notification-box_header">
@@ -61,7 +65,15 @@ const Msg = ({ picture, text, icon, name, type }) => (
         <img className="noftification-avatar" src={picture} alt="" />
         {type !== "react" ? (
           <div className="absolute bottom-2 right-0 w-5 h-5">
-            <i className={`notification_${type}_icon`}></i>
+            {iconsReact.includes(icon) ? (
+              <img
+                className="absolute bottom-2 right-0 w-5 h-5"
+                src={`../../../reacts/${icon}.svg`}
+                alt=""
+              />
+            ) : (
+              <i className={`notification_${type}_icon`}></i>
+            )}
           </div>
         ) : (
           <img
@@ -123,12 +135,13 @@ export default function Header({
   const location = useLocation();
   const { user } = useSelector((state) => ({ ...state.auth }));
   const { callState, callerUser } = useSelector((state) => ({ ...state.call }));
-  const { newNotifications } = useSelector((state) => ({
+  const { newNotifications, newFriendRequest } = useSelector((state) => ({
     ...state.notification,
   }));
   const { conversations, chatBox, newMessage } = useSelector((state) => ({
     ...state.messenger,
   }));
+
   const color = "#65676b";
   const dispatch = useDispatch();
   const [showAllMenu, setShowAllMenu] = useState(false);
@@ -283,9 +296,6 @@ export default function Header({
 
   useEffect(() => {
     socketRef?.on("commentNotification", (data) => {
-      dispatch(getNotification({ userToken: user?.token }));
-      dispatch(getNewNotifications(data));
-
       toast(
         <Msg
           picture={data?.from?.picture}
@@ -304,17 +314,17 @@ export default function Header({
           transition: bounce,
         }
       );
+
+      dispatch(getNotification({ userToken: user?.token }));
+      dispatch(getNewNotifications(data));
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    socketRef?.on("friendSentRequest", (data) => {
-      const pathCurrent = location.pathname;
+    const handleNewFriendsRequest = (data) => {
       const userName = data?.from?.username;
-      const friendPath = `/profile/${userName}`;
-
       toast(
         <Msg
           picture={data?.from?.picture}
@@ -336,16 +346,21 @@ export default function Header({
 
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
+      dispatch(getNewFriendRequest(data));
 
-      if (pathCurrent === friendPath) {
-        dispatch(
-          updateProfile({
-            userName,
-            token: user?.token,
-          })
-        );
-      }
-    });
+      dispatch(
+        updateProfile({
+          userName,
+          token: user?.token,
+        })
+      );
+    };
+
+    socketRef?.on("friendSentRequest", handleNewFriendsRequest);
+
+    return () => {
+      socketRef?.off("friendSentRequest", handleNewFriendsRequest);
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -355,14 +370,16 @@ export default function Header({
       const pathCurrent = location.pathname;
       const userName = data;
       const friendPath = `/profile/${userName}`;
-      if (pathCurrent === friendPath) {
-        dispatch(
-          updateProfile({
-            userName,
-            token: user?.token,
-          })
-        );
-      }
+      // if (pathCurrent === friendPath) {
+
+      // }
+
+      dispatch(
+        updateProfile({
+          userName,
+          token: user?.token,
+        })
+      );
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -373,20 +390,26 @@ export default function Header({
       const pathCurrent = location.pathname;
       const userName = data;
       const friendPath = `/profile/${userName}`;
-      console.log(userName);
-      dispatch(getFriendsInformation({ token: user?.token }));
+      dispatch(
+        getFriendsInformation({
+          token: user?.token,
+          socketRef,
+          userId: user?.id,
+        })
+      );
       dispatch(getConversations({ userToken: user?.token }));
 
       if (pathCurrent === friendPath) {
-        dispatch(
-          updateProfile({
-            userName,
-            token: user?.token,
-          })
-        );
       } else if (pathCurrent === "/") {
         //Xử lý load lại post ở new Feed ở đây, tạo hàm gọi api khác với getPosts
       }
+
+      dispatch(
+        updateProfile({
+          userName,
+          token: user?.token,
+        })
+      );
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -431,23 +454,29 @@ export default function Header({
         }
       );
 
-      const pathCurrent = location.pathname;
-
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));
       dispatch(getConversations({ userToken: user?.token }));
-      dispatch(getFriendsInformation({ token: user?.token }));
+      dispatch(
+        getFriendsInformation({
+          token: user?.token,
+          socketRef,
+          userId: user?.id,
+        })
+      );
 
       const userName = data?.from?.username;
       const friendPath = `/profile/${userName}`;
-      if (pathCurrent === friendPath) {
-        dispatch(
-          updateProfile({
-            userName,
-            token: user?.token,
-          })
-        );
-      }
+
+      // if (pathCurrent === friendPath) {
+
+      // }
+      dispatch(
+        updateProfile({
+          userName,
+          token: user?.token,
+        })
+      );
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -472,7 +501,6 @@ export default function Header({
       arrivalMessage?.currentChatID === chatBox.currentChatBox &&
       !chatBox.chatBoxWaiting.includes(arrivalMessage?.currentChatID)
     ) {
-      console.log(arrivalMessage?.messages);
       socketRef?.emit("messageSeen", {
         message: arrivalMessage?.messages,
         currentChatId: arrivalMessage?.currentChatID,
@@ -513,17 +541,18 @@ export default function Header({
   ) => {
     if (chatBox.chatBoxWaiting?.includes(currentChatId)) {
       dispatch(removeChatBoxWaiting(currentChatId));
-      dispatch(
-        seenAllMessageChat({
-          userToken: userToken,
-          currentChatId: currentChatId,
-        })
-      );
-      socketRef?.emit("messageSeenAll", {
-        receiverId: friendChatId,
-        currentChatId: currentChatId,
-      });
     }
+
+    dispatch(
+      seenAllMessageChat({
+        userToken: userToken,
+        currentChatId: currentChatId,
+      })
+    );
+    socketRef?.emit("messageSeenAll", {
+      receiverId: friendChatId,
+      currentChatId: currentChatId,
+    });
   };
 
   //================================================================
@@ -570,10 +599,17 @@ export default function Header({
         </Link>
         <Link
           to="/friends"
-          // onClick={() => dispatch(setPage("friends"))}
+          onClick={() => {
+            dispatch(clearNewFriendRequest());
+          }}
           className={`middle_icon ${page === "friends" ? "active" : "hover1"}`}
         >
           {page === "friends" ? <FriendsActive /> : <Friends color={color} />}
+          {newFriendRequest?.length > 0 && (
+            <div className="middle_notification">
+              {newFriendRequest.length}+
+            </div>
+          )}
         </Link>
         <Link to="/" className="middle_icon hover1">
           <Watch color={color} />

@@ -1,6 +1,7 @@
 import Moment from "react-moment";
 import { useDispatch } from "react-redux";
 import {
+  clearNewFriendRequest,
   seenNotification,
   selecteNotification,
 } from "../../redux/features/notificationSlice";
@@ -29,6 +30,7 @@ export default function AllNotificationItem({
           navigate("/details-notification/system");
           // dispatch(setPage(""));
         } else if (notification.icon === "friend") {
+          dispatch(clearNewFriendRequest());
           navigate(`/profile/${notification?.from?.username}`);
         } else {
           navigate("/details-notification/post");
