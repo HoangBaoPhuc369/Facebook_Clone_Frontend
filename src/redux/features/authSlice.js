@@ -174,7 +174,7 @@ export const authSlice = createSlice({
       const socket = action.payload.socketRef;
       const id = action.payload.userId;
       setTimeout(() => {
-        socket.emit("getFriendsOnline", id);
+        socket?.emit("getFriendsOnline", id);
       }, 3000);
       state.error = null;
     },

@@ -72,15 +72,22 @@ export default function Friendship({ profileId }) {
     }
   };
   const unfriendHandler = async () => {
-    await dispatch(
-      unfriend({
-        profileId: profileId,
-        userName: profile?.username,
-        token: user.token,
-      })
-    );
+    try {
+      const res = await api.unfriend(profileId, user.token);
+      if (res.data) {
+        dispatch(
+          unfriend({
+            userName: profile?.username,
+            token: user.token,
+          })
+        );
 
-    await dispatch(getConversations({ userToken: user?.token }));
+        dispatch(updateFriends(res.data.friends));
+        dispatch(getConversations({ userToken: user?.token }));
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const deleteRequestHandler = async () => {

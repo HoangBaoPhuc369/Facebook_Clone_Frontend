@@ -386,7 +386,13 @@ export default function Header({
       const pathCurrent = location.pathname;
       const userName = data;
       const friendPath = `/profile/${userName}`;
-      dispatch(getFriendsInformation({ token: user?.token }));
+      dispatch(
+        getFriendsInformation({
+          token: user?.token,
+          socketRef,
+          userId: user?.id,
+        })
+      );
       dispatch(getConversations({ userToken: user?.token }));
 
       if (pathCurrent === friendPath) {

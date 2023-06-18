@@ -122,22 +122,22 @@ function App() {
 
   useEffect(() => {
     socketRef.current?.on("getFriendsOnline", (users) => {
-      const activeUsers = user.friends.filter((f) =>
-        users.some((u) => u.userId === f._id)
-      );
+      if (user) {
+        const activeUsers = user.friends.filter((f) =>
+          users.some((u) => u.userId === f._id)
+        );
 
-      const activeUsersSocket = users.filter(
-        (activeUser) =>
-          activeUser.socketId !== socketRef.current?.id &&
-          user.friends.some((u) => u._id === activeUser.userId)
-      );
+        const activeUsersSocket = users.filter(
+          (activeUser) =>
+            activeUser.socketId !== socketRef.current?.id &&
+            user.friends.some((u) => u._id === activeUser.userId)
+        );
 
-      console.log(users);
-      console.log("user", user.friends);
-      setOnlineUsers(activeUsers);
-      dispatch(setActiveUsers(activeUsersSocket));
+        setOnlineUsers(activeUsers);
+        dispatch(setActiveUsers(activeUsersSocket));
+      }
     });
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     socketRef.current?.on("call-other", (data) => {
