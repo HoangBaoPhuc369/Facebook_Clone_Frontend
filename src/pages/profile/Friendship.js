@@ -23,6 +23,7 @@ import {
 import { getConversations } from "../../redux/features/conversationSlice";
 import * as api from "../../redux/api";
 import { updateFriends } from "../../redux/features/authSlice";
+import { clearNewFriendRequest } from "../../redux/features/notificationSlice";
 
 export default function Friendship({ profileId }) {
   const dispatch = useDispatch();
@@ -64,8 +65,8 @@ export default function Friendship({ profileId }) {
         );
 
         dispatch(updateFriends(res.data.friends));
-
         dispatch(getConversations({ userToken: user?.token }));
+        dispatch(clearNewFriendRequest());
       }
     } catch (error) {
       console.log(error);
@@ -92,6 +93,7 @@ export default function Friendship({ profileId }) {
 
   const deleteRequestHandler = async () => {
     dispatch(deleteRequest({ profileId: profileId, token: user.token }));
+    dispatch(clearNewFriendRequest());
   };
 
   return (

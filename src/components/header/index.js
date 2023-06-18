@@ -323,10 +323,8 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    socketRef?.on("friendSentRequest", (data) => {
-      const pathCurrent = location.pathname;
+    const handleNewFriendsRequest = (data) => {
       const userName = data?.from?.username;
-      const friendPath = `/profile/${userName}`;
       toast(
         <Msg
           picture={data?.from?.picture}
@@ -356,7 +354,13 @@ export default function Header({
           token: user?.token,
         })
       );
-    });
+    };
+
+    socketRef?.on("friendSentRequest", handleNewFriendsRequest);
+
+    return () => {
+      socketRef?.off("friendSentRequest", handleNewFriendsRequest);
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -449,8 +453,6 @@ export default function Header({
           transition: bounce,
         }
       );
-
-      const pathCurrent = location.pathname;
 
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getNewNotifications(data));

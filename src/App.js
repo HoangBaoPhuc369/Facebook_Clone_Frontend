@@ -90,7 +90,6 @@ function App() {
 
   useEffect(() => {
     if (user?.token) {
-      // dispatch(getAllPosts({ userToken: user?.token }));
       dispatch(getNotification({ userToken: user?.token }));
       dispatch(getConversations({ userToken: user?.token }));
     }
@@ -110,15 +109,6 @@ function App() {
     // setSocketRef(socketRef);
     handleWSSCallInParent(socketRef.current);
   }, [user]);
-
-  // const isReloadedRef = useRef(false);
-
-  // useEffect(() => {
-  //   if (user && !isReloadedRef.current) {
-  //     isReloadedRef.current = true;
-  //     window.location.reload();
-  //   }
-  // }, [user]);
 
   useEffect(() => {
     socketRef.current?.on("getFriendsOnline", (users) => {

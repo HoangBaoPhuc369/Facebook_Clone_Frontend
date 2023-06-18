@@ -170,14 +170,14 @@ export const notificationSlice = createSlice({
       state.newNotifications = [action.payload._id, ...state.newNotifications];
       localStorage.setItem(
         "newNotification",
-        JSON.stringify([action.payload._id, ...state.newNotifications])
+        JSON.stringify([...state.newNotifications])
       );
     },
     getNewFriendRequest: (state, action) => {
       state.newFriendRequest = [action.payload._id, ...state.newFriendRequest];
       localStorage.setItem(
         "newFriendRequest",
-        JSON.stringify([action.payload._id, ...state.newFriendRequest])
+        JSON.stringify([...state.newFriendRequest])
       );
     },
     clearNewNotifications: (state, action) => {
