@@ -18,7 +18,6 @@ export default function Home({
   socketRef,
   setVisible,
   onlineUser,
-  setOnlineUsers,
   setPostShare,
   setIsProfile,
   setsharePostPopUp,
@@ -29,20 +28,28 @@ export default function Home({
   }));
 
   useEffect(() => {
-    if (socketRef) {
-      socketRef.on("newComment", (data) => {
-        dispatch(getNewCommentPost(data));
-      });
-    }
+    const handleNewComment = (data) => {
+      dispatch(getNewCommentPost(data));
+    };
+
+    socketRef?.on("newComment", handleNewComment);
+
+    return () => {
+      socketRef?.off("newComment", handleNewComment);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (socketRef) {
-      socketRef.on("newPost", (data) => {
-        dispatch(getNewPost(data));
-      });
-    }
+    const handleNewPost = (data) => {
+      dispatch(getNewPost(data));
+    };
+
+    socketRef?.on("newPost", handleNewPost);
+
+    return () => {
+      socketRef?.off("newPost", handleNewPost);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

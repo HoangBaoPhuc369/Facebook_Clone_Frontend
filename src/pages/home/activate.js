@@ -14,42 +14,11 @@ export default function Activate() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, loadingActive, errorActive, message } = useSelector((state) => ({ ...state.auth }));
-  // const [success, setSuccess] = useState("");
-  // const [error, setError] = useState("");
-  // const [loading, setLoading] = useState(true);
   const { token } = useParams();
   useEffect(() => {
     activateAccount();
   }, []);
   const activateAccount = () => {
-    // try {
-    //   setLoading(true);
-    //   const { data } = await axios.post(
-    //     `${process.env.REACT_APP_BACKEND_URL}/auth/activate`,
-    //     { token },
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${user.token}`,
-    //       },
-    //     }
-    //   );
-    //   setSuccess(data.message);
-    //   Cookies.set("user", JSON.stringify({ ...user, verified: true }));
-    //   dispatch({
-    //     type: "VERIFY",
-    //     payload: true,
-    //   });
-
-    //   setTimeout(() => {
-    //     navigate("/");
-    //   }, 3000);
-    // } catch (error) {
-    //   setError(error.response.data.message);
-    //   setTimeout(() => {
-    //     navigate("/");
-    //   }, 3000);
-    // }
-
     dispatch(active({token, userToken: user.token, navigate}))
   };
   return (

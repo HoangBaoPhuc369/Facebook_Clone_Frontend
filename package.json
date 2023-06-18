@@ -35,7 +35,7 @@
     "react-toastify": "^9.1.1",
     "redux": "^4.1.2",
     "redux-devtools-extension": "^2.13.9",
-    "socket.io-client": "^4.5.2",
+    "socket.io-client": "^4.6.2",
     "tailwindcss-important": "^1.0.0",
     "timeago.js": "^4.0.2",
     "uuid": "^9.0.0",

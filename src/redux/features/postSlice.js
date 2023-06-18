@@ -180,7 +180,7 @@ export const postSlice = createSlice({
     },
     getNewCommentPost: (state, action) => {
       const post = state.posts.find((p) => p._id === action.payload.postId);
-      post.comments = [action.payload.comment, ...post.comments];
+      post.comments = [action.payload.comment, ...post?.comments];
     },
     getNewPost: (state, action) => {
       state.posts = [action.payload, ...state.posts];

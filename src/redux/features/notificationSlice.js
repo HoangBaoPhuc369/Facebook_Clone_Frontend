@@ -147,6 +147,9 @@ const initialState = {
   newNotifications: localStorage.getItem("newNotification")
     ? JSON.parse(localStorage.getItem("newNotification"))
     : [],
+  newFriendRequest: localStorage.getItem("newFriendRequest")
+    ? JSON.parse(localStorage.getItem("newFriendRequest"))
+    : [],
   notificationsSelected: localStorage.getItem("notificationsSelected")
     ? JSON.parse(localStorage.getItem("notificationsSelected"))
     : null,
@@ -164,17 +167,26 @@ export const notificationSlice = createSlice({
   initialState,
   reducers: {
     getNewNotifications: (state, action) => {
-      console.log([action.payload._id, ...state.newNotifications]);
       state.newNotifications = [action.payload._id, ...state.newNotifications];
-      console.log(state.newNotifications);
       localStorage.setItem(
         "newNotification",
         JSON.stringify([action.payload._id, ...state.newNotifications])
       );
     },
+    getNewFriendRequest: (state, action) => {
+      state.newFriendRequest = [action.payload._id, ...state.newFriendRequest];
+      localStorage.setItem(
+        "newFriendRequest",
+        JSON.stringify([action.payload._id, ...state.newFriendRequest])
+      );
+    },
     clearNewNotifications: (state, action) => {
       state.newNotifications = [];
-      localStorage.setItem("newNotification", JSON.stringify(null));
+      localStorage.setItem("newNotification", JSON.stringify([]));
+    },
+    clearNewFriendRequest: (state, action) => {
+      state.newFriendRequest = [];
+      localStorage.setItem("newFriendRequest", JSON.stringify([]));
     },
     selecteNotification: (state, action) => {
       state.notificationsSelected = action.payload;
@@ -221,10 +233,8 @@ export const notificationSlice = createSlice({
     },
   },
   extraReducers: {
-    [getNotification.pending]: (state, action) => {
-    },
+    [getNotification.pending]: (state, action) => {},
     [getNotification.fulfilled]: (state, action) => {
-      console.log(action.payload);
       state.notifications = action.payload;
       state.error = "";
     },
@@ -307,6 +317,8 @@ export const {
   clearPostDetails,
   selecteNotification,
   getNewNotifications,
+  getNewFriendRequest,
+  clearNewFriendRequest,
   clearNewNotifications,
   deleteCommentInDetails,
   viewNegativePostDetails,

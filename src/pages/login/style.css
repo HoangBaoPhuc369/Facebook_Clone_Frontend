@@ -265,6 +265,7 @@
 
   .login_wrap {
     min-height: unset;
+    height: unset;
   }
   .reg_line {
     flex-direction: unset;

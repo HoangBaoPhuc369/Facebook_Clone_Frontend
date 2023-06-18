@@ -1152,10 +1152,18 @@ header {
   .middle_icon {
     width: 90px;
   }
+
+  .middle_notification {
+    right: 0.9rem;
+  }
 }
 @media (max-width: 1130px) {
   .middle_icon {
     width: 70px;
+  }
+
+  .middle_notification {
+    right: 0.1rem;
   }
 }
 @media (max-width: 1040px) {

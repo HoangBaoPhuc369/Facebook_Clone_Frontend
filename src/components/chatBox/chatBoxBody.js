@@ -80,7 +80,6 @@ export default function ChatBoxBody({
     typingUsers &&
       currentChat?.members.some((m) => typingUsers?.some((c) => c === m._id)) &&
       setShowTyping(() => [...typingUsers]);
-    console.log([...typingUsers]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typingUsers]);
 
