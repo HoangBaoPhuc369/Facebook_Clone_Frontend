@@ -65,7 +65,7 @@ export default function ChatBoxHeader({
     const type = "host";
     const username = `${user.first_name} ${user.last_name}`;
     const videoCallWindow = window.open(
-      `${process.env.REACT_APP_VIDEO_CALL_URL}/?roomId=${roomId}&username=${username}&type=${type}`,
+      `${process.env.REACT_APP_VIDEO_CALL_URL}/video-call/?roomId=${roomId}&username=${username}&type=${type}`,
       "Video Call",
       `
       width=${w / systemZoom}, 
