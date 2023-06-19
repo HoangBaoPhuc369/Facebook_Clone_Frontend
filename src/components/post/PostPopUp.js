@@ -45,8 +45,6 @@ export default function PostPopUp({
     ...state.notification,
   }));
 
-  // const isPostHaveTyping = userTypingPosts.some((p) => p === post?._id);
-
   const [showMenu, setShowMenu] = useState(false);
   const [reacts, setReacts] = useState();
   const [check, setCheck] = useState();
@@ -395,7 +393,6 @@ export default function PostPopUp({
             </div>
           ) : null}
 
-          {/* <div className="share_count">0 share</div> */}
         </div>
       </div>
       <div
