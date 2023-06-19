@@ -41,7 +41,7 @@ export default function NotificationPopUp({
 
     const type = "joiner";
     const videoCallWindow = window.open(
-      `http://localhost:3001/video-call/?roomId=${roomId}&type=${type}`,
+      `${process.env.REACT_APP_VIDEO_CALL_URL}/video-call/?roomId=${roomId}&type=${type}`,
       "Video Call",
       `
       width=${w / systemZoom}, 
