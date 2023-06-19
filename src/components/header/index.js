@@ -714,7 +714,7 @@ export default function Header({
             </div>
           </div>
 
-          {showUserMenu && <UserMenu user={user} socket={socketRef} />}
+          {showUserMenu && <UserMenu user={user} socket={socketRef} setShowUserMenu={setShowUserMenu} />}
         </div>
       </div>
       <div id="wrapper">

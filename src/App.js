@@ -136,20 +136,28 @@ function App() {
   }, [user]);
 
   useEffect(() => {
-    if (socketRef.current) {
-      socketRef.current.on("startPostCommentTyping", () => {
-        dispatch(handleAddUserTypingPost(true));
-      });
-    }
+    const handleTyping = () => {
+      dispatch(handleAddUserTypingPost(true));
+    };
+
+    socketRef.current?.on("startPostCommentTyping", handleTyping);
+
+    return () => {
+      socketRef.current?.off("startPostCommentTyping", handleTyping);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (socketRef.current) {
-      socketRef.current.on("stopPostCommentTyping", () => {
-        dispatch(handleRemoveUserTypingPost(false));
-      });
-    }
+    const handleTyping = () => {
+      dispatch(handleRemoveUserTypingPost(false));
+    };
+
+    socketRef.current?.on("stopPostCommentTyping", handleTyping);
+
+    return () => {
+      socketRef.current?.off("stopPostCommentTyping", handleTyping);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -272,12 +280,14 @@ function App() {
           <Route
             path="/details-notification/:type"
             element={
-              <DetailsNotifications
-                socketRef={socketRef.current}
-                onlineUser={onlineUser}
-                setOnlineUsers={setOnlineUsers}
-                toastDetailsPost={toastDetailsPost}
-              />
+              socketRef.current ? (
+                <DetailsNotifications
+                  socketRef={socketRef.current}
+                  onlineUser={onlineUser}
+                  setOnlineUsers={setOnlineUsers}
+                  toastDetailsPost={toastDetailsPost}
+                />
+              ) : null
             }
             exact
           />

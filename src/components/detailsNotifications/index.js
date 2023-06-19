@@ -1,22 +1,20 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Header from "../../components/header";
-import { getNewCommentPost } from "../../redux/features/postSlice";
+import {
+  getNewCommentPost,
+  handleAddUserTypingPost,
+  handleRemoveUserTypingPost,
+} from "../../redux/features/postSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   clearPostDetails,
+  getNewCommentPostDetail,
   getPost,
 } from "../../redux/features/notificationSlice";
 import PostPopUp from "../post/PostPopUp";
 import PostSkeleton from "../postSkeleton";
-import { setPage } from "../../redux/features/pageSlice";
 
-export default function DetailsNotifications({
-  socketRef,
-  onlineUser,
-  setOnlineUsers,
-  toastDetailsPost,
-}) {
+export default function DetailsNotifications({ socketRef, toastDetailsPost }) {
   const { type } = useParams();
   const { notificationsSelected, loadingPostDetails, postDetails } =
     useSelector((state) => ({
@@ -42,11 +40,16 @@ export default function DetailsNotifications({
   }, [type, notificationsSelected]);
 
   useEffect(() => {
-    if (socketRef) {
-      socketRef.on("newComment", (data) => {
-        dispatch(getNewCommentPost(data));
-      });
-    }
+    const handleNewComment = (data) => {
+      dispatch(getNewCommentPostDetail(data));
+    };
+
+    socketRef?.on("newComment", handleNewComment);
+
+    return () => {
+      socketRef?.off("newComment", handleNewComment);
+    };
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socketRef]);
 

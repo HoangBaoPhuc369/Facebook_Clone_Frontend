@@ -231,6 +231,13 @@ export const notificationSlice = createSlice({
       state.postDetails = null;
       localStorage.setItem("post-details", JSON.stringify(""));
     },
+
+    getNewCommentPostDetail: (state, action) => {
+      state.postDetails.comments = [
+        action.payload.comment,
+        ...state.postDetails?.comments,
+      ];
+    },
   },
   extraReducers: {
     [getNotification.pending]: (state, action) => {},
@@ -321,6 +328,7 @@ export const {
   clearNewFriendRequest,
   clearNewNotifications,
   deleteCommentInDetails,
+  getNewCommentPostDetail,
   viewNegativePostDetails,
   editCommentPostDetailsLoading,
   createCommentPostDetailsLoading,
